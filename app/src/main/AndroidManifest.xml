@@ -23,9 +23,6 @@ android:exported="true">
 <data android:mimeType="text/plain"/>
 <category android:name="android.intent.category.DEFAULT"/>
 </intent-filter>
-<meta-data
-android:name="android.app.process_text"
-android:resource="@xml/process_text_encode"/>
 </activity>
 
 <activity
@@ -36,9 +33,6 @@ android:exported="true">
 <data android:mimeType="text/plain"/>
 <category android:name="android.intent.category.DEFAULT"/>
 </intent-filter>
-<meta-data
-android:name="android.app.process_text"
-android:resource="@xml/process_text_decode"/>
 </activity>
 
 <activity
