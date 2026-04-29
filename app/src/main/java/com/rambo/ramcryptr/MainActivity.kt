@@ -3,113 +3,107 @@ package com.rambo.ramcryptr
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.rambo.ramcryptr.encoding.AES256Encoder
 
-class MainActivity : AppCompatActivity() {
+class MainActivity :
+AppCompatActivity() {
 
-    private lateinit var inputBox: EditText
-    private lateinit var encodeBtn: Button
-    private lateinit var decodeBtn: Button
+private lateinit var inputText:EditText
+private lateinit var encodeButton:Button
+private lateinit var decodeButton:Button
 
-    private val defaultKey =
-        "12345678901234567890123456789012"
+private val key=
+"12345678901234567890123456789012"
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+override fun onCreate(
+savedInstanceState:Bundle?
+){
+super.onCreate(
+savedInstanceState
+)
 
-        inputBox = findViewById(R.id.inputBox)
-        encodeBtn = findViewById(R.id.btnEncode)
-        decodeBtn = findViewById(R.id.btnDecode)
+setContentView(
+R.layout.activity_main
+)
 
-        encodeBtn.setOnClickListener {
-            encodeText()
-        }
+inputText=
+findViewById(
+R.id.inputBox
+)
 
-        decodeBtn.setOnClickListener {
-            decodeText()
-        }
-    }
+encodeButton=
+findViewById(
+R.id.btnEncode
+)
 
-    private fun encodeText() {
+decodeButton=
+findViewById(
+R.id.btnDecode
+)
 
-        val text = inputBox.text.toString()
+encodeButton
+.setOnClickListener{
 
-        if(text.isBlank()){
-            toast("Enter text first")
-            return
-        }
+val plain=
+inputText.text
+.toString()
+.trim()
 
-        try{
-            val encrypted =
-                AES256Encoder.encryptText(
-                    text,
-                    defaultKey
-                )
+if(
+plain.isNotEmpty()
+){
 
-            showResult(encrypted)
+val enc=
+AES256Encoder.encryptText(
+plain,
+key
+)
 
-        }catch(e:Exception){
-            toast("Encoding failed")
-        }
-    }
+inputText.setText(
+enc
+)
 
-    private fun decodeText(){
+}
 
-        val text=inputBox.text.toString()
+}
 
-        if(text.isBlank()){
-            toast("Enter encoded text")
-            return
-        }
+decodeButton
+.setOnClickListener{
 
-        try{
-            val decoded=
-                AES256Encoder.decryptText(
-                    text,
-                    defaultKey
-                )
+try{
 
-            showResult(decoded)
+val encrypted=
+inputText.text
+.toString()
+.trim()
+.replace(
+"\\s".toRegex(),
+""
+)
 
-        }catch(e:Exception){
-            toast("Decoding failed")
-        }
-    }
+val dec=
+AES256Encoder.decryptText(
+encrypted,
+key
+)
 
-    private fun showResult(result:String){
+inputText.setText(
+dec
+)
 
-        AlertDialog.Builder(this)
-            .setTitle("Result")
-            .setMessage(result)
-            .setPositiveButton("Copy"){_,_->
+}catch(
+e:Exception
+){
 
-                val clip=
-                    getSystemService(
-                    CLIPBOARD_SERVICE
-                    ) as
-                    android.content.ClipboardManager
+inputText.setError(
+"Invalid encrypted text"
+)
 
-                clip.setPrimaryClip(
-                    android.content.ClipData
-                    .newPlainText(
-                        "encoded",
-                        result
-                    )
-                )
-            }
-            .setNegativeButton("Close",null)
-            .show()
-    }
+}
 
-    private fun toast(msg:String){
-        Toast.makeText(
-            this,
-            msg,
-            Toast.LENGTH_SHORT
-        ).show()
-    }
+}
+
+}
+
 }

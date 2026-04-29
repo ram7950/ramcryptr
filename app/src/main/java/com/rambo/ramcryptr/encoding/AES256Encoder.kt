@@ -9,114 +9,128 @@ import javax.crypto.spec.SecretKeySpec
 
 object AES256Encoder {
 
-    private const val MARKER = "AES256::"
+private const val MARKER="AES256::"
 
-    private fun makeKey(
-        password:String
-    ):ByteArray{
+private fun makeKey(
+password:String
+):ByteArray{
 
-        return MessageDigest
-            .getInstance("SHA-256")
-            .digest(
-                password.toByteArray()
-            )
-    }
+return MessageDigest
+.getInstance(
+"SHA-256"
+)
+.digest(
+password.toByteArray()
+)
 
-    fun encryptText(
-        plainText:String,
-        key:String
-    ):String{
+}
 
-        val iv=ByteArray(16)
+fun encryptText(
+plainText:String,
+key:String
+):String{
 
-        SecureRandom()
-            .nextBytes(iv)
+val iv=ByteArray(16)
 
-        val cipher=
-            Cipher.getInstance(
-                "AES/CBC/PKCS5Padding"
-            )
+SecureRandom()
+.nextBytes(iv)
 
-        cipher.init(
-            Cipher.ENCRYPT_MODE,
-            SecretKeySpec(
-                makeKey(key),
-                "AES"
-            ),
-            IvParameterSpec(iv)
-        )
+val cipher=
+Cipher.getInstance(
+"AES/CBC/PKCS5Padding"
+)
 
-        val encrypted=
-            cipher.doFinal(
-                plainText.toByteArray()
-            )
+cipher.init(
+Cipher.ENCRYPT_MODE,
+SecretKeySpec(
+makeKey(key),
+"AES"
+),
+IvParameterSpec(iv)
+)
 
-        val combined=iv+encrypted
+val encrypted=
+cipher.doFinal(
+plainText.toByteArray()
+)
 
-        return MARKER+
-            Base64.encodeToString(
-                combined,
-                Base64.NO_WRAP
-            )
-    }
+val combined=
+iv+encrypted
 
-    fun decryptText(
-        encodedText:String,
-        key:String
-    ):String{
+return MARKER+
+Base64.encodeToString(
+combined,
+Base64.NO_WRAP
+)
 
-        if(
-            !encodedText.startsWith(
-                MARKER
-            )
-        ){
-            throw Exception(
-                "Invalid encrypted data"
-            )
-        }
+}
 
-        val raw=
-            Base64.decode(
-                encodedText.removePrefix(
-                    MARKER
-                ),
-                Base64.NO_WRAP
-            )
+fun decryptText(
+encodedText:String,
+key:String
+):String{
 
-        val iv=
-            raw.copyOfRange(
-                0,
-                16
-            )
+val cleaned=
+encodedText
+.trim()
+.replace(
+"\\s".toRegex(),
+""
+)
 
-        val cipherBytes=
-            raw.copyOfRange(
-                16,
-                raw.size
-            )
+if(
+!cleaned.startsWith(
+MARKER
+)
+){
+throw Exception(
+"Invalid encrypted data"
+)
+}
 
-        val cipher=
-            Cipher.getInstance(
-                "AES/CBC/PKCS5Padding"
-            )
+val raw=
+Base64.decode(
+cleaned.removePrefix(
+MARKER
+),
+Base64.NO_WRAP
+)
 
-        cipher.init(
-            Cipher.DECRYPT_MODE,
-            SecretKeySpec(
-                makeKey(key),
-                "AES"
-            ),
-            IvParameterSpec(iv)
-        )
+val iv=
+raw.copyOfRange(
+0,
+16
+)
 
-        val decrypted=
-            cipher.doFinal(
-                cipherBytes
-            )
+val cipherBytes=
+raw.copyOfRange(
+16,
+raw.size
+)
 
-        return String(
-            decrypted
-        )
-    }
+val cipher=
+Cipher.getInstance(
+"AES/CBC/PKCS5Padding"
+)
+
+cipher.init(
+Cipher.DECRYPT_MODE,
+SecretKeySpec(
+makeKey(key),
+"AES"
+),
+IvParameterSpec(iv)
+)
+
+val decrypted=
+cipher.doFinal(
+cipherBytes
+)
+
+return String(
+decrypted
+)
+
+}
 
 }

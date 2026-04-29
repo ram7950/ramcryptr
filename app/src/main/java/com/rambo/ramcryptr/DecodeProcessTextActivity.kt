@@ -21,9 +21,17 @@ savedInstanceState
 )
 
 val text=
-intent.getCharSequenceExtra(
+intent
+.getCharSequenceExtra(
 Intent.EXTRA_PROCESS_TEXT
-)?.toString() ?: ""
+)
+?.toString()
+?.trim()
+?.replace(
+"\\s".toRegex(),
+""
+)
+?: ""
 
 if(
 !text.startsWith(
@@ -38,20 +46,21 @@ if(
 AlertDialog.Builder(
 this
 )
-.setTitle("😄")
+.setTitle(
+"😄"
+)
 .setMessage(
 "Are Paglu,\nDecode nahi Encode dabao"
 )
 .setPositiveButton(
 "OK"
 ){_,_->
-
 finish()
-
 }
 .show()
 
 return
+
 }
 
 try{
@@ -92,7 +101,9 @@ this
 )
 .setPositiveButton(
 "OK"
-){_,_->finish()}
+){_,_->
+finish()
+}
 .show()
 
 }
