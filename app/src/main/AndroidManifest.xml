@@ -13,6 +13,52 @@ android:theme="@style/Theme.RAMcryptr">
 <activity android:name=".CustomMethodActivity"/>
 <activity android:name=".ConsistencyChannelActivity"/>
 
+<!-- Encode appears in selection menu -->
+<activity
+android:name=".EncodeProcessTextActivity"
+android:label="Encode"
+android:exported="true">
+
+<intent-filter>
+<action android:name=
+"android.intent.action.PROCESS_TEXT"/>
+<category android:name=
+"android.intent.category.DEFAULT"/>
+<data android:mimeType=
+"text/plain"/>
+</intent-filter>
+
+<meta-data
+android:name=
+"android.support.PROCESS_TEXT_READONLY"
+android:value="false"/>
+
+</activity>
+
+
+<!-- Decode appears in selection menu -->
+<activity
+android:name=".DecodeProcessTextActivity"
+android:label="Decode"
+android:exported="true">
+
+<intent-filter>
+<action android:name=
+"android.intent.action.PROCESS_TEXT"/>
+<category android:name=
+"android.intent.category.DEFAULT"/>
+<data android:mimeType=
+"text/plain"/>
+</intent-filter>
+
+<meta-data
+android:name=
+"android.support.PROCESS_TEXT_READONLY"
+android:value="false"/>
+
+</activity>
+
+
 <activity
 android:name=".MainActivity"
 android:exported="true">
