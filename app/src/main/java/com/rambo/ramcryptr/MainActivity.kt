@@ -1,5 +1,6 @@
 package com.rambo.ramcryptr
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -7,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.rambo.ramcryptr.encoding.AES256Encoder
 
 class MainActivity :
-AppCompatActivity() {
+AppCompatActivity(){
 
 private lateinit var inputText:EditText
 private lateinit var encodeButton:Button
@@ -25,6 +26,13 @@ savedInstanceState
 
 setContentView(
 R.layout.activity_main
+)
+
+startService(
+Intent(
+this,
+ClipboardMonitorService::class.java
+)
 )
 
 inputText=
@@ -96,9 +104,8 @@ dec
 e:Exception
 ){
 
-inputText.setError(
+inputText.error=
 "Invalid encrypted text"
-)
 
 }
 

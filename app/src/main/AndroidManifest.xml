@@ -1,76 +1,77 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+package="com.rambo.ramcryptr">
 
 <application
-android:allowBackup="false"
+android:allowBackup="true"
 android:label="RAMcryptr"
 android:supportsRtl="true"
-android:theme="@style/Theme.RAMcryptr">
+android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-<activity android:name=".SettingsActivity"/>
-<activity android:name=".TBKSys8Activity"/>
-<activity android:name=".ManualKeyActivity"/>
-<activity android:name=".CustomMethodActivity"/>
-<activity android:name=".ConsistencyChannelActivity"/>
-
-<!-- Encode appears in selection menu -->
 <activity
-android:name=".EncodeProcessTextActivity"
-android:label="Encode"
-android:exported="true">
-
+android:name=".MainActivity">
 <intent-filter>
-<action android:name=
-"android.intent.action.PROCESS_TEXT"/>
-<category android:name=
-"android.intent.category.DEFAULT"/>
-<data android:mimeType=
-"text/plain"/>
-</intent-filter>
-
-<meta-data
+<action
 android:name=
-"android.support.PROCESS_TEXT_READONLY"
-android:value="false"/>
-
-</activity>
-
-
-<!-- Decode appears in selection menu -->
-<activity
-android:name=".DecodeProcessTextActivity"
-android:label="Decode"
-android:exported="true">
-
-<intent-filter>
-<action android:name=
-"android.intent.action.PROCESS_TEXT"/>
-<category android:name=
-"android.intent.category.DEFAULT"/>
-<data android:mimeType=
-"text/plain"/>
-</intent-filter>
-
-<meta-data
-android:name=
-"android.support.PROCESS_TEXT_READONLY"
-android:value="false"/>
-
-</activity>
-
-
-<activity
-android:name=".MainActivity"
-android:exported="true">
-
-<intent-filter>
-<action android:name=
 "android.intent.action.MAIN"/>
-<category android:name=
+<category
+android:name=
 "android.intent.category.LAUNCHER"/>
 </intent-filter>
-
 </activity>
+
+<activity
+android:name=
+".EncodeProcessTextActivity"
+android:exported="true">
+<intent-filter>
+<action
+android:name=
+"android.intent.action.PROCESS_TEXT"/>
+<data
+android:mimeType=
+"text/plain"/>
+<category
+android:name=
+"android.intent.category.DEFAULT"/>
+</intent-filter>
+<meta-data
+android:name=
+"android.app.process_text"
+android:resource=
+"@xml/process_text_encode"/>
+</activity>
+
+<activity
+android:name=
+".DecodeProcessTextActivity"
+android:exported="true">
+<intent-filter>
+<action
+android:name=
+"android.intent.action.PROCESS_TEXT"/>
+<data
+android:mimeType=
+"text/plain"/>
+<category
+android:name=
+"android.intent.category.DEFAULT"/>
+</intent-filter>
+<meta-data
+android:name=
+"android.app.process_text"
+android:resource=
+"@xml/process_text_decode"/>
+</activity>
+
+<activity
+android:name=
+".ClipboardDecodePromptActivity"
+android:exported="false"/>
+
+<service
+android:name=
+".ClipboardMonitorService"
+android:exported="false"/>
 
 </application>
 
