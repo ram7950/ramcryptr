@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:padding="20dp">
+
+<EditText
+android:id="@+id/inputBox"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:minLines="6"
+android:gravity="top"
+android:hint="Enter text to encode or decode"/>
+
+<Button
+android:id="@+id/btnEncode"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Encode"
+android:layout_marginTop="20dp"/>
+
+<Button
+android:id="@+id/btnDecode"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Decode"
+android:layout_marginTop="12dp"/>
+
+</LinearLayout>

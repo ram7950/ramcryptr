@@ -1,0 +1,17 @@
+R_DEF: Internal format may change without notice
+local
+color black
+color white
+id btnDecode
+id btnEncode
+id inputBox
+id resultText
+layout activity_consistency_channel
+layout activity_custom_method
+layout activity_main
+layout activity_manual_key
+layout activity_settings
+layout activity_tbk_sys8
+layout dialog_result
+string app_name
+style Theme.RAMcryptr
