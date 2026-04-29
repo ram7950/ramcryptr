@@ -28,13 +28,6 @@ setContentView(
 R.layout.activity_main
 )
 
-startService(
-Intent(
-this,
-ClipboardMonitorService::class.java
-)
-)
-
 inputText=
 findViewById(
 R.id.inputBox
@@ -50,21 +43,28 @@ findViewById(
 R.id.btnDecode
 )
 
-encodeButton
-.setOnClickListener{
+startService(
+Intent(
+this,
+ClipboardMonitorService::class.java
+)
+)
 
-val plain=
+encodeButton.setOnClickListener{
+
+try{
+
+val txt=
 inputText.text
 .toString()
-.trim()
 
 if(
-plain.isNotEmpty()
+txt.isNotBlank()
 ){
 
 val enc=
 AES256Encoder.encryptText(
-plain,
+txt,
 key
 )
 
@@ -74,25 +74,50 @@ enc
 
 }
 
+}catch(
+e:Exception
+){
+e.printStackTrace()
 }
 
-decodeButton
-.setOnClickListener{
+}
+
+decodeButton.setOnClickListener{
 
 try{
 
-val encrypted=
+val txt=
 inputText.text
 .toString()
 .trim()
 .replace(
-"\\s".toRegex(),
+"\n",
 ""
 )
 
+val clean=
+if(
+txt.startsWith(
+"🔄CON🔄"
+)
+)
+{
+txt.removePrefix(
+"🔄CON🔄"
+)
+}else{
+txt
+}
+
+if(
+clean.startsWith(
+"AES256::"
+)
+){
+
 val dec=
 AES256Encoder.decryptText(
-encrypted,
+clean,
 key
 )
 
@@ -100,15 +125,40 @@ inputText.setText(
 dec
 )
 
+}
+
 }catch(
 e:Exception
 ){
-
-inputText.error=
-"Invalid encrypted text"
+e.printStackTrace()
+}
 
 }
 
+/* LONG PRESS = FILE CRYPTO */
+
+encodeButton.setOnLongClickListener{
+
+startActivity(
+Intent(
+this,
+FileEncryptActivity::class.java
+)
+)
+
+true
+}
+
+decodeButton.setOnLongClickListener{
+
+startActivity(
+Intent(
+this,
+FileDecryptActivity::class.java
+)
+)
+
+true
 }
 
 }
