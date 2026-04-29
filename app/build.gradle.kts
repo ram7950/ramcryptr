@@ -11,7 +11,7 @@ android {
         applicationId = "com.rambo.ramcryptr"
         minSdk = 24
         targetSdk = 33
-        versionCode = 3
+        versionCode = 4
         versionName = "2.0"
     }
 
