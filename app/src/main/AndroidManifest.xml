@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-package="com.rambo.ramcryptr">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
 <application
 android:allowBackup="true"
@@ -8,69 +7,46 @@ android:supportsRtl="true"
 android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
 <activity
-android:name=".MainActivity">
-<intent-filter>
-<action
-android:name=
-"android.intent.action.MAIN"/>
-<category
-android:name=
-"android.intent.category.LAUNCHER"/>
-</intent-filter>
-</activity>
-
-<activity
-android:name=
-".EncodeProcessTextActivity"
+android:name=".MainActivity"
 android:exported="true">
 <intent-filter>
-<action
-android:name=
-"android.intent.action.PROCESS_TEXT"/>
-<data
-android:mimeType=
-"text/plain"/>
-<category
-android:name=
-"android.intent.category.DEFAULT"/>
+<action android:name="android.intent.action.MAIN"/>
+<category android:name="android.intent.category.LAUNCHER"/>
 </intent-filter>
-<meta-data
-android:name=
-"android.app.process_text"
-android:resource=
-"@xml/process_text_encode"/>
 </activity>
 
 <activity
-android:name=
-".DecodeProcessTextActivity"
+android:name=".EncodeProcessTextActivity"
 android:exported="true">
 <intent-filter>
-<action
-android:name=
-"android.intent.action.PROCESS_TEXT"/>
-<data
-android:mimeType=
-"text/plain"/>
-<category
-android:name=
-"android.intent.category.DEFAULT"/>
+<action android:name="android.intent.action.PROCESS_TEXT"/>
+<data android:mimeType="text/plain"/>
+<category android:name="android.intent.category.DEFAULT"/>
 </intent-filter>
 <meta-data
-android:name=
-"android.app.process_text"
-android:resource=
-"@xml/process_text_decode"/>
+android:name="android.app.process_text"
+android:resource="@xml/process_text_encode"/>
 </activity>
 
 <activity
-android:name=
-".ClipboardDecodePromptActivity"
+android:name=".DecodeProcessTextActivity"
+android:exported="true">
+<intent-filter>
+<action android:name="android.intent.action.PROCESS_TEXT"/>
+<data android:mimeType="text/plain"/>
+<category android:name="android.intent.category.DEFAULT"/>
+</intent-filter>
+<meta-data
+android:name="android.app.process_text"
+android:resource="@xml/process_text_decode"/>
+</activity>
+
+<activity
+android:name=".ClipboardDecodePromptActivity"
 android:exported="false"/>
 
 <service
-android:name=
-".ClipboardMonitorService"
+android:name=".ClipboardMonitorService"
 android:exported="false"/>
 
 </application>
