@@ -13,7 +13,7 @@ import javax.crypto.spec.SecretKeySpec
 
 object FileCryptoManager {
 
-private const val HEADER="RAMCRYPT_V1\n"
+private const val PREFIX="RAMCRYPT_V2|"
 
 private const val KEY=
 "12345678901234567890123456789012"
@@ -21,52 +21,40 @@ private const val KEY=
 private fun makeKey():ByteArray{
 return MessageDigest
 .getInstance("SHA-256")
-.digest(
-KEY.toByteArray()
-)
+.digest(KEY.toByteArray())
 }
 
 fun encryptFile(
 input:File,
-output:File
+output:File,
+ext:String,
+mime:String
 ){
+
+val header =
+"${PREFIX}ext=${ext}|mime=${mime}\n"
 
 val iv=ByteArray(16)
 SecureRandom().nextBytes(iv)
 
 val cipher=
-Cipher.getInstance(
-"AES/CBC/PKCS5Padding"
-)
+Cipher.getInstance("AES/CBC/PKCS5Padding")
 
 cipher.init(
 Cipher.ENCRYPT_MODE,
-SecretKeySpec(
-makeKey(),
-"AES"
-),
+SecretKeySpec(makeKey(),"AES"),
 IvParameterSpec(iv)
 )
 
 FileOutputStream(output).use{fos->
 
-fos.write(
-HEADER.toByteArray()
-)
-
+fos.write(header.toByteArray())
 fos.write(iv)
 
-CipherOutputStream(
-fos,
-cipher
-).use{cos->
+CipherOutputStream(fos,cipher).use{cos->
 
-FileInputStream(
-input
-).use{fis->
-
+FileInputStream(input).use{fis->
 fis.copyTo(cos)
-
 }
 
 }
@@ -78,56 +66,55 @@ fis.copyTo(cos)
 fun decryptFile(
 input:File,
 output:File
-){
+): Pair<String,String>{
 
-FileInputStream(
-input
-).use{fis->
+FileInputStream(input).use{fis->
 
-val headerBytes=
-ByteArray(HEADER.length)
+val headerBuilder=StringBuilder()
 
-fis.read(headerBytes)
+while(true){
+val ch=fis.read()
+if(ch==-1 || ch.toChar()=='\n') break
+headerBuilder.append(ch.toChar())
+}
 
-val header=String(headerBytes)
+val header=headerBuilder.toString()
 
-if(header!=HEADER){
+if(!header.startsWith(PREFIX)){
 throw Exception("Invalid encrypted file")
 }
 
-val iv=
-ByteArray(16)
+val parts=header.split("|")
 
+var ext="tmp"
+var mime="*/*"
+
+for(p in parts){
+if(p.startsWith("ext=")) ext=p.removePrefix("ext=")
+if(p.startsWith("mime=")) mime=p.removePrefix("mime=")
+}
+
+val iv=ByteArray(16)
 fis.read(iv)
 
 val cipher=
-Cipher.getInstance(
-"AES/CBC/PKCS5Padding"
-)
+Cipher.getInstance("AES/CBC/PKCS5Padding")
 
 cipher.init(
 Cipher.DECRYPT_MODE,
-SecretKeySpec(
-makeKey(),
-"AES"
-),
+SecretKeySpec(makeKey(),"AES"),
 IvParameterSpec(iv)
 )
 
-CipherInputStream(
-fis,
-cipher
-).use{cis->
+CipherInputStream(fis,cipher).use{cis->
 
-FileOutputStream(
-output
-).use{fos->
-
+FileOutputStream(output).use{fos->
 cis.copyTo(fos)
-
 }
 
 }
+
+return Pair(ext,mime)
 
 }
 
