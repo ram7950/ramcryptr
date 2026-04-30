@@ -13,7 +13,7 @@ import javax.crypto.spec.SecretKeySpec
 
 object FileCryptoManager {
 
-private const val HEADER="RAMCRYPT_V1"
+private const val HEADER="RAMCRYPT_V1\n"
 
 private const val KEY=
 "12345678901234567890123456789012"
@@ -51,8 +51,7 @@ IvParameterSpec(iv)
 FileOutputStream(output).use{fos->
 
 fos.write(
-(HEADER+"\n")
-.toByteArray()
+HEADER.toByteArray()
 )
 
 fos.write(iv)
@@ -86,11 +85,15 @@ input
 ).use{fis->
 
 val headerBytes=
-ByteArray(11)
+ByteArray(HEADER.length)
 
-fis.read(
-headerBytes
-)
+fis.read(headerBytes)
+
+val header=String(headerBytes)
+
+if(header!=HEADER){
+throw Exception("Invalid encrypted file")
+}
 
 val iv=
 ByteArray(16)
