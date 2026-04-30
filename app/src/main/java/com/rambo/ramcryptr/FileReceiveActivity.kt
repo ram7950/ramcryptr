@@ -14,63 +14,62 @@ class FileReceiveActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val uri: Uri? = intent?.getParcelableExtra(Intent.EXTRA_STREAM)
+        val uri = when {
+            intent?.action == Intent.ACTION_SEND ->
+                intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
 
-        if (uri != null) {
-            processFile(uri)
-        } else {
-            finish()
+            intent?.action == Intent.ACTION_VIEW ->
+                intent.data
+
+            else -> null
         }
+
+        if (uri != null) handle(uri) else finish()
     }
 
-    private fun getExtension(uri: Uri): String {
+    private fun getExt(uri: Uri): String {
         val mime = contentResolver.getType(uri)
         val ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mime)
         return ext ?: "dat"
     }
 
-    private fun processFile(uri: Uri) {
+    private fun handle(uri: Uri) {
         try {
-            val inputStream = contentResolver.openInputStream(uri) ?: return
+            val input = contentResolver.openInputStream(uri) ?: return
 
-            val tempInput = File(cacheDir, "input_${System.currentTimeMillis()}")
-            FileOutputStream(tempInput).use {
-                inputStream.copyTo(it)
-            }
+            val tempIn = File(cacheDir, "in_${System.currentTimeMillis()}")
+            FileOutputStream(tempIn).use { input.copyTo(it) }
 
             val isEncrypted = uri.toString().endsWith(".ram.bin")
 
             if (isEncrypted) {
+                val tempOut = File(cacheDir, "out_tmp")
 
-                // 🔓 DECODE
-                val tempOutput = File(cacheDir, "decoded_temp")
-
-                val result = FileCryptoManager.decryptFile(tempInput, tempOutput)
+                val (ext, mime) =
+                    FileCryptoManager.decryptFile(tempIn, tempOut)
 
                 val finalFile = File(
                     cacheDir,
-                    "decoded_${System.currentTimeMillis()}.${result.first}"
+                    "decoded_${System.currentTimeMillis()}.$ext"
                 )
 
-                tempOutput.renameTo(finalFile)
+                tempOut.renameTo(finalFile)
 
-                val intent = Intent(Intent.ACTION_VIEW)
+                val view = Intent(Intent.ACTION_VIEW)
                 val fileUri = FileProvider.getUriForFile(
                     this,
                     packageName + ".provider",
                     finalFile
                 )
 
-                intent.setDataAndType(fileUri, result.second)
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                view.setDataAndType(fileUri, mime)
+                view.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-                startActivity(intent)
+                startActivity(view)
                 finish()
 
             } else {
-
-                // 🔐 ENCODE
-                val ext = getExtension(uri)   // ✅ FIX
+                val ext = getExt(uri)
                 val mime = contentResolver.getType(uri) ?: "*/*"
 
                 val outFile = File(
@@ -79,7 +78,7 @@ class FileReceiveActivity : AppCompatActivity() {
                 )
 
                 FileCryptoManager.encryptFile(
-                    tempInput,
+                    tempIn,
                     outFile,
                     ext,
                     mime
@@ -97,7 +96,7 @@ class FileReceiveActivity : AppCompatActivity() {
                 send.putExtra(Intent.EXTRA_STREAM, fileUri)
                 send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-                startActivity(Intent.createChooser(send, "Share via"))
+                startActivity(Intent.createChooser(send, "Share"))
                 finish()
             }
 

@@ -8,7 +8,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-        <!-- MAIN ACTIVITY -->
+        <!-- MAIN -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -20,20 +20,34 @@
 
         </activity>
 
-        <!-- FILE RECEIVE -->
+        <!-- RECEIVE + OPEN -->
         <activity
             android:name=".FileReceiveActivity"
             android:exported="true">
 
+            <!-- SHARE -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="*/*" />
             </intent-filter>
 
+            <!-- OPEN FILE (.ram.bin) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+
         </activity>
 
-        <!-- FILE PROVIDER -->
+        <!-- PROVIDER -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.rambo.ramcryptr.provider"
