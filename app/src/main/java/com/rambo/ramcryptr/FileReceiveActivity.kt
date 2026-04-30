@@ -36,17 +36,17 @@ input.copyTo(output)
 if (isEncrypted(tempFile)) {
 showDecodeDialog(tempFile)
 } else {
-showEncodeDialog(tempFile)
+showEncodeDialog(tempFile, uri)
 }
 }
 
 private fun isEncrypted(file: File): Boolean {
 return try {
-val header = ByteArray(11)
+val header = ByteArray(12)
 file.inputStream().use {
 it.read(header)
 }
-String(header).contains("RAMCRYPT_V1")
+String(header).contains("RAMCRYPT")
 } catch (e: Exception) {
 false
 }
@@ -66,13 +66,13 @@ finish()
 .show()
 }
 
-private fun showEncodeDialog(file: File) {
+private fun showEncodeDialog(file: File, uri: Uri) {
 
 AlertDialog.Builder(this)
 .setTitle("📦 Normal File Detected")
 .setMessage("Do you want to encode this file?")
 .setPositiveButton("Encode") { _, _ ->
-encodeFile(file)
+encodeFile(file, uri)
 }
 .setNegativeButton("No Thanks") { _, _ ->
 finish()
@@ -80,24 +80,32 @@ finish()
 .show()
 }
 
-private fun encodeFile(input: File) {
+private fun encodeFile(input: File, uri: Uri) {
 
-val outFile = File(cacheDir, "shared_encoded.ram.bin")
+val outFile = File(cacheDir, "shared_${System.currentTimeMillis()}.ram.bin")
 
 try {
 
-FileCryptoManager.encryptFile(input, outFile)
+val ext = uri.lastPathSegment?.substringAfterLast('.', "tmp") ?: "tmp"
+val mime = contentResolver.getType(uri) ?: "*/*"
+
+FileCryptoManager.encryptFile(
+input,
+outFile,
+ext,
+mime
+)
 
 val send = Intent(Intent.ACTION_SEND)
 send.type = "*/*"
 
-val uri = androidx.core.content.FileProvider.getUriForFile(
+val fileUri = androidx.core.content.FileProvider.getUriForFile(
 this,
 packageName + ".provider",
 outFile
 )
 
-send.putExtra(Intent.EXTRA_STREAM, uri)
+send.putExtra(Intent.EXTRA_STREAM, fileUri)
 send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
 startActivity(Intent.createChooser(send, "Share encrypted file"))
@@ -114,20 +122,30 @@ finish()
 
 private fun decodeFile(input: File) {
 
-val outFile = File(cacheDir, "shared_decoded")
+val outFile = File(cacheDir, "decoded_temp")
 
 try {
 
-FileCryptoManager.decryptFile(input, outFile)
+val result = FileCryptoManager.decryptFile(input, outFile)
+
+val ext = result.first
+val mime = result.second
+
+val finalFile = File(
+cacheDir,
+"dec_${System.currentTimeMillis()}.$ext"
+)
+
+outFile.renameTo(finalFile)
 
 val uri = androidx.core.content.FileProvider.getUriForFile(
 this,
 packageName + ".provider",
-outFile
+finalFile
 )
 
 val open = Intent(Intent.ACTION_VIEW)
-open.setDataAndType(uri, "*/*")
+open.setDataAndType(uri, mime)
 open.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
 startActivity(open)
