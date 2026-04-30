@@ -84,7 +84,7 @@ if(!header.startsWith(PREFIX)){
 throw Exception("Invalid encrypted file")
 }
 
-val parts=header.split("|")
+val parts=header.split("\\|")
 
 var ext="tmp"
 var mime="*/*"
