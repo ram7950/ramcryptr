@@ -1,113 +1,48 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rambo.ramcryptr">
 
-<application
-android:allowBackup="true"
-android:label="RAMcryptr"
-android:supportsRtl="true"
-android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+    <application
+        android:allowBackup="true"
+        android:label="RAMcryptr"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-<!-- Main App -->
-<activity
-android:name=".MainActivity"
-android:exported="true">
-<intent-filter>
-<action android:name="android.intent.action.MAIN"/>
-<category android:name="android.intent.category.LAUNCHER"/>
-</intent-filter>
-</activity>
+        <!-- 🔹 Main App -->
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
-<!-- Text Encode -->
-<activity
-android:name=".EncodeProcessTextActivity"
-android:label="Encode"
-android:exported="true">
-<intent-filter>
-<action android:name="android.intent.action.PROCESS_TEXT"/>
-<data android:mimeType="text/plain"/>
-<category android:name="android.intent.category.DEFAULT"/>
-</intent-filter>
-</activity>
+        <!-- 🔹 File Receive (ONLY ONE INTENT FILTER) -->
+        <activity
+            android:name=".FileReceiveActivity"
+            android:exported="true">
 
-<!-- Text Decode -->
-<activity
-android:name=".DecodeProcessTextActivity"
-android:label="Decode"
-android:exported="true">
-<intent-filter>
-<action android:name="android.intent.action.PROCESS_TEXT"/>
-<data android:mimeType="text/plain"/>
-<category android:name="android.intent.category.DEFAULT"/>
-</intent-filter>
-</activity>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
 
-<!-- Share Encode -->
-<activity
-android:name=".ShareEncodeActivity"
-android:exported="true"
-android:label="RAMcryptr Encode">
-<intent-filter>
-<action android:name="android.intent.action.SEND"/>
-<category android:name="android.intent.category.DEFAULT"/>
-<data android:mimeType="text/plain"/>
-</intent-filter>
-</activity>
+        </activity>
 
-<!-- Share Decode -->
-<activity
-android:name=".ShareDecodeActivity"
-android:exported="true"
-android:label="RAMcryptr Decode">
-<intent-filter>
-<action android:name="android.intent.action.SEND"/>
-<category android:name="android.intent.category.DEFAULT"/>
-<data android:mimeType="text/plain"/>
-</intent-filter>
-</activity>
+        <!-- 🔹 FileProvider -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.rambo.ramcryptr.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
 
-<!-- FILE ENCRYPT -->
-<activity
-android:name=".FileEncryptActivity"
-android:exported="false"/>
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
-<!-- FILE DECRYPT -->
-<activity
-android:name=".FileDecryptActivity"
-android:exported="false"/>
-
-<!-- FILE RECEIVE (NEW 🔥) -->
-<activity
-android:name=".FileReceiveActivity"
-android:exported="true"
-android:label="RAMcryptr">
-
-<intent-filter>
-<action android:name="android.intent.action.SEND"/>
-<category android:name="android.intent.category.DEFAULT"/>
-<data android:mimeType="*/*"/>
-</intent-filter>
-
-</activity>
-
-<!-- Clipboard -->
-<activity
-android:name=".ClipboardDecodePromptActivity"
-android:exported="false"/>
-
-<service
-android:name=".ClipboardMonitorService"
-android:exported="false"/>
-
-<!-- FileProvider -->
-<provider
-android:name="androidx.core.content.FileProvider"
-android:authorities="${applicationId}.provider"
-android:exported="false"
-android:grantUriPermissions="true">
-<meta-data
-android:name="android.support.FILE_PROVIDER_PATHS"
-android:resource="@xml/file_paths"/>
-</provider>
-
-</application>
+    </application>
 
 </manifest>

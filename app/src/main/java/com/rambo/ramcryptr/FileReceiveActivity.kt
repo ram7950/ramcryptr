@@ -1,10 +1,9 @@
-// BUILD_CHECK_123
 package com.rambo.ramcryptr
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
+import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import java.io.File
@@ -18,35 +17,35 @@ class FileReceiveActivity : AppCompatActivity() {
         val uri: Uri? = intent?.getParcelableExtra(Intent.EXTRA_STREAM)
 
         if (uri != null) {
-            handleFile(uri)
+            processFile(uri)
         } else {
-            Toast.makeText(this, "No file received", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
 
-    private fun handleFile(uri: Uri) {
-        try {
-            val name = uri.lastPathSegment ?: ""
+    private fun getExtension(uri: Uri): String {
+        val mime = contentResolver.getType(uri)
+        val ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mime)
+        return ext ?: "dat"
+    }
 
-            val isEncrypted = name.endsWith(".ram.bin")
+    private fun processFile(uri: Uri) {
+        try {
+            val inputStream = contentResolver.openInputStream(uri) ?: return
+
+            val tempInput = File(cacheDir, "input_${System.currentTimeMillis()}")
+            FileOutputStream(tempInput).use {
+                inputStream.copyTo(it)
+            }
+
+            val isEncrypted = uri.toString().endsWith(".ram.bin")
 
             if (isEncrypted) {
 
-                Toast.makeText(this, "DECODE START", Toast.LENGTH_SHORT).show()
-
-                val inputStream = contentResolver.openInputStream(uri) ?: return
-                val tempInput = File(cacheDir, "enc_input.ram.bin")
-
-                FileOutputStream(tempInput).use {
-                    inputStream.copyTo(it)
-                }
-
+                // 🔓 DECODE
                 val tempOutput = File(cacheDir, "decoded_temp")
 
                 val result = FileCryptoManager.decryptFile(tempInput, tempOutput)
-
-                Toast.makeText(this, "DECODE OK ext=${result.first}", Toast.LENGTH_LONG).show()
 
                 val finalFile = File(
                     cacheDir,
@@ -70,16 +69,8 @@ class FileReceiveActivity : AppCompatActivity() {
 
             } else {
 
-                Toast.makeText(this, "ENCODE START", Toast.LENGTH_SHORT).show()
-
-                val inputStream = contentResolver.openInputStream(uri) ?: return
-                val tempInput = File(cacheDir, "input.tmp")
-
-                FileOutputStream(tempInput).use {
-                    inputStream.copyTo(it)
-                }
-
-                val ext = name.substringAfterLast('.', "tmp")
+                // 🔐 ENCODE
+                val ext = getExtension(uri)   // ✅ FIX
                 val mime = contentResolver.getType(uri) ?: "*/*"
 
                 val outFile = File(
@@ -112,7 +103,6 @@ class FileReceiveActivity : AppCompatActivity() {
 
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "ERROR: " + e.message, Toast.LENGTH_LONG).show()
             finish()
         }
     }
