@@ -24,42 +24,83 @@ class FileReceiveActivity : AppCompatActivity() {
 
     private fun handleFile(uri: Uri) {
         try {
-            val inputStream = contentResolver.openInputStream(uri) ?: return
-            val tempInput = File(cacheDir, "input.tmp")
 
-            FileOutputStream(tempInput).use { output ->
-                inputStream.copyTo(output)
+            val name = uri.lastPathSegment ?: ""
+
+            // 🔥 Decide encode or decode
+            val isEncrypted = name.endsWith(".bin")
+
+            if (isEncrypted) {
+
+                // 🔓 DECODE FLOW
+                val inputStream = contentResolver.openInputStream(uri) ?: return
+                val tempInput = File(cacheDir, "enc_input.bin")
+
+                FileOutputStream(tempInput).use { output ->
+                    inputStream.copyTo(output)
+                }
+
+                val tempOutput = File(cacheDir, "decoded_temp")
+
+                val result = FileCryptoManager.decryptFile(tempInput, tempOutput)
+
+                val finalFile = File(
+                    cacheDir,
+                    "decoded_${System.currentTimeMillis()}.${result.first}"
+                )
+
+                tempOutput.renameTo(finalFile)
+
+                val intent = Intent(Intent.ACTION_VIEW)
+                val fileUri = FileProvider.getUriForFile(
+                    this,
+                    packageName + ".provider",
+                    finalFile
+                )
+
+                intent.setDataAndType(fileUri, result.second)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                startActivity(intent)
+                finish()
+
+            } else {
+
+                // 🔐 ENCODE FLOW
+                val inputStream = contentResolver.openInputStream(uri) ?: return
+                val tempInput = File(cacheDir, "input.tmp")
+
+                FileOutputStream(tempInput).use { output ->
+                    inputStream.copyTo(output)
+                }
+
+                val ext = name.substringAfterLast('.', "tmp")
+                val mime = contentResolver.getType(uri) ?: "*/*"
+
+                val outFile = File(cacheDir, "encoded_${System.currentTimeMillis()}.bin")
+
+                FileCryptoManager.encryptFile(
+                    tempInput,
+                    outFile,
+                    ext,
+                    mime
+                )
+
+                val send = Intent(Intent.ACTION_SEND)
+                send.type = "*/*"
+
+                val fileUri = FileProvider.getUriForFile(
+                    this,
+                    packageName + ".provider",
+                    outFile
+                )
+
+                send.putExtra(Intent.EXTRA_STREAM, fileUri)
+                send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                startActivity(Intent.createChooser(send, "Share via"))
+                finish()
             }
-
-            val ext = uri.lastPathSegment
-                ?.substringAfterLast('.', "tmp") ?: "tmp"
-
-            val mime = contentResolver.getType(uri) ?: "*/*"
-
-            val outFile = File(cacheDir, "encoded_${System.currentTimeMillis()}.bin")
-
-            FileCryptoManager.encryptFile(
-                tempInput,
-                outFile,
-                ext,
-                mime
-            )
-
-            val send = Intent(Intent.ACTION_SEND)
-            send.type = "*/*"
-
-            val fileUri = FileProvider.getUriForFile(
-                this,
-                packageName + ".provider",
-                outFile
-            )
-
-            send.putExtra(Intent.EXTRA_STREAM, fileUri)
-            send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
-            startActivity(Intent.createChooser(send, "Share via"))
-
-            finish()
 
         } catch (e: Exception) {
             e.printStackTrace()
