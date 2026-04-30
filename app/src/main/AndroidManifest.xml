@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
 <application
 android:allowBackup="true"
@@ -7,6 +6,7 @@ android:label="RAMcryptr"
 android:supportsRtl="true"
 android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
+<!-- Main App -->
 <activity
 android:name=".MainActivity"
 android:exported="true">
@@ -16,6 +16,7 @@ android:exported="true">
 </intent-filter>
 </activity>
 
+<!-- Text Encode -->
 <activity
 android:name=".EncodeProcessTextActivity"
 android:label="Encode"
@@ -27,6 +28,7 @@ android:exported="true">
 </intent-filter>
 </activity>
 
+<!-- Text Decode -->
 <activity
 android:name=".DecodeProcessTextActivity"
 android:label="Decode"
@@ -38,6 +40,7 @@ android:exported="true">
 </intent-filter>
 </activity>
 
+<!-- Share Encode -->
 <activity
 android:name=".ShareEncodeActivity"
 android:exported="true"
@@ -49,6 +52,7 @@ android:label="RAMcryptr Encode">
 </intent-filter>
 </activity>
 
+<!-- Share Decode -->
 <activity
 android:name=".ShareDecodeActivity"
 android:exported="true"
@@ -60,14 +64,31 @@ android:label="RAMcryptr Decode">
 </intent-filter>
 </activity>
 
+<!-- FILE ENCRYPT -->
 <activity
 android:name=".FileEncryptActivity"
 android:exported="false"/>
 
+<!-- FILE DECRYPT -->
 <activity
 android:name=".FileDecryptActivity"
 android:exported="false"/>
 
+<!-- FILE RECEIVE (NEW 🔥) -->
+<activity
+android:name=".FileReceiveActivity"
+android:exported="true"
+android:label="RAMcryptr">
+
+<intent-filter>
+<action android:name="android.intent.action.SEND"/>
+<category android:name="android.intent.category.DEFAULT"/>
+<data android:mimeType="*/*"/>
+</intent-filter>
+
+</activity>
+
+<!-- Clipboard -->
 <activity
 android:name=".ClipboardDecodePromptActivity"
 android:exported="false"/>
@@ -76,6 +97,7 @@ android:exported="false"/>
 android:name=".ClipboardMonitorService"
 android:exported="false"/>
 
+<!-- FileProvider -->
 <provider
 android:name="androidx.core.content.FileProvider"
 android:authorities="${applicationId}.provider"
