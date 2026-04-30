@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import java.io.File
+import java.io.FileOutputStream
 
 class FileReceiveActivity : AppCompatActivity() {
 
@@ -23,7 +24,12 @@ class FileReceiveActivity : AppCompatActivity() {
 
     private fun handleFile(uri: Uri) {
         try {
-            val input = contentResolver.openInputStream(uri) ?: return
+            val inputStream = contentResolver.openInputStream(uri) ?: return
+            val tempInput = File(cacheDir, "input.tmp")
+
+            FileOutputStream(tempInput).use { output ->
+                inputStream.copyTo(output)
+            }
 
             val ext = uri.lastPathSegment
                 ?.substringAfterLast('.', "tmp") ?: "tmp"
@@ -33,7 +39,7 @@ class FileReceiveActivity : AppCompatActivity() {
             val outFile = File(cacheDir, "encoded_${System.currentTimeMillis()}.bin")
 
             FileCryptoManager.encryptFile(
-                input,
+                tempInput,
                 outFile,
                 ext,
                 mime
