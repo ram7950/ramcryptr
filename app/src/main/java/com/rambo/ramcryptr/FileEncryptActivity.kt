@@ -99,7 +99,7 @@ outs
 val outFile=
 File(
 cacheDir,
-"encrypted_file.ram"
+"encrypted_file.ram.bin"
 )
 
 FileCryptoManager
@@ -119,10 +119,9 @@ Intent(
 Intent.ACTION_SEND
 )
 
-send.type="application/octet-stream"
+send.type="*/*"
 
-send.putExtra(
-Intent.EXTRA_STREAM,
+val fileUri=
 androidx.core.content.FileProvider
 .getUriForFile(
 this,
@@ -130,6 +129,14 @@ packageName+
 ".provider",
 outFile
 )
+
+send.putExtra(
+Intent.EXTRA_STREAM,
+fileUri
+)
+
+send.addFlags(
+Intent.FLAG_GRANT_READ_URI_PERMISSION
 )
 
 startActivity(
