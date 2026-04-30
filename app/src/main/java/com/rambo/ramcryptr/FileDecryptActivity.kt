@@ -1,6 +1,7 @@
 package com.rambo.ramcryptr
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -13,31 +14,18 @@ AppCompatActivity(){
 
 private val PICK_FILE=202
 
-override fun onCreate(
-savedInstanceState:Bundle?
-){
-super.onCreate(
-savedInstanceState
-)
-
+override fun onCreate(savedInstanceState:Bundle?){
+super.onCreate(savedInstanceState)
 pickFile()
-
 }
 
 private fun pickFile(){
 
-val i=
-Intent(
-Intent.ACTION_GET_CONTENT
-)
-
+val i=Intent(Intent.ACTION_GET_CONTENT)
 i.type="*/*"
 
 startActivityForResult(
-Intent.createChooser(
-i,
-"Select Encrypted File"
-),
+Intent.createChooser(i,"Select Encrypted File"),
 PICK_FILE
 )
 
@@ -49,109 +37,92 @@ resultCode:Int,
 data:Intent?
 ){
 
-super.onActivityResult(
-requestCode,
-resultCode,
-data
-)
+super.onActivityResult(requestCode,resultCode,data)
 
-if(
-requestCode==PICK_FILE &&
-resultCode==Activity.RESULT_OK
-){
-
+if(requestCode==PICK_FILE && resultCode==Activity.RESULT_OK){
 data?.data?.let{
 decryptUri(it)
 }
-
 }
 
 }
 
-private fun decryptUri(
-uri:Uri
-){
+private fun decryptUri(uri:Uri){
 
 try{
 
-val enc=
-File(
-cacheDir,
-"temp_encrypted.ram"
-)
+val enc=File(cacheDir,"temp_encrypted")
 
-contentResolver
-.openInputStream(uri)
-?.use{
-ins->
-enc.outputStream()
-.use{
-outs->
-ins.copyTo(
-outs
-)
+contentResolver.openInputStream(uri)?.use{ins->
+enc.outputStream().use{outs->
+ins.copyTo(outs)
 }
 }
 
-val dec=
-File(
+val tempDec=File(cacheDir,"temp_decoded")
+
+val result = FileCryptoManager.decryptFile(enc,tempDec)
+
+val ext=result.first
+val mime=result.second
+
+val finalFile=File(
 cacheDir,
-"preview_file"
+"dec_${System.currentTimeMillis()}.$ext"
 )
 
-FileCryptoManager
-.decryptFile(
-enc,
-dec
-)
+tempDec.renameTo(finalFile)
 
-Toast.makeText(
+showPreviewOptions(finalFile,mime)
+
+}catch(e:Exception){
+
+Toast.makeText(this,"Decode failed",Toast.LENGTH_LONG).show()
+finish()
+
+}
+
+}
+
+private fun showPreviewOptions(file:File,mime:String){
+
+val fileUri = androidx.core.content.FileProvider.getUriForFile(
 this,
-"Preview ready",
-Toast.LENGTH_LONG
-).show()
-
-val open=
-Intent(
-Intent.ACTION_VIEW
+packageName+".provider",
+file
 )
 
-val fileUri=
-androidx.core.content
-.FileProvider
-.getUriForFile(
-this,
-packageName+
-".provider",
-dec
-)
+val dialog=AlertDialog.Builder(this)
+.setTitle("Preview Ready")
+.setMessage("What do you want to do?")
+.setPositiveButton("Open"){_,_->
 
-open.setDataAndType(
-fileUri,
-"*/*"
-)
-
-open.addFlags(
-Intent.FLAG_GRANT_READ_URI_PERMISSION
-)
+val open=Intent(Intent.ACTION_VIEW)
+open.setDataAndType(fileUri,mime)
+open.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
 startActivity(open)
 
-finish()
+}
+.setNeutralButton("Save"){_,_->
 
-}catch(
-e:Exception
-){
+val saved=SecureVaultManager.saveFile(this,file,mime)
 
 Toast.makeText(
 this,
-"Decrypt failed",
+"Saved to vault",
 Toast.LENGTH_LONG
 ).show()
+
+}
+.setNegativeButton("Dismiss"){_,_->
 
 finish()
 
 }
+.create()
+
+dialog.show()
 
 }
 
