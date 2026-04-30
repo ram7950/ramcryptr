@@ -8,160 +8,89 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 
-class FileEncryptActivity :
-AppCompatActivity(){
+class FileEncryptActivity : AppCompatActivity() {
 
-private val PICK_FILE=101
+    private val PICK_FILE = 101
 
-override fun onCreate(
-savedInstanceState:Bundle?
-){
-super.onCreate(
-savedInstanceState
-)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        pickFile()
+    }
 
-pickFile()
+    private fun pickFile() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "*/*"
 
-}
+        startActivityForResult(
+            Intent.createChooser(intent, "Select File"),
+            PICK_FILE
+        )
+    }
 
-private fun pickFile(){
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-val intent=
-Intent(
-Intent.ACTION_GET_CONTENT
-)
+        if (requestCode == PICK_FILE && resultCode == Activity.RESULT_OK) {
+            val uri = data?.data ?: return
+            encryptUri(uri)
+        }
+    }
 
-intent.type="*/*"
+    private fun encryptUri(uri: Uri) {
+        try {
 
-startActivityForResult(
-Intent.createChooser(
-intent,
-"Select File"
-),
-PICK_FILE
-)
+            val input = File(cacheDir, "temp_input")
 
-}
+            contentResolver.openInputStream(uri)?.use { ins ->
+                input.outputStream().use { outs ->
+                    ins.copyTo(outs)
+                }
+            }
 
-override fun onActivityResult(
-requestCode:Int,
-resultCode:Int,
-data:Intent?
-){
+            val outFile = File(
+                cacheDir,
+                "enc_${System.currentTimeMillis()}.ram.bin"
+            )
 
-super.onActivityResult(
-requestCode,
-resultCode,
-data
-)
+            val ext = uri.lastPathSegment
+                ?.substringAfterLast('.', "tmp") ?: "tmp"
 
-if(
-requestCode==PICK_FILE &&
-resultCode==Activity.RESULT_OK
-){
+            val mime = contentResolver.getType(uri) ?: "*/*"
 
-val uri=
-data?.data ?: return
+            // 🔥 FIXED CALL
+            FileCryptoManager.encryptFile(
+                input,
+                outFile,
+                ext,
+                mime
+            )
 
-encryptUri(
-uri
-)
+            val send = Intent(Intent.ACTION_SEND)
+            send.type = "*/*"
 
-}
+            val fileUri =
+                androidx.core.content.FileProvider.getUriForFile(
+                    this,
+                    packageName + ".provider",
+                    outFile
+                )
 
-}
+            send.putExtra(Intent.EXTRA_STREAM, fileUri)
+            send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-private fun encryptUri(
-uri:Uri
-){
+            startActivity(
+                Intent.createChooser(send, "Share encrypted file")
+            )
 
-try{
+            finish()
 
-val input=
-File(
-cacheDir,
-"temp_input"
-)
-
-contentResolver
-.openInputStream(uri)
-?.use{
-ins->
-input.outputStream()
-.use{
-outs->
-ins.copyTo(
-outs
-)
-}
-}
-
-val outFile=
-File(
-cacheDir,
-"encrypted_file.ram.bin"
-)
-
-FileCryptoManager
-.encryptFile(
-input,
-outFile
-)
-
-Toast.makeText(
-this,
-"File encrypted",
-Toast.LENGTH_LONG
-).show()
-
-val send=
-Intent(
-Intent.ACTION_SEND
-)
-
-send.type="*/*"
-
-val fileUri=
-androidx.core.content.FileProvider
-.getUriForFile(
-this,
-packageName+
-".provider",
-outFile
-)
-
-send.putExtra(
-Intent.EXTRA_STREAM,
-fileUri
-)
-
-send.addFlags(
-Intent.FLAG_GRANT_READ_URI_PERMISSION
-)
-
-startActivity(
-Intent.createChooser(
-send,
-"Share encrypted file"
-)
-)
-
-finish()
-
-}catch(
-e:Exception
-){
-
-Toast.makeText(
-this,
-"Encrypt failed",
-Toast.LENGTH_LONG
-).show()
-
-finish()
-
-}
-
-}
-
+        } catch (e: Exception) {
+            Toast.makeText(this, "Encrypt failed", Toast.LENGTH_LONG).show()
+            finish()
+        }
+    }
 }

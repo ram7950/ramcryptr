@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rambo.ramcryptr"
+    android:versionCode="7"
+    android:versionName="3.1.1" >
+
+    <uses-sdk
+        android:minSdkVersion="24"
+        android:targetSdkVersion="33" />
+
+    <permission
+        android:name="com.rambo.ramcryptr.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.rambo.ramcryptr.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+
+    <application
+        android:allowBackup="true"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:debuggable="true"
+        android:extractNativeLibs="false"
+        android:label="RAMcryptr"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+
+        <!-- Main App -->
+        <activity
+            android:name="com.rambo.ramcryptr.MainActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Text Encode -->
+        <activity
+            android:name="com.rambo.ramcryptr.EncodeProcessTextActivity"
+            android:exported="true"
+            android:label="Encode" >
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+
+                <data android:mimeType="text/plain" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Text Decode -->
+        <activity
+            android:name="com.rambo.ramcryptr.DecodeProcessTextActivity"
+            android:exported="true"
+            android:label="Decode" >
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+
+                <data android:mimeType="text/plain" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Share Encode -->
+        <activity
+            android:name="com.rambo.ramcryptr.ShareEncodeActivity"
+            android:exported="true"
+            android:label="RAMcryptr Encode" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <!-- Share Decode -->
+        <activity
+            android:name="com.rambo.ramcryptr.ShareDecodeActivity"
+            android:exported="true"
+            android:label="RAMcryptr Decode" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <!-- FILE ENCRYPT -->
+        <activity
+            android:name="com.rambo.ramcryptr.FileEncryptActivity"
+            android:exported="false" />
+
+        <!-- FILE DECRYPT -->
+        <activity
+            android:name="com.rambo.ramcryptr.FileDecryptActivity"
+            android:exported="false" />
+
+        <!-- FILE RECEIVE (NEW 🔥) -->
+        <activity
+            android:name="com.rambo.ramcryptr.FileReceiveActivity"
+            android:exported="true"
+            android:label="RAMcryptr" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+
+        <!-- Clipboard -->
+        <activity
+            android:name="com.rambo.ramcryptr.ClipboardDecodePromptActivity"
+            android:exported="false" />
+
+        <service
+            android:name="com.rambo.ramcryptr.ClipboardMonitorService"
+            android:exported="false" />
+
+        <!-- FileProvider -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.rambo.ramcryptr.provider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.rambo.ramcryptr.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+        </provider>
+    </application>
+
+</manifest>

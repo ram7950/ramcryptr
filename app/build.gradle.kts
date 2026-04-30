@@ -1,39 +1,23 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    kotlin("android")
 }
 
 android {
     namespace = "com.rambo.ramcryptr"
-    compileSdk = 34
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "com.rambo.ramcryptr"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 6
-        versionName = "3.1.0b"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    signingConfigs {
-        create("release") {
-            storeFile = file("ramcryptr.keystore")
-            storePassword = "123456"
-            keyAlias = "ramcryptr"
-            keyPassword = "123456"
-        }
+        targetSdk = 33
+        versionCode = 7
+        versionName = "3.1.1"
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
-        }
-
-        getByName("debug") {
-            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -48,7 +32,18 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.13.1")
+    // 🔥 Force same Kotlin version
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
+
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.material:material:1.9.0")
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
+        force("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.20")
+        force("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20")
+    }
 }

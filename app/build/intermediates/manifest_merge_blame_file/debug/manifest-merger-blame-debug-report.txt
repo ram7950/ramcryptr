@@ -1,0 +1,254 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.rambo.ramcryptr"
+4    android:versionCode="7"
+5    android:versionName="3.1.1" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+8-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml
+9        android:targetSdkVersion="33" />
+9-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml
+10
+11    <permission
+11-->[androidx.core:core:1.10.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/698ac5a19138dff6150045fb736c0bc9/transformed/core-1.10.1/AndroidManifest.xml:22:5-24:47
+12        android:name="com.rambo.ramcryptr.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+12-->[androidx.core:core:1.10.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/698ac5a19138dff6150045fb736c0bc9/transformed/core-1.10.1/AndroidManifest.xml:23:9-81
+13        android:protectionLevel="signature" />
+13-->[androidx.core:core:1.10.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/698ac5a19138dff6150045fb736c0bc9/transformed/core-1.10.1/AndroidManifest.xml:24:9-44
+14
+15    <uses-permission android:name="com.rambo.ramcryptr.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+15-->[androidx.core:core:1.10.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/698ac5a19138dff6150045fb736c0bc9/transformed/core-1.10.1/AndroidManifest.xml:26:5-97
+15-->[androidx.core:core:1.10.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/698ac5a19138dff6150045fb736c0bc9/transformed/core-1.10.1/AndroidManifest.xml:26:22-94
+16
+17    <application
+17-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:3:1-111:15
+18        android:allowBackup="true"
+18-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:4:1-27
+19        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+19-->[androidx.core:core:1.10.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/698ac5a19138dff6150045fb736c0bc9/transformed/core-1.10.1/AndroidManifest.xml:28:18-86
+20        android:debuggable="true"
+21        android:extractNativeLibs="false"
+22        android:label="RAMcryptr"
+22-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:5:1-26
+23        android:supportsRtl="true"
+23-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:6:1-27
+24        android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+24-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:7:1-57
+25
+26        <!-- Main App -->
+27        <activity
+27-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:10:1-17:12
+28            android:name="com.rambo.ramcryptr.MainActivity"
+28-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:11:1-29
+29            android:exported="true" >
+29-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:12:1-24
+30            <intent-filter>
+30-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:13:1-16:17
+31                <action android:name="android.intent.action.MAIN" />
+31-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:14:1-52
+31-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:14:9-50
+32
+33                <category android:name="android.intent.category.LAUNCHER" />
+33-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:15:1-60
+33-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:15:11-58
+34            </intent-filter>
+35        </activity>
+36
+37        <!-- Text Encode -->
+38        <activity
+38-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:20:1-29:12
+39            android:name="com.rambo.ramcryptr.EncodeProcessTextActivity"
+39-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:21:1-42
+40            android:exported="true"
+40-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:23:1-24
+41            android:label="Encode" >
+41-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:22:1-23
+42            <intent-filter>
+42-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:24:1-28:17
+43                <action android:name="android.intent.action.PROCESS_TEXT" />
+43-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:25:1-60
+43-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:25:9-58
+44
+45                <data android:mimeType="text/plain" />
+45-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:26:1-38
+45-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:26:7-36
+46
+47                <category android:name="android.intent.category.DEFAULT" />
+47-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:27:1-59
+47-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:27:11-57
+48            </intent-filter>
+49        </activity>
+50
+51        <!-- Text Decode -->
+52        <activity
+52-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:32:1-41:12
+53            android:name="com.rambo.ramcryptr.DecodeProcessTextActivity"
+53-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:33:1-42
+54            android:exported="true"
+54-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:35:1-24
+55            android:label="Decode" >
+55-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:34:1-23
+56            <intent-filter>
+56-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:24:1-28:17
+57                <action android:name="android.intent.action.PROCESS_TEXT" />
+57-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:25:1-60
+57-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:25:9-58
+58
+59                <data android:mimeType="text/plain" />
+59-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:26:1-38
+59-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:26:7-36
+60
+61                <category android:name="android.intent.category.DEFAULT" />
+61-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:27:1-59
+61-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:27:11-57
+62            </intent-filter>
+63        </activity>
+64
+65        <!-- Share Encode -->
+66        <activity
+66-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:44:1-53:12
+67            android:name="com.rambo.ramcryptr.ShareEncodeActivity"
+67-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:45:1-36
+68            android:exported="true"
+68-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:46:1-24
+69            android:label="RAMcryptr Encode" >
+69-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:47:1-33
+70            <intent-filter>
+70-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:48:1-52:17
+71                <action android:name="android.intent.action.SEND" />
+71-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:49:1-52
+71-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:49:9-50
+72
+73                <category android:name="android.intent.category.DEFAULT" />
+73-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:27:1-59
+73-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:27:11-57
+74
+75                <data android:mimeType="text/plain" />
+75-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:26:1-38
+75-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:26:7-36
+76            </intent-filter>
+77        </activity>
+78
+79        <!-- Share Decode -->
+80        <activity
+80-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:56:1-65:12
+81            android:name="com.rambo.ramcryptr.ShareDecodeActivity"
+81-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:57:1-36
+82            android:exported="true"
+82-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:58:1-24
+83            android:label="RAMcryptr Decode" >
+83-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:59:1-33
+84            <intent-filter>
+84-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:48:1-52:17
+85                <action android:name="android.intent.action.SEND" />
+85-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:49:1-52
+85-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:49:9-50
+86
+87                <category android:name="android.intent.category.DEFAULT" />
+87-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:27:1-59
+87-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:27:11-57
+88
+89                <data android:mimeType="text/plain" />
+89-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:26:1-38
+89-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:26:7-36
+90            </intent-filter>
+91        </activity>
+92
+93        <!-- FILE ENCRYPT -->
+94        <activity
+94-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:68:1-70:27
+95            android:name="com.rambo.ramcryptr.FileEncryptActivity"
+95-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:69:1-36
+96            android:exported="false" />
+96-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:70:1-25
+97
+98        <!-- FILE DECRYPT -->
+99        <activity
+99-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:73:1-75:27
+100            android:name="com.rambo.ramcryptr.FileDecryptActivity"
+100-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:74:1-36
+101            android:exported="false" />
+101-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:75:1-25
+102
+103        <!-- FILE RECEIVE (NEW 🔥) -->
+104        <activity
+104-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:78:1-89:12
+105            android:name="com.rambo.ramcryptr.FileReceiveActivity"
+105-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:79:1-36
+106            android:exported="true"
+106-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:80:1-24
+107            android:label="RAMcryptr" >
+107-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:81:1-26
+108            <intent-filter>
+108-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:83:1-87:17
+109                <action android:name="android.intent.action.SEND" />
+109-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:49:1-52
+109-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:49:9-50
+110
+111                <category android:name="android.intent.category.DEFAULT" />
+111-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:27:1-59
+111-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:27:11-57
+112
+113                <data android:mimeType="*/*" />
+113-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:26:1-38
+113-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:26:7-36
+114            </intent-filter>
+115        </activity>
+116
+117        <!-- Clipboard -->
+118        <activity
+118-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:92:1-94:27
+119            android:name="com.rambo.ramcryptr.ClipboardDecodePromptActivity"
+119-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:93:1-46
+120            android:exported="false" />
+120-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:94:1-25
+121
+122        <service
+122-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:96:1-98:27
+123            android:name="com.rambo.ramcryptr.ClipboardMonitorService"
+123-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:97:1-40
+124            android:exported="false" />
+124-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:98:1-25
+125
+126        <!-- FileProvider -->
+127        <provider
+128            android:name="androidx.core.content.FileProvider"
+128-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:102:1-50
+129            android:authorities="com.rambo.ramcryptr.provider"
+129-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:103:1-48
+130            android:exported="false"
+130-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:104:1-25
+131            android:grantUriPermissions="true" >
+131-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:105:1-35
+132            <meta-data
+132-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:106:1-108:37
+133                android:name="android.support.FILE_PROVIDER_PATHS"
+133-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:107:1-51
+134                android:resource="@xml/file_paths" />
+134-->/data/data/com.termux/files/home/Acode/app/src/main/AndroidManifest.xml:108:1-35
+135        </provider>
+136        <provider
+136-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/f55c465a53da0173befbbca5530bddbf/transformed/emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+137            android:name="androidx.startup.InitializationProvider"
+137-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/f55c465a53da0173befbbca5530bddbf/transformed/emoji2-1.2.0/AndroidManifest.xml:25:13-67
+138            android:authorities="com.rambo.ramcryptr.androidx-startup"
+138-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/f55c465a53da0173befbbca5530bddbf/transformed/emoji2-1.2.0/AndroidManifest.xml:26:13-68
+139            android:exported="false" >
+139-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/f55c465a53da0173befbbca5530bddbf/transformed/emoji2-1.2.0/AndroidManifest.xml:27:13-37
+140            <meta-data
+140-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/f55c465a53da0173befbbca5530bddbf/transformed/emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+141                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+141-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/f55c465a53da0173befbbca5530bddbf/transformed/emoji2-1.2.0/AndroidManifest.xml:30:17-75
+142                android:value="androidx.startup" />
+142-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/f55c465a53da0173befbbca5530bddbf/transformed/emoji2-1.2.0/AndroidManifest.xml:31:17-49
+143            <meta-data
+143-->[androidx.lifecycle:lifecycle-process:2.4.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/b512ff0be6e0e8eb351a833b7586b7c8/transformed/lifecycle-process-2.4.1/AndroidManifest.xml:31:13-33:52
+144                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+144-->[androidx.lifecycle:lifecycle-process:2.4.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/b512ff0be6e0e8eb351a833b7586b7c8/transformed/lifecycle-process-2.4.1/AndroidManifest.xml:32:17-78
+145                android:value="androidx.startup" />
+145-->[androidx.lifecycle:lifecycle-process:2.4.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/b512ff0be6e0e8eb351a833b7586b7c8/transformed/lifecycle-process-2.4.1/AndroidManifest.xml:33:17-49
+146        </provider>
+147    </application>
+148
+149</manifest>
