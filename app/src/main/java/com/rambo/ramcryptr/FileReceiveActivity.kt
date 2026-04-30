@@ -1,14 +1,12 @@
 package com.rambo.ramcryptr
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.webkit.MimeTypeMap
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -44,11 +42,7 @@ class FileReceiveActivity : AppCompatActivity() {
             }
         }
 
-        if (name.isNullOrEmpty()) {
-            name = uri.lastPathSegment
-        }
-
-        return name ?: "file"
+        return name ?: (uri.lastPathSegment ?: "file")
     }
 
     private fun isRamEncrypted(file: File): Boolean {
@@ -58,29 +52,14 @@ class FileReceiveActivity : AppCompatActivity() {
             val bytesRead = fis.read(buffer)
             fis.close()
 
-            if (bytesRead <= 0) {
-                false
-            } else {
+            if (bytesRead <= 0) false
+            else {
                 val text = String(buffer, 0, bytesRead)
                 text.startsWith("RAMCRYPT_V2|")
             }
         } catch (e: Exception) {
             false
         }
-    }
-
-    private fun getMimeFromExt(ext: String): String {
-        val mime = MimeTypeMap.getSingleton()
-            .getMimeTypeFromExtension(ext)
-        return mime ?: "*/*"
-    }
-
-    private fun getExt(uri: Uri): String {
-        val mime = contentResolver.getType(uri)
-        val ext = MimeTypeMap.getSingleton()
-            .getExtensionFromMimeType(mime)
-
-        return ext ?: "dat"
     }
 
     private fun handle(uri: Uri) {
@@ -96,88 +75,55 @@ class FileReceiveActivity : AppCompatActivity() {
                 fileName.endsWith(".ram.bin") || isRamEncrypted(tempIn)
 
             if (isEncrypted) {
-
-                val tempOut = File(cacheDir, "out_tmp")
-
-                val (ext, _) =
-                    FileCryptoManager.decryptFile(tempIn, tempOut)
-
-                val mime = getMimeFromExt(ext)
-
-                val finalFile = File(
-                    cacheDir,
-                    "decoded_${System.currentTimeMillis()}.$ext"
-                )
-
-                FileInputStream(tempOut).use { inp ->
-                    FileOutputStream(finalFile).use { out ->
-                        inp.copyTo(out)
-                    }
-                }
-
-                tempOut.delete()
-                tempIn.delete()
-
-                val view = Intent(Intent.ACTION_VIEW)
-                val fileUri = FileProvider.getUriForFile(
-                    this,
-                    packageName + ".provider",
-                    finalFile
-                )
-
-                view.setDataAndType(fileUri, mime)
-                view.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
-                if (view.resolveActivity(packageManager) != null) {
-                    startActivity(view)
-                } else {
-                    Toast.makeText(
-                        this,
-                        "No app found to open file",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                finish()
-
+                showDecodePrompt(tempIn)
             } else {
-
-                val ext = getExt(uri)
-                val mime = getMimeFromExt(ext)
-
-                val outFile = File(
-                    cacheDir,
-                    "encoded_${System.currentTimeMillis()}.ram.bin"
-                )
-
-                FileCryptoManager.encryptFile(
-                    tempIn,
-                    outFile,
-                    ext,
-                    mime
-                )
-
-                tempIn.delete()
-
-                val send = Intent(Intent.ACTION_SEND)
-                send.type = "*/*"
-
-                val fileUri = FileProvider.getUriForFile(
-                    this,
-                    packageName + ".provider",
-                    outFile
-                )
-
-                send.putExtra(Intent.EXTRA_STREAM, fileUri)
-                send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
-                startActivity(Intent.createChooser(send, "Share"))
-                finish()
+                showEncodePrompt(tempIn, uri)
             }
 
         } catch (e: Exception) {
             e.printStackTrace()
             finish()
         }
+    }
+
+    // ---------------- ENCODE PROMPT ----------------
+
+    private fun showEncodePrompt(file: File, uri: Uri) {
+
+        AlertDialog.Builder(this)
+            .setTitle("Encode File")
+            .setMessage("Do you want to encode this file?")
+            .setNegativeButton("No, thanks") { _, _ ->
+                file.delete()
+                finish()
+            }
+            .setPositiveButton("Encode") { _, _ ->
+                // NEXT STEP में actual encode करेंगे
+                // अभी सिर्फ confirm test
+                file.delete()
+                finish()
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    // ---------------- DECODE PROMPT ----------------
+
+    private fun showDecodePrompt(file: File) {
+
+        AlertDialog.Builder(this)
+            .setTitle("Encrypted File Found")
+            .setMessage("Do you want to decode this file?")
+            .setNegativeButton("No, thanks") { _, _ ->
+                file.delete()
+                finish()
+            }
+            .setPositiveButton("Decode") { _, _ ->
+                // NEXT STEP में actual decode करेंगे
+                file.delete()
+                finish()
+            }
+            .setCancelable(false)
+            .show()
     }
 }
