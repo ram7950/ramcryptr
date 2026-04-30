@@ -78,6 +78,24 @@ class FileReceiveActivity : AppCompatActivity() {
         return mime ?: "*/*"
     }
 
+    private fun normalizeExt(extRaw: String): String {
+        var ext = extRaw.trim().lowercase()
+
+        // अगर ext mime जैसा आया
+        if (ext.contains("/")) {
+            val fromMime = MimeTypeMap.getSingleton()
+                .getExtensionFromMimeType(ext)
+            if (fromMime != null) ext = fromMime
+        }
+
+        // common fixes
+        return when (ext) {
+            "jpeg" -> "jpg"
+            "jpg", "png", "pdf", "mp4", "txt" -> ext
+            else -> "dat"
+        }
+    }
+
     private fun handle(uri: Uri) {
         try {
             val input = contentResolver.openInputStream(uri) ?: return
@@ -102,10 +120,9 @@ class FileReceiveActivity : AppCompatActivity() {
         }
     }
 
-    // ---------------- ENCODE ----------------
+    // -------- ENCODE --------
 
     private fun showEncodePrompt(file: File, uri: Uri) {
-
         AlertDialog.Builder(this)
             .setTitle("Encode File")
             .setMessage("Do you want to encode this file?")
@@ -121,7 +138,6 @@ class FileReceiveActivity : AppCompatActivity() {
     }
 
     private fun encodeFile(file: File, uri: Uri) {
-
         try {
             val ext = getExt(uri)
             val mime = contentResolver.getType(uri) ?: "*/*"
@@ -131,12 +147,7 @@ class FileReceiveActivity : AppCompatActivity() {
                 "encoded_${System.currentTimeMillis()}.ram.bin"
             )
 
-            FileCryptoManager.encryptFile(
-                file,
-                outFile,
-                ext,
-                mime
-            )
+            FileCryptoManager.encryptFile(file, outFile, ext, mime)
 
             file.delete()
 
@@ -150,7 +161,6 @@ class FileReceiveActivity : AppCompatActivity() {
     }
 
     private fun showEncodeResult(file: File) {
-
         AlertDialog.Builder(this)
             .setTitle("Success")
             .setMessage("File encoded successfully")
@@ -175,10 +185,9 @@ class FileReceiveActivity : AppCompatActivity() {
             .show()
     }
 
-    // ---------------- DECODE ----------------
+    // -------- DECODE --------
 
     private fun showDecodePrompt(file: File) {
-
         AlertDialog.Builder(this)
             .setTitle("Encrypted File Found")
             .setMessage("Do you want to decode this file?")
@@ -194,12 +203,13 @@ class FileReceiveActivity : AppCompatActivity() {
     }
 
     private fun decodeFile(file: File) {
-
         try {
             val tempOut = File(cacheDir, "out_tmp")
 
-            val (ext, _) =
+            val (extRaw, _) =
                 FileCryptoManager.decryptFile(file, tempOut)
+
+            val ext = normalizeExt(extRaw)
 
             val finalFile = File(
                 cacheDir,
