@@ -6,7 +6,10 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.webkit.MimeTypeMap
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -62,6 +65,19 @@ class FileReceiveActivity : AppCompatActivity() {
         }
     }
 
+    private fun getExt(uri: Uri): String {
+        val mime = contentResolver.getType(uri)
+        val ext = MimeTypeMap.getSingleton()
+            .getExtensionFromMimeType(mime)
+        return ext ?: "dat"
+    }
+
+    private fun getMimeFromExt(ext: String): String {
+        val mime = MimeTypeMap.getSingleton()
+            .getMimeTypeFromExtension(ext)
+        return mime ?: "*/*"
+    }
+
     private fun handle(uri: Uri) {
         try {
             val input = contentResolver.openInputStream(uri) ?: return
@@ -86,7 +102,7 @@ class FileReceiveActivity : AppCompatActivity() {
         }
     }
 
-    // ---------------- ENCODE PROMPT ----------------
+    // ---------------- ENCODE ----------------
 
     private fun showEncodePrompt(file: File, uri: Uri) {
 
@@ -98,16 +114,68 @@ class FileReceiveActivity : AppCompatActivity() {
                 finish()
             }
             .setPositiveButton("Encode") { _, _ ->
-                // NEXT STEP में actual encode करेंगे
-                // अभी सिर्फ confirm test
-                file.delete()
+                encodeFile(file, uri)
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun encodeFile(file: File, uri: Uri) {
+
+        try {
+            val ext = getExt(uri)
+            val mime = contentResolver.getType(uri) ?: "*/*"
+
+            val outFile = File(
+                cacheDir,
+                "encoded_${System.currentTimeMillis()}.ram.bin"
+            )
+
+            FileCryptoManager.encryptFile(
+                file,
+                outFile,
+                ext,
+                mime
+            )
+
+            file.delete()
+
+            showEncodeResult(outFile)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Encode failed", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
+
+    private fun showEncodeResult(file: File) {
+
+        AlertDialog.Builder(this)
+            .setTitle("Success")
+            .setMessage("File encoded successfully")
+            .setPositiveButton("Share") { _, _ ->
+
+                val send = Intent(Intent.ACTION_SEND)
+                send.type = "*/*"
+
+                val uri = FileProvider.getUriForFile(
+                    this,
+                    packageName + ".provider",
+                    file
+                )
+
+                send.putExtra(Intent.EXTRA_STREAM, uri)
+                send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                startActivity(Intent.createChooser(send, "Share"))
                 finish()
             }
             .setCancelable(false)
             .show()
     }
 
-    // ---------------- DECODE PROMPT ----------------
+    // ---------------- DECODE ----------------
 
     private fun showDecodePrompt(file: File) {
 
@@ -119,11 +187,54 @@ class FileReceiveActivity : AppCompatActivity() {
                 finish()
             }
             .setPositiveButton("Decode") { _, _ ->
-                // NEXT STEP में actual decode करेंगे
-                file.delete()
-                finish()
+                decodeFile(file)
             }
             .setCancelable(false)
             .show()
+    }
+
+    private fun decodeFile(file: File) {
+
+        try {
+            val tempOut = File(cacheDir, "out_tmp")
+
+            val (ext, _) =
+                FileCryptoManager.decryptFile(file, tempOut)
+
+            val finalFile = File(
+                cacheDir,
+                "decoded_${System.currentTimeMillis()}.$ext"
+            )
+
+            FileInputStream(tempOut).use { inp ->
+                FileOutputStream(finalFile).use { out ->
+                    inp.copyTo(out)
+                }
+            }
+
+            tempOut.delete()
+            file.delete()
+
+            val mime = getMimeFromExt(ext)
+
+            val view = Intent(Intent.ACTION_VIEW)
+            val uri = FileProvider.getUriForFile(
+                this,
+                packageName + ".provider",
+                finalFile
+            )
+
+            view.setDataAndType(uri, mime)
+            view.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+            startActivity(Intent.createChooser(view, "Open file"))
+
+            finish()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Decode failed", Toast.LENGTH_SHORT).show()
+            finish()
+        }
     }
 }
