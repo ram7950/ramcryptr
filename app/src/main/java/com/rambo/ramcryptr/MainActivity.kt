@@ -1,6 +1,7 @@
 package com.rambo.ramcryptr
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -8,8 +9,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-
-    private val MASTER_KEY = "ramcryptr_secret"
 
     private val PICK_ENCODE_FILE = 201
     private val PICK_DECODE_FILE = 202
@@ -30,13 +29,8 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            try {
-                val encrypted = TextCrypto.encrypt(text, MASTER_KEY)
-                input.setText(encrypted)
-                Toast.makeText(this, "Encoded", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Toast.makeText(this, "Encode failed", Toast.LENGTH_SHORT).show()
-            }
+            val result = TextCrypto.encrypt(text, "ramcryptr_secret")
+            input.setText(result)
         }
 
         // 🔓 TEXT DECODE
@@ -47,50 +41,53 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            try {
-                val decrypted = TextCrypto.decrypt(text, MASTER_KEY)
-                input.setText(decrypted)
-                Toast.makeText(this, "Decoded", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Toast.makeText(this, "Decode failed", Toast.LENGTH_SHORT).show()
-            }
+            val result = TextCrypto.decrypt(text, "ramcryptr_secret")
+            input.setText(result)
         }
 
-        // 📂 LONG PRESS → FILE PICKER (ENCODE)
+        // 📂 LONG PRESS ENCODE → same as share
         encodeBtn.setOnLongClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "*/*"
-            startActivityForResult(intent, PICK_ENCODE_FILE)
-            true   // 🔥 MUST
+            pickFile(PICK_ENCODE_FILE)
+            true
         }
 
-        // 📂 LONG PRESS → FILE PICKER (DECODE)
+        // 📂 LONG PRESS DECODE → same as open
         decodeBtn.setOnLongClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "*/*"
-            startActivityForResult(intent, PICK_DECODE_FILE)
-            true   // 🔥 MUST
+            pickFile(PICK_DECODE_FILE)
+            true
         }
     }
 
-    // 📂 FILE PICK RESULT
+    private fun pickFile(code: Int) {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "*/*"
+        startActivityForResult(intent, code)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode != RESULT_OK || data == null) return
 
-        val uri = data.data ?: return
+        val uri: Uri = data.data ?: return
 
         when (requestCode) {
 
+            // 🔐 ENCODE → simulate share
             PICK_ENCODE_FILE -> {
-                Toast.makeText(this, "File selected for encode", Toast.LENGTH_SHORT).show()
-                // 👉 यहाँ existing file encode logic call करना है
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.type = "*/*"
+                intent.putExtra(Intent.EXTRA_STREAM, uri)
+                intent.setPackage(packageName)
+                startActivity(intent)
             }
 
+            // 🔓 DECODE → simulate open file
             PICK_DECODE_FILE -> {
-                Toast.makeText(this, "File selected for decode", Toast.LENGTH_SHORT).show()
-                // 👉 यहाँ existing file decode logic call करना है
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setDataAndType(uri, "*/*")
+                intent.setPackage(packageName)
+                startActivity(intent)
             }
         }
     }
