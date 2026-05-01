@@ -13,7 +13,8 @@ object SaveUtils {
     fun saveSecure(context: Context, sourceFile: File, ext: String) {
 
         try {
-            val baseDir = File("/storage/emulated/0/Secured_Repository")
+            // ✅ SAFE PATH (no permission needed)
+            val baseDir = File(context.getExternalFilesDir(null), "Secured_Repository")
 
             if (!baseDir.exists()) baseDir.mkdirs()
 
