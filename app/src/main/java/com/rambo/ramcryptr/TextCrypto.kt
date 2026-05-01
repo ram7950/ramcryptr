@@ -1,6 +1,7 @@
 package com.rambo.ramcryptr
 
 import android.util.Base64
+import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.security.SecureRandom
 import javax.crypto.Cipher
@@ -10,53 +11,78 @@ import javax.crypto.spec.SecretKeySpec
 object TextCrypto {
 
     private const val TRANSFORMATION = "AES/GCM/NoPadding"
+    private const val IV_SIZE = 12
+    private const val TAG_SIZE = 128
 
-    fun deriveKey(master: String, index: Int): SecretKeySpec {
-        val md = MessageDigest.getInstance("SHA-256")
-        val keyBytes = md.digest((master + index).toByteArray())
+    // 🔐 Key derivation (stable + safe)
+    private fun deriveKey(master: String, index: Int): SecretKeySpec {
+        val digest = MessageDigest.getInstance("SHA-256")
+        val fullKey = digest.digest((master + index).toByteArray(Charset.forName("UTF-8")))
+        val keyBytes = fullKey.copyOf(32) // 256-bit key
         return SecretKeySpec(keyBytes, "AES")
     }
 
-    fun encrypt(text: String, master: String): String {
-        val index = DateUtils.getDayIndex()
-        val code = Base62.encode(index)
+    // 🔐 Encrypt
+    fun encrypt(plainText: String, master: String): String {
+        try {
+            val index = DateUtils.getDayIndex()
+            val code = Base62.encode(index)
 
-        val key = deriveKey(master, index)
+            val key = deriveKey(master, index)
 
-        val iv = ByteArray(12)
-        SecureRandom().nextBytes(iv)
+            val iv = ByteArray(IV_SIZE)
+            SecureRandom().nextBytes(iv)
 
-        val cipher = Cipher.getInstance(TRANSFORMATION)
-        cipher.init(Cipher.ENCRYPT_MODE, key, GCMParameterSpec(128, iv))
+            val cipher = Cipher.getInstance(TRANSFORMATION)
+            cipher.init(Cipher.ENCRYPT_MODE, key, GCMParameterSpec(TAG_SIZE, iv))
 
-        val encrypted = cipher.doFinal(text.toByteArray())
+            val encrypted = cipher.doFinal(plainText.toByteArray(Charset.forName("UTF-8")))
 
-        val combined = iv + encrypted
-        val data = Base64.encodeToString(combined, Base64.NO_WRAP)
+            val combined = ByteArray(iv.size + encrypted.size)
+            System.arraycopy(iv, 0, combined, 0, iv.size)
+            System.arraycopy(encrypted, 0, combined, iv.size, encrypted.size)
 
-        return "AES256::$code::$data"
+            val base64 = Base64.encodeToString(combined, Base64.NO_WRAP)
+
+            return "AES256::$code::$base64"
+
+        } catch (e: Exception) {
+            throw RuntimeException("Encryption failed", e)
+        }
     }
 
+    // 🔓 Decrypt
     fun decrypt(message: String, master: String): String {
-        val parts = message.split("::")
-        if (parts.size != 3) throw Exception("Invalid format")
+        try {
+            val parts = message.split("::", limit = 3)
+            if (parts.size != 3 || parts[0] != "AES256") {
+                throw IllegalArgumentException("Invalid format")
+            }
 
-        val code = parts[1]
-        val data = parts[2]
+            val code = parts[1]
+            val data = parts[2]
 
-        val index = Base62.decode(code)
-        val key = deriveKey(master, index)
+            val index = Base62.decode(code)
+            val key = deriveKey(master, index)
 
-        val decoded = Base64.decode(data, Base64.NO_WRAP)
+            val decoded = Base64.decode(data, Base64.NO_WRAP)
 
-        val iv = decoded.copyOfRange(0, 12)
-        val encrypted = decoded.copyOfRange(12, decoded.size)
+            if (decoded.size <= IV_SIZE) {
+                throw IllegalArgumentException("Corrupted data")
+            }
 
-        val cipher = Cipher.getInstance(TRANSFORMATION)
-        cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, iv))
+            val iv = decoded.copyOfRange(0, IV_SIZE)
+            val encrypted = decoded.copyOfRange(IV_SIZE, decoded.size)
 
-        val decrypted = cipher.doFinal(encrypted)
+            val cipher = Cipher.getInstance(TRANSFORMATION)
+            cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(TAG_SIZE, iv))
 
-        return String(decrypted)
+            val decrypted = cipher.doFinal(encrypted)
+
+            return String(decrypted, Charset.forName("UTF-8"))
+
+        } catch (e: Exception) {
+            throw RuntimeException("Decryption failed", e)
+        }
     }
 }

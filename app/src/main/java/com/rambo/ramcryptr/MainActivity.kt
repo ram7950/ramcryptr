@@ -1,129 +1,85 @@
 package com.rambo.ramcryptr
 
-import android.app.Activity
+import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private val PICK_ENCODE = 1001
-    private val PICK_DECODE = 1002
+    // 🔐 TODO: बाद में user-input / keystore में ले जाना
+    private val MASTER_KEY = "ramcryptr_secret"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        val layout = LinearLayout(this)
-        layout.orientation = LinearLayout.VERTICAL
-        layout.setPadding(40, 60, 40, 40)
+        val input = findViewById<EditText>(R.id.editText)
+        val encodeBtn = findViewById<Button>(R.id.btnEncode)
+        val decodeBtn = findViewById<Button>(R.id.btnDecode)
+        val repoBtn = findViewById<Button>(R.id.btnRepo)
 
-        val editText = EditText(this)
-        editText.hint = "Enter text here"
-
-        val encodeBtn = Button(this)
-        encodeBtn.text = "ENCODE"
-
-        val decodeBtn = Button(this)
-        decodeBtn.text = "DECODE"
-
-        val vaultBtn = Button(this)
-        vaultBtn.text = "SECURED 🔐 REPOSITORY"
-
-        // ===== TEXT ENCODE (basic restore)
+        // 🔐 ENCODE
         encodeBtn.setOnClickListener {
-            val input = editText.text.toString()
-            if (input.isEmpty()) {
+            val text = input.text.toString()
+            if (text.isBlank()) {
                 Toast.makeText(this, "Enter text", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val encoded = input.reversed() // simple logic (replace later with real)
-            editText.setText(encoded)
-
-            copyToClipboard(encoded)
-            Toast.makeText(this, "Encoded + Copied", Toast.LENGTH_SHORT).show()
+            try {
+                val encrypted = TextCrypto.encrypt(text, MASTER_KEY)
+                input.setText(encrypted)
+                copyToClipboard(encrypted)
+                Toast.makeText(this, "Encoded + Copied", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Encode failed", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        // ===== TEXT DECODE
+        // 🔓 DECODE
         decodeBtn.setOnClickListener {
-            val input = editText.text.toString()
-            if (input.isEmpty()) {
+            val text = input.text.toString()
+            if (text.isBlank()) {
                 Toast.makeText(this, "Enter text", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val decoded = input.reversed()
-            editText.setText(decoded)
+            if (!text.startsWith("AES256::")) {
+                Toast.makeText(this, "Invalid encrypted text", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            copyToClipboard(decoded)
-            Toast.makeText(this, "Decoded + Copied", Toast.LENGTH_SHORT).show()
+            try {
+                val decrypted = TextCrypto.decrypt(text, MASTER_KEY)
+                input.setText(decrypted)
+                copyToClipboard(decrypted)
+                Toast.makeText(this, "Decoded + Copied", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Decode failed", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        // ===== LONG PRESS → FILE PICKER
-        encodeBtn.setOnLongClickListener {
-            openPicker(PICK_ENCODE)
-            true
-        }
-
-        decodeBtn.setOnLongClickListener {
-            openPicker(PICK_DECODE)
-            true
-        }
-
-        // ===== VAULT BUTTON (FIXED)
-        vaultBtn.setOnClickListener {
-            Toast.makeText(
-                this,
-                "Open manually:\nAndroid/data/com.rambo.ramcryptr/files/Secured_Repository",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-
-        layout.addView(editText)
-        layout.addView(encodeBtn)
-        layout.addView(decodeBtn)
-        layout.addView(vaultBtn)
-
-        setContentView(layout)
-    }
-
-    private fun openPicker(code: Int) {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "*/*"
-        startActivityForResult(Intent.createChooser(intent, "Select File"), code)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode != Activity.RESULT_OK || data?.data == null) return
-
-        val uri = data.data!!
-
-        if (requestCode == PICK_ENCODE) {
-            val intent = Intent(this, FileReceiveActivity::class.java)
-            intent.action = Intent.ACTION_SEND
-            intent.putExtra(Intent.EXTRA_STREAM, uri)
-            intent.type = "*/*"
-            startActivity(intent)
-        }
-
-        if (requestCode == PICK_DECODE) {
-            val intent = Intent(this, FileReceiveActivity::class.java)
-            intent.action = Intent.ACTION_VIEW
-            intent.data = uri
-            startActivity(intent)
+        // 📁 REPOSITORY (SAF picker)
+        repoBtn.setOnClickListener {
+            try {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                startActivity(intent)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Cannot open folder", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
+    // 📋 Clipboard helper
     private fun copyToClipboard(text: String) {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(android.content.ClipData.newPlainText("text", text))
+        val clip = ClipData.newPlainText("ramcryptr", text)
+        clipboard.setPrimaryClip(clip)
     }
 }
