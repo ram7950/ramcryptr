@@ -1,31 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:padding="20dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-<EditText
-android:id="@+id/inputBox"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:minLines="6"
-android:gravity="top"
-android:hint="Enter text to encode or decode"/>
+    <!-- Input Box -->
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter text"
+        android:minHeight="120dp"
+        android:gravity="top"
+        android:background="@android:drawable/edit_text"
+        android:padding="12dp" />
 
-<Button
-android:id="@+id/btnEncode"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Encode"
-android:layout_marginTop="20dp"/>
+    <!-- Encode Button -->
+    <Button
+        android:id="@+id/btnEncode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ENCODE"
+        android:layout_marginTop="16dp" />
 
-<Button
-android:id="@+id/btnDecode"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Decode"
-android:layout_marginTop="12dp"/>
+    <!-- Decode Button -->
+    <Button
+        android:id="@+id/btnDecode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DECODE"
+        android:layout_marginTop="8dp" />
+
+    <!-- Repository Button -->
+    <Button
+        android:id="@+id/btnRepo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Secured 🔐 Repository"
+        android:layout_marginTop="24dp" />
 
 </LinearLayout>
