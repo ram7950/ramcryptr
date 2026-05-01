@@ -1,15 +1,15 @@
 package com.rambo.ramcryptr
 
 import android.app.Activity
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,50 +27,62 @@ class MainActivity : AppCompatActivity() {
         editText.hint = "Enter text here"
 
         val encodeBtn = Button(this)
-        encodeBtn.text = "Encode"
+        encodeBtn.text = "ENCODE"
 
         val decodeBtn = Button(this)
-        decodeBtn.text = "Decode"
+        decodeBtn.text = "DECODE"
 
         val vaultBtn = Button(this)
-        vaultBtn.text = "Secured 🔐 Repository"
+        vaultBtn.text = "SECURED 🔐 REPOSITORY"
 
-        // ===== NORMAL CLICK (text)
+        // ===== TEXT ENCODE (basic restore)
         encodeBtn.setOnClickListener {
-            Toast.makeText(this, "Text encode flow", Toast.LENGTH_SHORT).show()
+            val input = editText.text.toString()
+            if (input.isEmpty()) {
+                Toast.makeText(this, "Enter text", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val encoded = input.reversed() // simple logic (replace later with real)
+            editText.setText(encoded)
+
+            copyToClipboard(encoded)
+            Toast.makeText(this, "Encoded + Copied", Toast.LENGTH_SHORT).show()
         }
 
+        // ===== TEXT DECODE
         decodeBtn.setOnClickListener {
-            Toast.makeText(this, "Text decode flow", Toast.LENGTH_SHORT).show()
+            val input = editText.text.toString()
+            if (input.isEmpty()) {
+                Toast.makeText(this, "Enter text", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val decoded = input.reversed()
+            editText.setText(decoded)
+
+            copyToClipboard(decoded)
+            Toast.makeText(this, "Decoded + Copied", Toast.LENGTH_SHORT).show()
         }
 
         // ===== LONG PRESS → FILE PICKER
         encodeBtn.setOnLongClickListener {
-            openFilePicker(PICK_ENCODE)
+            openPicker(PICK_ENCODE)
             true
         }
 
         decodeBtn.setOnLongClickListener {
-            openFilePicker(PICK_DECODE)
+            openPicker(PICK_DECODE)
             true
         }
 
-        // ===== VAULT BUTTON (open system file manager)
+        // ===== VAULT BUTTON (FIXED)
         vaultBtn.setOnClickListener {
-            try {
-                val baseDir = File(getExternalFilesDir(null), "Secured_Repository")
-
-                val uri = Uri.parse(baseDir.absolutePath)
-
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(uri, "*/*")
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-                startActivity(intent)
-
-            } catch (e: Exception) {
-                Toast.makeText(this, "Open manually from file manager", Toast.LENGTH_LONG).show()
-            }
+            Toast.makeText(
+                this,
+                "Open manually:\nAndroid/data/com.rambo.ramcryptr/files/Secured_Repository",
+                Toast.LENGTH_LONG
+            ).show()
         }
 
         layout.addView(editText)
@@ -81,10 +93,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(layout)
     }
 
-    private fun openFilePicker(requestCode: Int) {
+    private fun openPicker(code: Int) {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "*/*"
-        startActivityForResult(Intent.createChooser(intent, "Select File"), requestCode)
+        startActivityForResult(Intent.createChooser(intent, "Select File"), code)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -95,7 +107,6 @@ class MainActivity : AppCompatActivity() {
         val uri = data.data!!
 
         if (requestCode == PICK_ENCODE) {
-            // 🔥 SAME AS SHARE → ENCODE FLOW
             val intent = Intent(this, FileReceiveActivity::class.java)
             intent.action = Intent.ACTION_SEND
             intent.putExtra(Intent.EXTRA_STREAM, uri)
@@ -104,11 +115,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (requestCode == PICK_DECODE) {
-            // 🔥 SAME AS CLICK FILE → DECODE FLOW
             val intent = Intent(this, FileReceiveActivity::class.java)
             intent.action = Intent.ACTION_VIEW
             intent.data = uri
             startActivity(intent)
         }
+    }
+
+    private fun copyToClipboard(text: String) {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboard.setPrimaryClip(android.content.ClipData.newPlainText("text", text))
     }
 }
