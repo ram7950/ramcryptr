@@ -1,0 +1,37 @@
+[33mbe41876[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m final fix: theme + launcher + stable structure
+[33m0d49359[m stable fix: preview safe + manifest verified
+[33mccc2f2d[m fix: launcher activity restored
+[33m9511137[m step 3 part1: in-app preview
+[33m29c5a06[m fix: full header parsing + ext normalization (final no-tmp)
+[33m944dd10[m fix: decode extension normalization (no more tmp)
+[33mc990617[m step 2: encode decode full flow + result UI
+[33m79d4ace[m step 1: prompt system added (encode/decode)
+[33m7373b06[m final stable decode fix + full hardening
+[33ma934fc8[m add open with support (ACTION_VIEW)
+[33m52aa855[m fix missing icon crash
+[33m0c34637[m fix exported error + clean manifest
+[33m933ebec[m fix manifest single intent filter
+[33m697a31c[m check build marker
+[33mfa764b8[m debug decode issue
+[33mb539bb6[m fix decode + ram.bin + version
+[33m33e1a15[m fix encode/decode flow properly
+[33mf08cf8d[m fix header split bug
+[33m367c8de[m fix build error
+[33m2716a87[m fix FileReceiveActivity crash
+[33me2418db[m setup github auto build
+[33m503b102[m Fix FileReceiveActivity for ext+mime params
+[33m66032f6[m Fix 3.1.1 crypto manager return type mismatch
+[33m0cae3ad[m Patch 3.1.1 add secure vault + save option
+[33m8cf9030[m Patch 3.1.0d fix file decrypt header mismatch
+[33m093585f[m Patch 3.1.0c manifest update for file share support
+[33m3e5596b[m Patch 3.1.0b fix signing (no uninstall updates)
+[33m57463e5[m Patch 3.1.0a WhatsApp share fix
+[33maac8f87[m Patch 3.1.0 file encryption MVP
+[33m8579b34[m Patch 2.1.1 dual share encode decode targets
+[33m8016a37[m Fix manifest missing process text xml refs
+[33md8020e0[m Fix manifest exported for Android 12
+[33m3b5f053[m Patch 2.1 clipboard auto decode feature
+[33m6b39b66[m Patch 1.1 decode sanitization sync fix
+[33m5f3ce0e[m Patch 1 inline encode decode update
+[33mc4050f0[m Add GitHub Actions APK build
+[33m8077e5a[m Initial commit
