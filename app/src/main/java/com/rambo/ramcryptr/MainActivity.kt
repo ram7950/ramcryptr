@@ -1,166 +1,114 @@
 package com.rambo.ramcryptr
 
+import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.rambo.ramcryptr.encoding.AES256Encoder
+import java.io.File
 
-class MainActivity :
-AppCompatActivity(){
+class MainActivity : AppCompatActivity() {
 
-private lateinit var inputText:EditText
-private lateinit var encodeButton:Button
-private lateinit var decodeButton:Button
+    private val PICK_ENCODE = 1001
+    private val PICK_DECODE = 1002
 
-private val key=
-"12345678901234567890123456789012"
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-override fun onCreate(
-savedInstanceState:Bundle?
-){
-super.onCreate(
-savedInstanceState
-)
+        val layout = LinearLayout(this)
+        layout.orientation = LinearLayout.VERTICAL
+        layout.setPadding(40, 60, 40, 40)
 
-setContentView(
-R.layout.activity_main
-)
+        val editText = EditText(this)
+        editText.hint = "Enter text here"
 
-inputText=
-findViewById(
-R.id.inputBox
-)
+        val encodeBtn = Button(this)
+        encodeBtn.text = "Encode"
 
-encodeButton=
-findViewById(
-R.id.btnEncode
-)
+        val decodeBtn = Button(this)
+        decodeBtn.text = "Decode"
 
-decodeButton=
-findViewById(
-R.id.btnDecode
-)
+        val vaultBtn = Button(this)
+        vaultBtn.text = "Secured 🔐 Repository"
 
-startService(
-Intent(
-this,
-ClipboardMonitorService::class.java
-)
-)
+        // ===== NORMAL CLICK (text)
+        encodeBtn.setOnClickListener {
+            Toast.makeText(this, "Text encode flow", Toast.LENGTH_SHORT).show()
+        }
 
-encodeButton.setOnClickListener{
+        decodeBtn.setOnClickListener {
+            Toast.makeText(this, "Text decode flow", Toast.LENGTH_SHORT).show()
+        }
 
-try{
+        // ===== LONG PRESS → FILE PICKER
+        encodeBtn.setOnLongClickListener {
+            openFilePicker(PICK_ENCODE)
+            true
+        }
 
-val txt=
-inputText.text
-.toString()
+        decodeBtn.setOnLongClickListener {
+            openFilePicker(PICK_DECODE)
+            true
+        }
 
-if(
-txt.isNotBlank()
-){
+        // ===== VAULT BUTTON (open system file manager)
+        vaultBtn.setOnClickListener {
+            try {
+                val baseDir = File(getExternalFilesDir(null), "Secured_Repository")
 
-val enc=
-AES256Encoder.encryptText(
-txt,
-key
-)
+                val uri = Uri.parse(baseDir.absolutePath)
 
-inputText.setText(
-enc
-)
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setDataAndType(uri, "*/*")
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-}
+                startActivity(intent)
 
-}catch(
-e:Exception
-){
-e.printStackTrace()
-}
+            } catch (e: Exception) {
+                Toast.makeText(this, "Open manually from file manager", Toast.LENGTH_LONG).show()
+            }
+        }
 
-}
+        layout.addView(editText)
+        layout.addView(encodeBtn)
+        layout.addView(decodeBtn)
+        layout.addView(vaultBtn)
 
-decodeButton.setOnClickListener{
+        setContentView(layout)
+    }
 
-try{
+    private fun openFilePicker(requestCode: Int) {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "*/*"
+        startActivityForResult(Intent.createChooser(intent, "Select File"), requestCode)
+    }
 
-val txt=
-inputText.text
-.toString()
-.trim()
-.replace(
-"\n",
-""
-)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-val clean=
-if(
-txt.startsWith(
-"🔄CON🔄"
-)
-)
-{
-txt.removePrefix(
-"🔄CON🔄"
-)
-}else{
-txt
-}
+        if (resultCode != Activity.RESULT_OK || data?.data == null) return
 
-if(
-clean.startsWith(
-"AES256::"
-)
-){
+        val uri = data.data!!
 
-val dec=
-AES256Encoder.decryptText(
-clean,
-key
-)
+        if (requestCode == PICK_ENCODE) {
+            // 🔥 SAME AS SHARE → ENCODE FLOW
+            val intent = Intent(this, FileReceiveActivity::class.java)
+            intent.action = Intent.ACTION_SEND
+            intent.putExtra(Intent.EXTRA_STREAM, uri)
+            intent.type = "*/*"
+            startActivity(intent)
+        }
 
-inputText.setText(
-dec
-)
-
-}
-
-}catch(
-e:Exception
-){
-e.printStackTrace()
-}
-
-}
-
-/* LONG PRESS = FILE CRYPTO */
-
-encodeButton.setOnLongClickListener{
-
-startActivity(
-Intent(
-this,
-FileEncryptActivity::class.java
-)
-)
-
-true
-}
-
-decodeButton.setOnLongClickListener{
-
-startActivity(
-Intent(
-this,
-FileDecryptActivity::class.java
-)
-)
-
-true
-}
-
-}
-
+        if (requestCode == PICK_DECODE) {
+            // 🔥 SAME AS CLICK FILE → DECODE FLOW
+            val intent = Intent(this, FileReceiveActivity::class.java)
+            intent.action = Intent.ACTION_VIEW
+            intent.data = uri
+            startActivity(intent)
+        }
+    }
 }
