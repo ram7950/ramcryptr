@@ -16,7 +16,8 @@ class FileDecryptActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val uri = intent.data
+        val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+            ?: intent.data
 
         if (uri != null) {
             decryptUri(uri)
@@ -26,36 +27,24 @@ class FileDecryptActivity : AppCompatActivity() {
     }
 
     private fun pickFile() {
-
         val i = Intent(Intent.ACTION_GET_CONTENT)
         i.type = "*/*"
-
-        startActivityForResult(
-            Intent.createChooser(i, "Select Encrypted File"),
-            PICK_FILE
-        )
+        startActivityForResult(i, PICK_FILE)
     }
 
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    ) {
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == PICK_FILE && resultCode == Activity.RESULT_OK) {
-            data?.data?.let {
-                decryptUri(it)
-            }
+            val uri = data?.data ?: return
+            decryptUri(uri)
         }
     }
 
     private fun decryptUri(uri: Uri) {
-
         try {
 
-            val enc = File(cacheDir, "temp_encrypted")
+            val enc = File(cacheDir, "temp_enc")
 
             contentResolver.openInputStream(uri)?.use { ins ->
                 enc.outputStream().use { outs ->
@@ -63,64 +52,32 @@ class FileDecryptActivity : AppCompatActivity() {
                 }
             }
 
-            val tempDec = File(cacheDir, "temp_decoded")
+            val tempDec = File(cacheDir, "temp_dec")
 
             val result = FileCryptoManager.decryptFile(enc, tempDec)
 
             val ext = result.first
             val mime = result.second
 
-            val finalFile = File(
-                cacheDir,
-                "dec_${System.currentTimeMillis()}.$ext"
-            )
-
+            val finalFile = File(cacheDir, "dec_${System.currentTimeMillis()}.$ext")
             tempDec.renameTo(finalFile)
 
-            showPreviewOptions(finalFile, mime)
+            val fileUri = androidx.core.content.FileProvider.getUriForFile(
+                this,
+                packageName + ".provider",
+                finalFile
+            )
 
-        } catch (e: Exception) {
+            val open = Intent(Intent.ACTION_VIEW)
+            open.setDataAndType(fileUri, mime)
+            open.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-            Toast.makeText(this, "Decode failed", Toast.LENGTH_LONG).show()
+            startActivity(open)
             finish()
 
+        } catch (e: Exception) {
+            Toast.makeText(this, "Decode failed: ${e.message}", Toast.LENGTH_LONG).show()
+            finish()
         }
-    }
-
-    private fun showPreviewOptions(file: File, mime: String) {
-
-        val fileUri = androidx.core.content.FileProvider.getUriForFile(
-            this,
-            packageName + ".provider",
-            file
-        )
-
-        AlertDialog.Builder(this)
-            .setTitle("Preview Ready")
-            .setMessage("What do you want to do?")
-            .setPositiveButton("Open") { _, _ ->
-
-                val open = Intent(Intent.ACTION_VIEW)
-                open.setDataAndType(fileUri, mime)
-                open.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
-                startActivity(open)
-
-            }
-            .setNeutralButton("Save") { _, _ ->
-
-                SecureVaultManager.saveFile(this, file, mime)
-
-                Toast.makeText(
-                    this,
-                    "Saved to vault",
-                    Toast.LENGTH_LONG
-                ).show()
-
-            }
-            .setNegativeButton("Dismiss") { _, _ ->
-                finish()
-            }
-            .show()
     }
 }

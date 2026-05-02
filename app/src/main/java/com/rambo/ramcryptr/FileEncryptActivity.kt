@@ -15,7 +15,8 @@ class FileEncryptActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val uri = intent.data
+        val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+            ?: intent.data
 
         if (uri != null) {
             encryptUri(uri)
@@ -27,18 +28,10 @@ class FileEncryptActivity : AppCompatActivity() {
     private fun pickFile() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "*/*"
-
-        startActivityForResult(
-            Intent.createChooser(intent, "Select File"),
-            PICK_FILE
-        )
+        startActivityForResult(intent, PICK_FILE)
     }
 
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    ) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == PICK_FILE && resultCode == Activity.RESULT_OK) {
@@ -58,44 +51,31 @@ class FileEncryptActivity : AppCompatActivity() {
                 }
             }
 
-            val outFile = File(
-                cacheDir,
-                "enc_${System.currentTimeMillis()}.ram.bin"
-            )
+            val outFile = File(cacheDir, "enc_${System.currentTimeMillis()}.ram")
 
-            val ext = uri.lastPathSegment
-                ?.substringAfterLast('.', "tmp") ?: "tmp"
-
+            val ext = uri.lastPathSegment?.substringAfterLast('.', "tmp") ?: "tmp"
             val mime = contentResolver.getType(uri) ?: "*/*"
 
-            FileCryptoManager.encryptFile(
-                input,
-                outFile,
-                ext,
-                mime
-            )
+            FileCryptoManager.encryptFile(input, outFile, ext, mime)
 
             val send = Intent(Intent.ACTION_SEND)
             send.type = "*/*"
 
-            val fileUri =
-                androidx.core.content.FileProvider.getUriForFile(
-                    this,
-                    packageName + ".provider",
-                    outFile
-                )
+            val fileUri = androidx.core.content.FileProvider.getUriForFile(
+                this,
+                packageName + ".provider",
+                outFile
+            )
 
             send.putExtra(Intent.EXTRA_STREAM, fileUri)
             send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-            startActivity(
-                Intent.createChooser(send, "Share encrypted file")
-            )
+            startActivity(Intent.createChooser(send, "Share encrypted file"))
 
             finish()
 
         } catch (e: Exception) {
-            Toast.makeText(this, "Encrypt failed", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Encrypt failed: ${e.message}", Toast.LENGTH_LONG).show()
             finish()
         }
     }
