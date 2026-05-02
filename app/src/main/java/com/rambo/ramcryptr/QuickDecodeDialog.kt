@@ -1,16 +1,14 @@
 package com.rambo.ramcryptr
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.ClipboardManager
+import android.content.Context
 import android.view.LayoutInflater
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.*
 
 object QuickDecodeDialog {
 
-    fun show(context: Context) {
+    fun showWithPrefill(context: Context, prefill: String) {
 
         val view = LayoutInflater.from(context)
             .inflate(R.layout.quick_decode_dialog, null)
@@ -26,14 +24,19 @@ object QuickDecodeDialog {
             .setCancelable(false)
             .create()
 
-        // 🔹 PASTE BUTTON
+        // 🔥 PREFILL
+        if (prefill.startsWith("AES256::")) {
+            input.setText(prefill)
+        }
+
+        // 🔹 PASTE
         btnPaste.setOnClickListener {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val text = clipboard.primaryClip?.getItemAt(0)?.text?.toString() ?: ""
             input.setText(text)
         }
 
-        // 🔹 DECODE BUTTON
+        // 🔹 DECODE
         btnDecode.setOnClickListener {
 
             val text = input.text.toString()
@@ -46,26 +49,16 @@ object QuickDecodeDialog {
             try {
                 val decoded = TextCrypto.decrypt(text, "ramcryptr_secret")
                 output.text = decoded
-                input.setText("")   // clear for next use
+                input.setText("")
             } catch (e: Exception) {
                 output.text = "Decode failed"
             }
         }
 
-        // 🔹 CLOSE BUTTON
+        // 🔹 CLOSE
         btnClose.setOnClickListener {
             dialog.dismiss()
         }
-
-        // 🔥 AUTO-FILL (smart UX)
-        try {
-            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val text = clipboard.primaryClip?.getItemAt(0)?.text?.toString() ?: ""
-
-            if (text.startsWith("AES256::")) {
-                input.setText(text)
-            }
-        } catch (_: Exception) {}
 
         dialog.show()
     }

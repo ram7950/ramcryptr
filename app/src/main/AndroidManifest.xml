@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rambo.ramcryptr">
 
+    <!-- Overlay permission (Bubble ke liye) -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
     <application
         android:allowBackup="true"
         android:label="RAMcryptr"
@@ -21,11 +24,13 @@
 
         <!-- MAIN -->
         <activity android:name=".MainActivity" android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
+            <!-- Open file -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -33,21 +38,32 @@
                 <data android:mimeType="*/*"/>
             </intent-filter>
 
+            <!-- Share file -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="*/*"/>
             </intent-filter>
+
         </activity>
 
+        <!-- 🔐 File Encrypt / Decrypt -->
         <activity android:name=".FileEncryptActivity" android:exported="true"/>
         <activity android:name=".FileDecryptActivity" android:exported="true"/>
 
-        <!-- 🔥 TEXT MENU FIX -->
+        <!-- 🧠 Quick Decode Activity (Bubble trigger) -->
         <activity
-            android:name=".EncodeProcessTextActivity"
+            android:name=".QuickDecodeActivity"
             android:exported="true"
-            android:label="🔐 Encode">
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+
+        <!-- 🫧 Floating Bubble Service -->
+        <service
+            android:name=".BubbleService"
+            android:exported="false"/>
+
+        <!-- 📋 TEXT SELECTION MENU -->
+        <activity android:name=".EncodeProcessTextActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -55,10 +71,7 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".DecodeProcessTextActivity"
-            android:exported="true"
-            android:label="🔓 Decode">
+        <activity android:name=".DecodeProcessTextActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -67,4 +80,5 @@
         </activity>
 
     </application>
+
 </manifest>
