@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         val encodeBtn = findViewById<Button>(R.id.btnEncode)
         val decodeBtn = findViewById<Button>(R.id.btnDecode)
 
+        // TEXT ENCODE
         encodeBtn.setOnClickListener {
             val text = input.text.toString()
             if (text.isEmpty()) {
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
             input.setText(TextCrypto.encrypt(text, "ramcryptr_secret"))
         }
 
+        // TEXT DECODE
         decodeBtn.setOnClickListener {
             val text = input.text.toString()
             if (text.isEmpty()) {
@@ -42,6 +44,7 @@ class MainActivity : AppCompatActivity() {
             input.setText(TextCrypto.decrypt(text, "ramcryptr_secret"))
         }
 
+        // LONG PRESS
         encodeBtn.setOnLongClickListener {
             pickFile(PICK_ENCODE_FILE)
             true
@@ -63,13 +66,13 @@ class MainActivity : AppCompatActivity() {
 
         when (intent.action) {
 
-            // 🔐 SHARE → ENCODE
+            // FILE SHARE → ENCODE
             Intent.ACTION_SEND -> {
                 val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
                 uri?.let { showEncodeDialog(it) }
             }
 
-            // 🔓 OPEN → DECODE
+            // FILE OPEN → DECODE
             Intent.ACTION_VIEW -> {
                 val uri = intent.data
                 uri?.let { showDecodeDialog(it) }
@@ -77,33 +80,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // 🔐 ENCODE FILE
     private fun showEncodeDialog(uri: Uri) {
         AlertDialog.Builder(this)
             .setTitle("Encode File")
             .setMessage("Do you want to encode this file?")
             .setPositiveButton("Encode") { _, _ ->
 
-                val intent = Intent(this, ShareEncodeActivity::class.java)
-                intent.putExtra(Intent.EXTRA_STREAM, uri)
-                intent.type = "*/*"
-                startActivity(intent)
+                val intent = Intent(this, FileEncryptActivity::class.java)
+                intent.setData(uri)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
+                startActivity(intent)
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
+    // 🔓 DECODE FILE
     private fun showDecodeDialog(uri: Uri) {
         AlertDialog.Builder(this)
             .setTitle("Decode File")
             .setMessage("Encoded file detected. Decode it?")
             .setPositiveButton("Decode") { _, _ ->
 
-                val intent = Intent(this, ShareDecodeActivity::class.java)
+                val intent = Intent(this, FileDecryptActivity::class.java)
                 intent.setData(uri)
-                intent.type = "*/*"
-                startActivity(intent)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
+                startActivity(intent)
             }
             .setNegativeButton("Cancel", null)
             .show()
