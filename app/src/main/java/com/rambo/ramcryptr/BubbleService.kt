@@ -1,45 +1,35 @@
 package com.rambo.ramcryptr
 
 import android.app.Service
-import android.content.*
+import android.content.Intent
 import android.graphics.PixelFormat
+import android.os.Build
 import android.os.IBinder
 import android.view.*
 import android.widget.ImageView
-import android.os.Handler
-import android.os.Looper
 
 class BubbleService : Service() {
 
     private lateinit var windowManager: WindowManager
     private lateinit var bubbleView: View
-    private lateinit var clipboard: ClipboardManager
 
-    private val handler = Handler(Looper.getMainLooper())
-
-    private var lastText: String = ""
-    private var lastShownTime: Long = 0
+    override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
 
-        clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-
-        initBubble()
-        startClipboardListener()
-    }
-
-    // ---------------- BUBBLE UI ----------------
-
-    private fun initBubble() {
+        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
 
         bubbleView = LayoutInflater.from(this)
             .inflate(R.layout.bubble_layout, null)
 
         val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            150,
+            150,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            else
+                WindowManager.LayoutParams.TYPE_PHONE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
         )
@@ -48,111 +38,65 @@ class BubbleService : Service() {
         params.x = 0
         params.y = 300
 
-        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         windowManager.addView(bubbleView, params)
 
-        val bubble = bubbleView.findViewById<ImageView>(R.id.bubble_icon)
+        val bubbleIcon = bubbleView.findViewById<ImageView>(R.id.bubble_icon)
 
-        // 🔹 Drag
-        bubble.setOnTouchListener(object : View.OnTouchListener {
+        // 🔥 DRAG + CLICK HANDLER
+        bubbleIcon.setOnTouchListener(object : View.OnTouchListener {
 
             private var initialX = 0
             private var initialY = 0
-            private var touchX = 0f
-            private var touchY = 0f
+            private var initialTouchX = 0f
+            private var initialTouchY = 0f
+            private var isClick = true
 
-            override fun onTouch(v: View?, event: MotionEvent): Boolean {
+            override fun onTouch(v: View, event: MotionEvent): Boolean {
 
                 when (event.action) {
 
                     MotionEvent.ACTION_DOWN -> {
                         initialX = params.x
                         initialY = params.y
-                        touchX = event.rawX
-                        touchY = event.rawY
+                        initialTouchX = event.rawX
+                        initialTouchY = event.rawY
+                        isClick = true
                         return true
                     }
 
                     MotionEvent.ACTION_MOVE -> {
-                        params.x = initialX + (event.rawX - touchX).toInt()
-                        params.y = initialY + (event.rawY - touchY).toInt()
+                        val dx = event.rawX - initialTouchX
+                        val dy = event.rawY - initialTouchY
+
+                        if (dx > 10 || dy > 10) isClick = false
+
+                        params.x = initialX + dx.toInt()
+                        params.y = initialY + dy.toInt()
+
                         windowManager.updateViewLayout(bubbleView, params)
+                        return true
+                    }
+
+                    MotionEvent.ACTION_UP -> {
+                        if (isClick) {
+                            // 🔥 OPEN QUICK DECODE POPUP
+                            QuickDecodeDialog.showWithPrefill(
+                                applicationContext,
+                                ""
+                            )
+                        }
                         return true
                     }
                 }
                 return false
             }
         })
-
-        // 🔹 Click = manual open
-        bubble.setOnClickListener {
-            openQuickDecode("")
-        }
     }
-
-    // ---------------- CLIPBOARD LISTENER ----------------
-
-    private fun startClipboardListener() {
-
-        clipboard.addPrimaryClipChangedListener {
-
-            handler.post {
-                handleClipboard()
-            }
-        }
-    }
-
-    private fun handleClipboard() {
-
-        try {
-            val clip = clipboard.primaryClip ?: return
-            if (clip.itemCount == 0) return
-
-            val text = clip.getItemAt(0).text?.toString() ?: return
-
-            // 🔥 FILTER 1: empty / small junk
-            if (text.length < 10) return
-
-            // 🔥 FILTER 2: duplicate ignore
-            if (text == lastText) return
-
-            lastText = text
-
-            // 🔥 FILTER 3: time gap (avoid spam)
-            val now = System.currentTimeMillis()
-            if (now - lastShownTime < 3000) return
-
-            // 🔐 MAIN CHECK
-            if (text.startsWith("AES256::")) {
-
-                lastShownTime = now
-
-                openQuickDecode(text)
-            }
-
-        } catch (e: Exception) {
-            // crash safe
-        }
-    }
-
-    // ---------------- OPEN DIALOG ----------------
-
-    private fun openQuickDecode(text: String) {
-
-        val intent = Intent(this, QuickDecodeActivity::class.java)
-        intent.putExtra("data", text)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
-    }
-
-    // ---------------- CLEANUP ----------------
 
     override fun onDestroy() {
         super.onDestroy()
-        try {
+        if (::bubbleView.isInitialized) {
             windowManager.removeView(bubbleView)
-        } catch (_: Exception) {}
+        }
     }
-
-    override fun onBind(intent: Intent?): IBinder? = null
 }

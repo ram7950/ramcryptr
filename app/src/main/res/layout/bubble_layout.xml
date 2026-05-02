@@ -4,4 +4,5 @@
     android:layout_width="60dp"
     android:layout_height="60dp"
     android:src="@android:drawable/ic_dialog_info"
-    android:background="@android:color/holo_blue_light"/>
+    android:background="@android:color/holo_blue_light"
+    android:padding="10dp"/>

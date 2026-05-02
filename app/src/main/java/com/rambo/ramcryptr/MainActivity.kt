@@ -3,6 +3,7 @@ package com.rambo.ramcryptr
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -17,6 +18,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // 🔥 Overlay permission
+        if (!Settings.canDrawOverlays(this)) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            startActivity(intent)
+        }
+
+        // 🔥 Start bubble service
+        startService(Intent(this, BubbleService::class.java))
 
         handleIncomingIntent(intent)
 
@@ -34,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             input.setText(TextCrypto.encrypt(text, "ramcryptr_secret"))
         }
 
-        // ✅ FIXED TEXT DECODE (NO CRASH)
+        // TEXT DECODE (CRASH SAFE)
         decodeBtn.setOnClickListener {
 
             val text = input.text.toString()
