@@ -4,9 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
@@ -19,23 +17,30 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 🔥 Overlay permission
-        if (!Settings.canDrawOverlays(this)) {
-            val intent = Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
-            )
-            startActivity(intent)
-        }
-
-        // 🔥 Start bubble service
-        startService(Intent(this, BubbleService::class.java))
-
-        handleIncomingIntent(intent)
-
         val input = findViewById<EditText>(R.id.editText)
         val encodeBtn = findViewById<Button>(R.id.btnEncode)
         val decodeBtn = findViewById<Button>(R.id.btnDecode)
+
+        // 🔥 NEW: Bubble toggle button (TEMP)
+        val bubbleBtn = Button(this)
+        bubbleBtn.text = "Enable Bubble"
+        (input.parent as LinearLayout).addView(bubbleBtn)
+
+        bubbleBtn.setOnClickListener {
+
+            if (!Settings.canDrawOverlays(this)) {
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                )
+                startActivity(intent)
+            } else {
+                startService(Intent(this, BubbleService::class.java))
+                Toast.makeText(this, "Bubble started", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        handleIncomingIntent(intent)
 
         // TEXT ENCODE
         encodeBtn.setOnClickListener {
@@ -47,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             input.setText(TextCrypto.encrypt(text, "ramcryptr_secret"))
         }
 
-        // TEXT DECODE (CRASH SAFE)
+        // TEXT DECODE
         decodeBtn.setOnClickListener {
 
             val text = input.text.toString()
@@ -69,7 +74,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // FILE PICKER
         encodeBtn.setOnLongClickListener {
             pickFile(PICK_ENCODE_FILE)
             true

@@ -42,55 +42,12 @@ class BubbleService : Service() {
 
         val bubbleIcon = bubbleView.findViewById<ImageView>(R.id.bubble_icon)
 
-        // 🔥 DRAG + CLICK HANDLER
-        bubbleIcon.setOnTouchListener(object : View.OnTouchListener {
-
-            private var initialX = 0
-            private var initialY = 0
-            private var initialTouchX = 0f
-            private var initialTouchY = 0f
-            private var isClick = true
-
-            override fun onTouch(v: View, event: MotionEvent): Boolean {
-
-                when (event.action) {
-
-                    MotionEvent.ACTION_DOWN -> {
-                        initialX = params.x
-                        initialY = params.y
-                        initialTouchX = event.rawX
-                        initialTouchY = event.rawY
-                        isClick = true
-                        return true
-                    }
-
-                    MotionEvent.ACTION_MOVE -> {
-                        val dx = event.rawX - initialTouchX
-                        val dy = event.rawY - initialTouchY
-
-                        if (dx > 10 || dy > 10) isClick = false
-
-                        params.x = initialX + dx.toInt()
-                        params.y = initialY + dy.toInt()
-
-                        windowManager.updateViewLayout(bubbleView, params)
-                        return true
-                    }
-
-                    MotionEvent.ACTION_UP -> {
-                        if (isClick) {
-                            // 🔥 OPEN QUICK DECODE POPUP
-                            QuickDecodeDialog.showWithPrefill(
-                                applicationContext,
-                                ""
-                            )
-                        }
-                        return true
-                    }
-                }
-                return false
-            }
-        })
+        // 🔥 CLICK → OPEN ACTIVITY
+        bubbleIcon.setOnClickListener {
+            val intent = Intent(this, QuickDecodeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
     }
 
     override fun onDestroy() {

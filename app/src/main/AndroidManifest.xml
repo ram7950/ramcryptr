@@ -10,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
+        <!-- FileProvider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.rambo.ramcryptr.provider"
@@ -20,6 +21,7 @@
                 android:resource="@xml/file_paths"/>
         </provider>
 
+        <!-- MAIN -->
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -40,19 +42,23 @@
             </intent-filter>
         </activity>
 
+        <!-- FILE -->
         <activity android:name=".FileEncryptActivity" android:exported="true"/>
         <activity android:name=".FileDecryptActivity" android:exported="true"/>
 
+        <!-- QUICK DECODE -->
         <activity
             android:name=".QuickDecodeActivity"
             android:exported="true"
+            android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
+        <!-- BUBBLE -->
         <service
             android:name=".BubbleService"
             android:exported="false"/>
 
-        <!-- ✅ FIXED LABELS -->
+        <!-- TEXT MENU -->
         <activity
             android:name=".EncodeProcessTextActivity"
             android:exported="true"
