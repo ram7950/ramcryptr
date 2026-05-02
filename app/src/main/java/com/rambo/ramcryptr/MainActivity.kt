@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 🔥 HANDLE INCOMING INTENT
         handleIncomingIntent(intent)
 
         val input = findViewById<EditText>(R.id.editText)
@@ -73,7 +72,7 @@ class MainActivity : AppCompatActivity() {
                 uri?.let { showEncodeDialog(it) }
             }
 
-            // 🔓 OPEN FILE → DECODE
+            // 🔓 OPEN → DECODE
             Intent.ACTION_VIEW -> {
                 val uri = intent.data
                 uri?.let { showDecodeDialog(it) }
@@ -81,23 +80,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // 🔐 ENCODE DIALOG → REAL ACTIVITY
     private fun showEncodeDialog(uri: Uri) {
         AlertDialog.Builder(this)
             .setTitle("Encode File")
             .setMessage("Do you want to encode this file?")
             .setPositiveButton("Encode") { _, _ ->
-                Toast.makeText(this, "Encoding started...", Toast.LENGTH_SHORT).show()
+
+                val intent = Intent(this, FileEncryptActivity::class.java)
+                intent.setData(uri)
+                startActivity(intent)
+
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
+    // 🔓 DECODE DIALOG → REAL ACTIVITY
     private fun showDecodeDialog(uri: Uri) {
         AlertDialog.Builder(this)
             .setTitle("Decode File")
             .setMessage("Encoded file detected. Decode it?")
             .setPositiveButton("Decode") { _, _ ->
-                Toast.makeText(this, "Decoding started...", Toast.LENGTH_SHORT).show()
+
+                val intent = Intent(this, FileDecryptActivity::class.java)
+                intent.setData(uri)
+                startActivity(intent)
+
             }
             .setNegativeButton("Cancel", null)
             .show()
