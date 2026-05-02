@@ -3,61 +3,29 @@ package com.rambo.ramcryptr
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.rambo.ramcryptr.encoding.AES256Encoder
 
-class EncodeProcessTextActivity :
-AppCompatActivity() {
+class EncodeProcessTextActivity : Activity() {
 
-private val key=
-"12345678901234567890123456789012"
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-override fun onCreate(
-savedInstanceState:Bundle?
-){
-super.onCreate(
-savedInstanceState
-)
+        val text = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString() ?: ""
 
-val selected=
-intent.getCharSequenceExtra(
-Intent.EXTRA_PROCESS_TEXT
-)?.toString() ?: ""
+        if (text.isBlank()) {
+            finish()
+            return
+        }
 
-if(
-selected.startsWith(
-"AES256::"
-)
-){
+        val result = try {
+            TextCrypto.encrypt(text, "ramcryptr_secret")
+        } catch (e: Exception) {
+            text
+        }
 
-setResult(
-Activity.RESULT_OK,
-Intent().putExtra(
-Intent.EXTRA_PROCESS_TEXT,
-selected
-)
-)
+        val intent = Intent()
+        intent.putExtra(Intent.EXTRA_PROCESS_TEXT, result)
+        setResult(Activity.RESULT_OK, intent)
 
-finish()
-return
-}
-
-val encoded=
-AES256Encoder.encryptText(
-selected,
-key
-)
-
-setResult(
-Activity.RESULT_OK,
-Intent().putExtra(
-Intent.EXTRA_PROCESS_TEXT,
-encoded
-)
-)
-
-finish()
-
-}
-
+        finish()
+    }
 }
