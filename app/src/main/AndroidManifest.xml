@@ -43,8 +43,11 @@
         <activity android:name=".FileEncryptActivity" android:exported="true"/>
         <activity android:name=".FileDecryptActivity" android:exported="true"/>
 
-        <!-- TEXT MENU -->
-        <activity android:name=".EncodeProcessTextActivity" android:exported="true">
+        <!-- 🔥 TEXT MENU FIX -->
+        <activity
+            android:name=".EncodeProcessTextActivity"
+            android:exported="true"
+            android:label="🔐 Encode">
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -52,7 +55,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".DecodeProcessTextActivity" android:exported="true">
+        <activity
+            android:name=".DecodeProcessTextActivity"
+            android:exported="true"
+            android:label="🔓 Decode">
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT"/>
                 <category android:name="android.intent.category.DEFAULT"/>
