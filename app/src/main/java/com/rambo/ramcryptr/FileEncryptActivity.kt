@@ -10,33 +10,14 @@ import java.io.File
 
 class FileEncryptActivity : AppCompatActivity() {
 
-    private val PICK_FILE = 101
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
-            ?: intent.data
-
+        val uri = intent.data
         if (uri != null) {
             encryptUri(uri)
         } else {
-            pickFile()
-        }
-    }
-
-    private fun pickFile() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "*/*"
-        startActivityForResult(intent, PICK_FILE)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == PICK_FILE && resultCode == Activity.RESULT_OK) {
-            val uri = data?.data ?: return
-            encryptUri(uri)
+            finish()
         }
     }
 
@@ -51,7 +32,11 @@ class FileEncryptActivity : AppCompatActivity() {
                 }
             }
 
-            val outFile = File(cacheDir, "enc_${System.currentTimeMillis()}.ram")
+            // ✅ FINAL EXTENSION FIX
+            val outFile = File(
+                cacheDir,
+                "enc_${System.currentTimeMillis()}.ram.bin"
+            )
 
             val ext = uri.lastPathSegment?.substringAfterLast('.', "tmp") ?: "tmp"
             val mime = contentResolver.getType(uri) ?: "*/*"
@@ -61,11 +46,12 @@ class FileEncryptActivity : AppCompatActivity() {
             val send = Intent(Intent.ACTION_SEND)
             send.type = "*/*"
 
-            val fileUri = androidx.core.content.FileProvider.getUriForFile(
-                this,
-                packageName + ".provider",
-                outFile
-            )
+            val fileUri =
+                androidx.core.content.FileProvider.getUriForFile(
+                    this,
+                    packageName + ".provider",
+                    outFile
+                )
 
             send.putExtra(Intent.EXTRA_STREAM, fileUri)
             send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
