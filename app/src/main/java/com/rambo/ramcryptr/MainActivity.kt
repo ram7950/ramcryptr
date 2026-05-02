@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -16,6 +17,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // 🔥 HANDLE INCOMING INTENT
+        handleIncomingIntent(intent)
 
         val input = findViewById<EditText>(R.id.editText)
         val encodeBtn = findViewById<Button>(R.id.btnEncode)
@@ -41,17 +45,62 @@ class MainActivity : AppCompatActivity() {
             input.setText(TextCrypto.decrypt(text, "ramcryptr_secret"))
         }
 
-        // LONG PRESS ENCODE → reuse SHARE flow
+        // LONG PRESS
         encodeBtn.setOnLongClickListener {
             pickFile(PICK_ENCODE_FILE)
             true
         }
 
-        // LONG PRESS DECODE → reuse OPEN flow
         decodeBtn.setOnLongClickListener {
             pickFile(PICK_DECODE_FILE)
             true
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleIncomingIntent(intent)
+    }
+
+    private fun handleIncomingIntent(intent: Intent?) {
+        if (intent == null) return
+
+        when (intent.action) {
+
+            // 🔐 SHARE → ENCODE
+            Intent.ACTION_SEND -> {
+                val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+                uri?.let { showEncodeDialog(it) }
+            }
+
+            // 🔓 OPEN FILE → DECODE
+            Intent.ACTION_VIEW -> {
+                val uri = intent.data
+                uri?.let { showDecodeDialog(it) }
+            }
+        }
+    }
+
+    private fun showEncodeDialog(uri: Uri) {
+        AlertDialog.Builder(this)
+            .setTitle("Encode File")
+            .setMessage("Do you want to encode this file?")
+            .setPositiveButton("Encode") { _, _ ->
+                Toast.makeText(this, "Encoding started...", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showDecodeDialog(uri: Uri) {
+        AlertDialog.Builder(this)
+            .setTitle("Decode File")
+            .setMessage("Encoded file detected. Decode it?")
+            .setPositiveButton("Decode") { _, _ ->
+                Toast.makeText(this, "Decoding started...", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun pickFile(code: Int) {
@@ -65,26 +114,11 @@ class MainActivity : AppCompatActivity() {
 
         if (resultCode != RESULT_OK || data == null) return
 
-        val uri: Uri = data.data ?: return
+        val uri = data.data ?: return
 
         when (requestCode) {
-
-            // 🔐 ENCODE → trigger SHARE (existing pipeline)
-            PICK_ENCODE_FILE -> {
-                val intent = Intent(Intent.ACTION_SEND)
-                intent.type = "*/*"
-                intent.putExtra(Intent.EXTRA_STREAM, uri)
-                intent.setPackage(packageName)
-                startActivity(intent)
-            }
-
-            // 🔓 DECODE → trigger VIEW (existing pipeline)
-            PICK_DECODE_FILE -> {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(uri, "*/*")
-                intent.setPackage(packageName)
-                startActivity(intent)
-            }
+            PICK_ENCODE_FILE -> showEncodeDialog(uri)
+            PICK_DECODE_FILE -> showDecodeDialog(uri)
         }
     }
 }
