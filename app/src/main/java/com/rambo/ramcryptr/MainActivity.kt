@@ -18,12 +18,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // 🔥 TEST MODE (REMOVE LATER)
+        QuickDecodeDialog.show(this)
+
         handleIncomingIntent(intent)
 
         val input = findViewById<EditText>(R.id.editText)
         val encodeBtn = findViewById<Button>(R.id.btnEncode)
         val decodeBtn = findViewById<Button>(R.id.btnDecode)
 
+        // TEXT ENCODE
         encodeBtn.setOnClickListener {
             val text = input.text.toString()
             if (text.isEmpty()) {
@@ -33,6 +37,7 @@ class MainActivity : AppCompatActivity() {
             input.setText(TextCrypto.encrypt(text, "ramcryptr_secret"))
         }
 
+        // TEXT DECODE
         decodeBtn.setOnClickListener {
             val text = input.text.toString()
             if (text.isEmpty()) {
@@ -42,6 +47,7 @@ class MainActivity : AppCompatActivity() {
             input.setText(TextCrypto.decrypt(text, "ramcryptr_secret"))
         }
 
+        // LONG PRESS (FILE PICKER)
         encodeBtn.setOnLongClickListener {
             pickFile(PICK_ENCODE_FILE)
             true
@@ -63,11 +69,13 @@ class MainActivity : AppCompatActivity() {
 
         when (intent.action) {
 
+            // SHARE → ENCODE
             Intent.ACTION_SEND -> {
                 val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
                 uri?.let { showEncodeDialog(it) }
             }
 
+            // OPEN → DECODE
             Intent.ACTION_VIEW -> {
                 val uri = intent.data
                 uri?.let { showDecodeDialog(it) }
@@ -111,6 +119,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (resultCode != RESULT_OK || data == null) return
 
         val uri = data.data ?: return
