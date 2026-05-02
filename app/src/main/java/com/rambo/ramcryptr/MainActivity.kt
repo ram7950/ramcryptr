@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         val encodeBtn = findViewById<Button>(R.id.btnEncode)
         val decodeBtn = findViewById<Button>(R.id.btnDecode)
 
-        // TEXT ENCODE
         encodeBtn.setOnClickListener {
             val text = input.text.toString()
             if (text.isEmpty()) {
@@ -34,7 +33,6 @@ class MainActivity : AppCompatActivity() {
             input.setText(TextCrypto.encrypt(text, "ramcryptr_secret"))
         }
 
-        // TEXT DECODE
         decodeBtn.setOnClickListener {
             val text = input.text.toString()
             if (text.isEmpty()) {
@@ -44,7 +42,6 @@ class MainActivity : AppCompatActivity() {
             input.setText(TextCrypto.decrypt(text, "ramcryptr_secret"))
         }
 
-        // LONG PRESS
         encodeBtn.setOnLongClickListener {
             pickFile(PICK_ENCODE_FILE)
             true
@@ -80,43 +77,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 🔐 ENCODE
     private fun showEncodeDialog(uri: Uri) {
         AlertDialog.Builder(this)
             .setTitle("Encode File")
             .setMessage("Do you want to encode this file?")
             .setPositiveButton("Encode") { _, _ ->
 
-                val intent = Intent(this, FileEncryptActivity::class.java)
-
-                // 🔥 FIX: pass URI both ways
-                intent.setData(uri)
+                val intent = Intent(this, ShareEncodeActivity::class.java)
                 intent.putExtra(Intent.EXTRA_STREAM, uri)
-
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
+                intent.type = "*/*"
                 startActivity(intent)
+
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
-    // 🔓 DECODE
     private fun showDecodeDialog(uri: Uri) {
         AlertDialog.Builder(this)
             .setTitle("Decode File")
             .setMessage("Encoded file detected. Decode it?")
             .setPositiveButton("Decode") { _, _ ->
 
-                val intent = Intent(this, FileDecryptActivity::class.java)
-
-                // 🔥 FIX: pass URI both ways
+                val intent = Intent(this, ShareDecodeActivity::class.java)
                 intent.setData(uri)
-                intent.putExtra(Intent.EXTRA_STREAM, uri)
-
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
+                intent.type = "*/*"
                 startActivity(intent)
+
             }
             .setNegativeButton("Cancel", null)
             .show()
