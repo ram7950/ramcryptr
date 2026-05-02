@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 🔐 ENCODE DIALOG → REAL ACTIVITY
+    // 🔐 ENCODE
     private fun showEncodeDialog(uri: Uri) {
         AlertDialog.Builder(this)
             .setTitle("Encode File")
@@ -88,15 +88,20 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("Encode") { _, _ ->
 
                 val intent = Intent(this, FileEncryptActivity::class.java)
-                intent.setData(uri)
-                startActivity(intent)
 
+                // 🔥 FIX: pass URI both ways
+                intent.setData(uri)
+                intent.putExtra(Intent.EXTRA_STREAM, uri)
+
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                startActivity(intent)
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
-    // 🔓 DECODE DIALOG → REAL ACTIVITY
+    // 🔓 DECODE
     private fun showDecodeDialog(uri: Uri) {
         AlertDialog.Builder(this)
             .setTitle("Decode File")
@@ -104,9 +109,14 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("Decode") { _, _ ->
 
                 val intent = Intent(this, FileDecryptActivity::class.java)
-                intent.setData(uri)
-                startActivity(intent)
 
+                // 🔥 FIX: pass URI both ways
+                intent.setData(uri)
+                intent.putExtra(Intent.EXTRA_STREAM, uri)
+
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                startActivity(intent)
             }
             .setNegativeButton("Cancel", null)
             .show()
