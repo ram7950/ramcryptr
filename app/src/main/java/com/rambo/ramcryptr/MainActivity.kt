@@ -20,8 +20,9 @@ class MainActivity : AppCompatActivity() {
         val input = findViewById<EditText>(R.id.editText)
         val encodeBtn = findViewById<Button>(R.id.btnEncode)
         val decodeBtn = findViewById<Button>(R.id.btnDecode)
+        val repoBtn = findViewById<Button>(R.id.btnRepo)
 
-        // 🔐 TEXT ENCODE
+        // TEXT ENCODE
         encodeBtn.setOnClickListener {
             val text = input.text.toString()
             if (text.isEmpty()) {
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             input.setText(result)
         }
 
-        // 🔓 TEXT DECODE
+        // TEXT DECODE
         decodeBtn.setOnClickListener {
             val text = input.text.toString()
             if (text.isEmpty()) {
@@ -45,16 +46,21 @@ class MainActivity : AppCompatActivity() {
             input.setText(result)
         }
 
-        // 📂 LONG PRESS ENCODE → same as share
+        // LONG PRESS ENCODE
         encodeBtn.setOnLongClickListener {
             pickFile(PICK_ENCODE_FILE)
             true
         }
 
-        // 📂 LONG PRESS DECODE → same as open
+        // LONG PRESS DECODE
         decodeBtn.setOnLongClickListener {
             pickFile(PICK_DECODE_FILE)
             true
+        }
+
+        // REPO BUTTON
+        repoBtn.setOnClickListener {
+            openRepo()
         }
     }
 
@@ -73,7 +79,6 @@ class MainActivity : AppCompatActivity() {
 
         when (requestCode) {
 
-            // 🔐 ENCODE → simulate share
             PICK_ENCODE_FILE -> {
                 val intent = Intent(Intent.ACTION_SEND)
                 intent.type = "*/*"
@@ -82,13 +87,29 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
-            // 🔓 DECODE → simulate open file
             PICK_DECODE_FILE -> {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.setDataAndType(uri, "*/*")
                 intent.setPackage(packageName)
                 startActivity(intent)
             }
+        }
+    }
+
+    private fun openRepo() {
+        try {
+            val folder = RepoManager.getRoot()
+
+            val intent = Intent(Intent.ACTION_VIEW)
+            val uri = Uri.fromFile(folder)
+
+            intent.setDataAndType(uri, "resource/folder")
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+            startActivity(intent)
+
+        } catch (e: Exception) {
+            Toast.makeText(this, "Unable to open repository", Toast.LENGTH_SHORT).show()
         }
     }
 }
