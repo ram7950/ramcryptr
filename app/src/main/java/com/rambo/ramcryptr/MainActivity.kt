@@ -18,8 +18,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 🔥 TEST MODE (REMOVE LATER)
-        QuickDecodeDialog.show(this)
+        // ❌ TEST LINE REMOVED (IMPORTANT FIX)
 
         handleIncomingIntent(intent)
 
