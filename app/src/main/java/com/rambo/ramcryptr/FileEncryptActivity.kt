@@ -14,7 +14,14 @@ class FileEncryptActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pickFile()
+
+        val uri = intent.data
+
+        if (uri != null) {
+            encryptUri(uri)
+        } else {
+            pickFile()
+        }
     }
 
     private fun pickFile() {
@@ -61,7 +68,6 @@ class FileEncryptActivity : AppCompatActivity() {
 
             val mime = contentResolver.getType(uri) ?: "*/*"
 
-            // 🔥 FIXED CALL
             FileCryptoManager.encryptFile(
                 input,
                 outFile,

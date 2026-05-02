@@ -9,121 +9,118 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 
-class FileDecryptActivity :
-AppCompatActivity(){
+class FileDecryptActivity : AppCompatActivity() {
 
-private val PICK_FILE=202
+    private val PICK_FILE = 202
 
-override fun onCreate(savedInstanceState:Bundle?){
-super.onCreate(savedInstanceState)
-pickFile()
-}
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-private fun pickFile(){
+        val uri = intent.data
 
-val i=Intent(Intent.ACTION_GET_CONTENT)
-i.type="*/*"
+        if (uri != null) {
+            decryptUri(uri)
+        } else {
+            pickFile()
+        }
+    }
 
-startActivityForResult(
-Intent.createChooser(i,"Select Encrypted File"),
-PICK_FILE
-)
+    private fun pickFile() {
 
-}
+        val i = Intent(Intent.ACTION_GET_CONTENT)
+        i.type = "*/*"
 
-override fun onActivityResult(
-requestCode:Int,
-resultCode:Int,
-data:Intent?
-){
+        startActivityForResult(
+            Intent.createChooser(i, "Select Encrypted File"),
+            PICK_FILE
+        )
+    }
 
-super.onActivityResult(requestCode,resultCode,data)
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
 
-if(requestCode==PICK_FILE && resultCode==Activity.RESULT_OK){
-data?.data?.let{
-decryptUri(it)
-}
-}
+        super.onActivityResult(requestCode, resultCode, data)
 
-}
+        if (requestCode == PICK_FILE && resultCode == Activity.RESULT_OK) {
+            data?.data?.let {
+                decryptUri(it)
+            }
+        }
+    }
 
-private fun decryptUri(uri:Uri){
+    private fun decryptUri(uri: Uri) {
 
-try{
+        try {
 
-val enc=File(cacheDir,"temp_encrypted")
+            val enc = File(cacheDir, "temp_encrypted")
 
-contentResolver.openInputStream(uri)?.use{ins->
-enc.outputStream().use{outs->
-ins.copyTo(outs)
-}
-}
+            contentResolver.openInputStream(uri)?.use { ins ->
+                enc.outputStream().use { outs ->
+                    ins.copyTo(outs)
+                }
+            }
 
-val tempDec=File(cacheDir,"temp_decoded")
+            val tempDec = File(cacheDir, "temp_decoded")
 
-val result = FileCryptoManager.decryptFile(enc,tempDec)
+            val result = FileCryptoManager.decryptFile(enc, tempDec)
 
-val ext=result.first
-val mime=result.second
+            val ext = result.first
+            val mime = result.second
 
-val finalFile=File(
-cacheDir,
-"dec_${System.currentTimeMillis()}.$ext"
-)
+            val finalFile = File(
+                cacheDir,
+                "dec_${System.currentTimeMillis()}.$ext"
+            )
 
-tempDec.renameTo(finalFile)
+            tempDec.renameTo(finalFile)
 
-showPreviewOptions(finalFile,mime)
+            showPreviewOptions(finalFile, mime)
 
-}catch(e:Exception){
+        } catch (e: Exception) {
 
-Toast.makeText(this,"Decode failed",Toast.LENGTH_LONG).show()
-finish()
+            Toast.makeText(this, "Decode failed", Toast.LENGTH_LONG).show()
+            finish()
 
-}
+        }
+    }
 
-}
+    private fun showPreviewOptions(file: File, mime: String) {
 
-private fun showPreviewOptions(file:File,mime:String){
+        val fileUri = androidx.core.content.FileProvider.getUriForFile(
+            this,
+            packageName + ".provider",
+            file
+        )
 
-val fileUri = androidx.core.content.FileProvider.getUriForFile(
-this,
-packageName+".provider",
-file
-)
+        AlertDialog.Builder(this)
+            .setTitle("Preview Ready")
+            .setMessage("What do you want to do?")
+            .setPositiveButton("Open") { _, _ ->
 
-val dialog=AlertDialog.Builder(this)
-.setTitle("Preview Ready")
-.setMessage("What do you want to do?")
-.setPositiveButton("Open"){_,_->
+                val open = Intent(Intent.ACTION_VIEW)
+                open.setDataAndType(fileUri, mime)
+                open.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-val open=Intent(Intent.ACTION_VIEW)
-open.setDataAndType(fileUri,mime)
-open.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                startActivity(open)
 
-startActivity(open)
+            }
+            .setNeutralButton("Save") { _, _ ->
 
-}
-.setNeutralButton("Save"){_,_->
+                SecureVaultManager.saveFile(this, file, mime)
 
-val saved=SecureVaultManager.saveFile(this,file,mime)
+                Toast.makeText(
+                    this,
+                    "Saved to vault",
+                    Toast.LENGTH_LONG
+                ).show()
 
-Toast.makeText(
-this,
-"Saved to vault",
-Toast.LENGTH_LONG
-).show()
-
-}
-.setNegativeButton("Dismiss"){_,_->
-
-finish()
-
-}
-.create()
-
-dialog.show()
-
-}
-
+            }
+            .setNegativeButton("Dismiss") { _, _ ->
+                finish()
+            }
+            .show()
+    }
 }
