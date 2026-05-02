@@ -3,6 +3,7 @@ package com.rambo.ramcryptr
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 
 class DecodeProcessTextActivity : Activity() {
 
@@ -16,12 +17,16 @@ class DecodeProcessTextActivity : Activity() {
             return
         }
 
+        // ✅ NORMAL TEXT → NO REPLACE, ONLY TOAST
+        if (!text.startsWith("AES256::")) {
+            Toast.makeText(this, "Paglu 😏 encode nahi decode dabao", Toast.LENGTH_SHORT).show()
+            setResult(Activity.RESULT_CANCELED)
+            finish()
+            return
+        }
+
         val result = try {
-            if (text.startsWith("AES256::")) {
-                TextCrypto.decrypt(text, "ramcryptr_secret")
-            } else {
-                "Paglu 😏 ye encrypted nahi hai"
-            }
+            TextCrypto.decrypt(text, "ramcryptr_secret")
         } catch (e: Exception) {
             "Decode failed"
         }
