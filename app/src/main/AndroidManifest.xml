@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rambo.ramcryptr">
 
-    <!-- 🔥 NEW: Notification permission -->
+    <!-- 🔔 Notification permission -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
-    <!-- Existing -->
+    <!-- Optional (future overlay) -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
@@ -14,6 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
+        <!-- FileProvider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.rambo.ramcryptr.provider"
@@ -24,6 +25,7 @@
                 android:resource="@xml/file_paths"/>
         </provider>
 
+        <!-- MAIN -->
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -44,21 +46,25 @@
             </intent-filter>
         </activity>
 
+        <!-- 🆕 MINI TOOL POPUP -->
+        <activity
+            android:name=".MiniToolActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.Dialog"/>
+
+        <!-- FILE -->
         <activity android:name=".FileEncryptActivity" android:exported="true"/>
         <activity android:name=".FileDecryptActivity" android:exported="true"/>
 
+        <!-- QUICK DECODE (incoming later) -->
         <activity
             android:name=".QuickDecodeActivity"
             android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
-        <service
-            android:name=".BubbleService"
-            android:exported="false"/>
-
+        <!-- 🔔 NOTIFICATION LISTENER -->
         <service
             android:name=".NotificationService"
-            android:label="RAMcryptr Notification"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
             android:exported="true">
             <intent-filter>
@@ -66,11 +72,12 @@
             </intent-filter>
         </service>
 
+        <!-- DISMISS RECEIVER -->
         <receiver
             android:name=".NotificationDismissReceiver"
-            android:exported="false"/>
+            android:exported="true"/>
 
-        <!-- Process text -->
+        <!-- TEXT MENU -->
         <activity
             android:name=".EncodeProcessTextActivity"
             android:exported="true"
