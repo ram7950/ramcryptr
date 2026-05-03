@@ -21,7 +21,6 @@ object NotificationHelper {
         }
     }
 
-    // 📌 FIXED → MiniTool
     fun showPersistent(context: Context) {
         val intent = Intent(context, MiniToolActivity::class.java)
         val pending = PendingIntent.getActivity(
@@ -41,7 +40,6 @@ object NotificationHelper {
         nm.notify(1, notification)
     }
 
-    // 🔔 INCOMING → QuickDecodeActivity + DATA
     fun showIncoming(context: Context, sender: String, platform: String, text: String) {
 
         val intent = Intent(context, QuickDecodeActivity::class.java)
@@ -49,8 +47,14 @@ object NotificationHelper {
         intent.putExtra("sender", sender)
         intent.putExtra("platform", platform)
 
-        val pending = PendingIntent.getActivity(
-            context, 2, intent,
+        val decodePending = PendingIntent.getActivity(
+            context, 1, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val ignoreIntent = Intent(context, NotificationDismissReceiver::class.java)
+        val ignorePending = PendingIntent.getBroadcast(
+            context, 2, ignoreIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -58,7 +62,10 @@ object NotificationHelper {
             .setContentTitle("🔐 Encrypted message received")
             .setContentText("From: $sender ($platform)")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentIntent(pending)
+            .setContentIntent(decodePending)
+            .addAction(android.R.drawable.ic_menu_view, "Decode", decodePending)
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Ignore", ignorePending)
+            .setAutoCancel(true)
             .build()
 
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

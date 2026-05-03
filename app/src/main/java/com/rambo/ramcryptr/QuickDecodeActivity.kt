@@ -1,5 +1,6 @@
 package com.rambo.ramcryptr
 
+import android.app.NotificationManager
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,10 @@ class QuickDecodeActivity : AppCompatActivity() {
 
         val tvTitle = findViewById<TextView>(R.id.tvTitle)
         val tvMessage = findViewById<TextView>(R.id.tvMessage)
+
+        // 🧹 Notification remove on open
+        val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        nm.cancelAll()
 
         val text = intent.getStringExtra("text") ?: ""
         val sender = intent.getStringExtra("sender") ?: "Unknown"
@@ -27,7 +32,7 @@ class QuickDecodeActivity : AppCompatActivity() {
                 tvMessage.text = "Decode failed"
             }
         } else {
-            tvMessage.text = "Invalid encrypted message"
+            tvMessage.text = "No valid encrypted message"
         }
     }
 }
