@@ -21,14 +21,13 @@ object NotificationHelper {
         }
     }
 
-    // 📌 FIXED NOTIFICATION → Mini Tool
     fun showPersistent(context: Context) {
         val intent = Intent(context, MiniToolActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
 
         val pending = PendingIntent.getActivity(
             context, 0, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val notification = Notification.Builder(context, CHANNEL_ID)
@@ -43,7 +42,7 @@ object NotificationHelper {
         nm.notify(1, notification)
     }
 
-    // 🔐 TEXT MESSAGE
+    // 🔐 TEXT
     fun showIncomingText(context: Context, sender: String, platform: String, text: String) {
 
         val intent = Intent(context, QuickDecodeActivity::class.java)
@@ -51,11 +50,13 @@ object NotificationHelper {
         intent.putExtra("text", text)
         intent.putExtra("sender", sender)
         intent.putExtra("platform", platform)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
 
         val pending = PendingIntent.getActivity(
-            context, 10, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            context,
+            System.currentTimeMillis().toInt(),
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val notification = Notification.Builder(context, CHANNEL_ID)
@@ -70,23 +71,29 @@ object NotificationHelper {
         nm.notify(System.currentTimeMillis().toInt(), notification)
     }
 
-    // 📁 FILE MESSAGE
+    // 📁 FILE → OPEN APP
     fun showIncomingFile(context: Context, sender: String, platform: String) {
 
-        val intent = Intent(context, QuickDecodeActivity::class.java)
-        intent.putExtra("mode", "file")
-        intent.putExtra("sender", sender)
-        intent.putExtra("platform", platform)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(
+            when (platform.lowercase()) {
+                "whatsapp" -> "com.whatsapp"
+                "telegram" -> "org.telegram.messenger"
+                else -> context.packageName
+            }
+        )
+
+        launchIntent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
         val pending = PendingIntent.getActivity(
-            context, 11, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            context,
+            (System.currentTimeMillis() + 1).toInt(),
+            launchIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val notification = Notification.Builder(context, CHANNEL_ID)
             .setContentTitle("📁 Encrypted file received")
-            .setContentText("From: $sender ($platform)")
+            .setContentText("Tap to open $platform")
             .setSmallIcon(android.R.drawable.ic_menu_upload)
             .setContentIntent(pending)
             .setAutoCancel(true)
