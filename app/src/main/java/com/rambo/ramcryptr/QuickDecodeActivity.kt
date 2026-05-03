@@ -16,18 +16,20 @@ class QuickDecodeActivity : AppCompatActivity() {
             val tvTitle = findViewById<TextView>(R.id.tvTitle)
             val tvMessage = findViewById<TextView>(R.id.tvMessage)
 
-            // 🧹 clear notifications
-            val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            nm.cancelAll()
-
-            val text = intent.getStringExtra("text") ?: ""
             val sender = intent.getStringExtra("sender") ?: "Unknown"
             val platform = intent.getStringExtra("platform") ?: "App"
+            val text = intent.getStringExtra("text")
 
-            // ❗ SAFE CHECK
+            // 🔥 CRITICAL FIX: null safe
+            if (text == null) {
+                tvTitle.text = "⚠ No data received"
+                tvMessage.text = "Try again"
+                return
+            }
+
             if (!text.startsWith("AES256::")) {
                 tvTitle.text = "⚠ Invalid encrypted message"
-                tvMessage.text = "No valid data received"
+                tvMessage.text = text
                 return
             }
 
@@ -40,9 +42,12 @@ class QuickDecodeActivity : AppCompatActivity() {
             tvTitle.text = "📥 Received encrypted message\nFrom: $sender ($platform)"
             tvMessage.text = decoded
 
+            // 🧹 remove only after success
+            val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            nm.cancelAll()
+
         } catch (e: Exception) {
             e.printStackTrace()
-            finish() // 🔥 crash रोकने के लिए
         }
     }
 }

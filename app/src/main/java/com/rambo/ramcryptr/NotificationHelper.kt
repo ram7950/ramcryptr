@@ -21,13 +21,16 @@ object NotificationHelper {
         }
     }
 
-    // 📌 FIXED
+    // 📌 FIXED NOTIFICATION → Mini Tool
     fun showPersistent(context: Context) {
-        val intent = Intent(context, MiniToolActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        val intent = Intent(context, MiniToolActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
 
         val pending = PendingIntent.getActivity(
-            context, 0, intent,
+            context,
+            0,
+            intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
@@ -43,16 +46,16 @@ object NotificationHelper {
         nm.notify(1, notification)
     }
 
-    // 🔐 TEXT MESSAGE
+    // 🔐 TEXT → Broadcast → Activity
     fun showIncomingText(context: Context, sender: String, platform: String, text: String) {
 
-        val intent = Intent(context, QuickDecodeActivity::class.java)
-        intent.putExtra("text", text)
-        intent.putExtra("sender", sender)
-        intent.putExtra("platform", platform)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        val intent = Intent(context, NotificationClickReceiver::class.java).apply {
+            putExtra("text", text)
+            putExtra("sender", sender)
+            putExtra("platform", platform)
+        }
 
-        val decodePending = PendingIntent.getActivity(
+        val pending = PendingIntent.getBroadcast(
             context,
             System.currentTimeMillis().toInt(),
             intent,
@@ -62,7 +65,7 @@ object NotificationHelper {
         val ignoreIntent = Intent(context, NotificationDismissReceiver::class.java)
         val ignorePending = PendingIntent.getBroadcast(
             context,
-            200,
+            System.currentTimeMillis().toInt() + 1,
             ignoreIntent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
@@ -71,8 +74,8 @@ object NotificationHelper {
             .setContentTitle("🔐 Encrypted message")
             .setContentText("From: $sender ($platform)")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentIntent(decodePending)
-            .addAction(android.R.drawable.ic_menu_view, "Decode", decodePending)
+            .setContentIntent(pending)
+            .addAction(android.R.drawable.ic_menu_view, "Decode", pending)
             .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Ignore", ignorePending)
             .setAutoCancel(true)
             .build()
@@ -81,7 +84,7 @@ object NotificationHelper {
         nm.notify(System.currentTimeMillis().toInt(), notification)
     }
 
-    // 📁 FILE MESSAGE
+    // 📁 FILE → Direct app open
     fun showIncomingFile(context: Context, sender: String, platform: String) {
 
         val launchIntent = context.packageManager.getLaunchIntentForPackage(
@@ -90,13 +93,13 @@ object NotificationHelper {
                 "telegram" -> "org.telegram.messenger"
                 else -> context.packageName
             }
-        )
-
-        launchIntent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        )?.apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
 
         val pending = PendingIntent.getActivity(
             context,
-            (System.currentTimeMillis() + 1).toInt(),
+            System.currentTimeMillis().toInt(),
             launchIntent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
