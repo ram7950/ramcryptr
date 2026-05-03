@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rambo.ramcryptr">
 
+    <!-- Overlay (optional, future use) -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
@@ -42,23 +43,33 @@
             </intent-filter>
         </activity>
 
-        <!-- FILE -->
+        <!-- FILE HANDLING -->
         <activity android:name=".FileEncryptActivity" android:exported="true"/>
         <activity android:name=".FileDecryptActivity" android:exported="true"/>
 
-        <!-- QUICK DECODE -->
+        <!-- QUICK DECODE POPUP -->
         <activity
             android:name=".QuickDecodeActivity"
             android:exported="true"
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
-        <!-- BUBBLE -->
+        <!-- 🔔 NOTIFICATION LISTENER -->
         <service
-            android:name=".BubbleService"
-            android:exported="false"/>
+            android:name=".NotificationService"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
 
-        <!-- TEXT MENU -->
+        <!-- 🧹 DISMISS RECEIVER -->
+        <receiver
+            android:name=".NotificationDismissReceiver"
+            android:exported="true"/>
+
+        <!-- TEXT SELECTION MENU -->
         <activity
             android:name=".EncodeProcessTextActivity"
             android:exported="true"

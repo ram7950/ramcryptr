@@ -17,32 +17,52 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val input = findViewById<EditText>(R.id.editText)
-        val encodeBtn = findViewById<Button>(R.id.btnEncode)
-        val decodeBtn = findViewById<Button>(R.id.btnDecode)
+        val prefs = getSharedPreferences("ramcryptr_prefs", MODE_PRIVATE)
 
-        // 🔥 NEW: Bubble toggle button (TEMP)
-        val bubbleBtn = Button(this)
-        bubbleBtn.text = "Enable Bubble"
-        (input.parent as LinearLayout).addView(bubbleBtn)
+        val switch = findViewById<Switch>(R.id.switchSmartDecode)
 
-        bubbleBtn.setOnClickListener {
+        // 🔥 Restore saved state
+        val isEnabled = prefs.getBoolean("smart_decode", false)
+        switch.isChecked = isEnabled
 
-            if (!Settings.canDrawOverlays(this)) {
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
-                )
-                startActivity(intent)
+        // 🔥 Notification setup (always show persistent)
+        NotificationHelper.createChannel(this)
+        NotificationHelper.showPersistent(this)
+
+        // 🔥 Switch behavior
+        switch.setOnCheckedChangeListener { _, isChecked ->
+
+            if (isChecked) {
+                if (!isNotificationServiceEnabled()) {
+
+                    Toast.makeText(
+                        this,
+                        "Enable notification access for smart decode",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                    startActivity(intent)
+
+                    // revert switch until enabled
+                    switch.isChecked = false
+
+                } else {
+                    prefs.edit().putBoolean("smart_decode", true).apply()
+                    Toast.makeText(this, "Smart decode enabled", Toast.LENGTH_SHORT).show()
+                }
             } else {
-                startService(Intent(this, BubbleService::class.java))
-                Toast.makeText(this, "Bubble started", Toast.LENGTH_SHORT).show()
+                prefs.edit().putBoolean("smart_decode", false).apply()
+                Toast.makeText(this, "Smart decode disabled", Toast.LENGTH_SHORT).show()
             }
         }
 
         handleIncomingIntent(intent)
 
-        // TEXT ENCODE
+        val input = findViewById<EditText>(R.id.editText)
+        val encodeBtn = findViewById<Button>(R.id.btnEncode)
+        val decodeBtn = findViewById<Button>(R.id.btnDecode)
+
         encodeBtn.setOnClickListener {
             val text = input.text.toString()
             if (text.isEmpty()) {
@@ -52,9 +72,7 @@ class MainActivity : AppCompatActivity() {
             input.setText(TextCrypto.encrypt(text, "ramcryptr_secret"))
         }
 
-        // TEXT DECODE
         decodeBtn.setOnClickListener {
-
             val text = input.text.toString()
 
             if (text.isEmpty()) {
@@ -83,6 +101,15 @@ class MainActivity : AppCompatActivity() {
             pickFile(PICK_DECODE_FILE)
             true
         }
+    }
+
+    private fun isNotificationServiceEnabled(): Boolean {
+        val pkgName = packageName
+        val flat = Settings.Secure.getString(
+            contentResolver,
+            "enabled_notification_listeners"
+        )
+        return flat != null && flat.contains(pkgName)
     }
 
     override fun onNewIntent(intent: Intent?) {
