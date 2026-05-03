@@ -21,9 +21,8 @@ object NotificationHelper {
         }
     }
 
+    // 📌 FIXED → MiniTool
     fun showPersistent(context: Context) {
-
-        // 🔥 FIXED: MiniToolActivity launch
         val intent = Intent(context, MiniToolActivity::class.java)
         val pending = PendingIntent.getActivity(
             context, 0, intent,
@@ -42,11 +41,16 @@ object NotificationHelper {
         nm.notify(1, notification)
     }
 
-    fun showIncoming(context: Context, sender: String, platform: String) {
+    // 🔔 INCOMING → QuickDecodeActivity + DATA
+    fun showIncoming(context: Context, sender: String, platform: String, text: String) {
 
-        val intent = Intent(context, MiniToolActivity::class.java)
+        val intent = Intent(context, QuickDecodeActivity::class.java)
+        intent.putExtra("text", text)
+        intent.putExtra("sender", sender)
+        intent.putExtra("platform", platform)
+
         val pending = PendingIntent.getActivity(
-            context, 1, intent,
+            context, 2, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
