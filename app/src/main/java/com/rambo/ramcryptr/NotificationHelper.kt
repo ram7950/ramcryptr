@@ -21,6 +21,7 @@ object NotificationHelper {
         }
     }
 
+    // 📌 FIXED
     fun showPersistent(context: Context) {
         val intent = Intent(context, MiniToolActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -42,28 +43,37 @@ object NotificationHelper {
         nm.notify(1, notification)
     }
 
-    // 🔐 TEXT
+    // 🔐 TEXT MESSAGE
     fun showIncomingText(context: Context, sender: String, platform: String, text: String) {
 
         val intent = Intent(context, QuickDecodeActivity::class.java)
-        intent.putExtra("mode", "text")
         intent.putExtra("text", text)
         intent.putExtra("sender", sender)
         intent.putExtra("platform", platform)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
 
-        val pending = PendingIntent.getActivity(
+        val decodePending = PendingIntent.getActivity(
             context,
             System.currentTimeMillis().toInt(),
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
+        val ignoreIntent = Intent(context, NotificationDismissReceiver::class.java)
+        val ignorePending = PendingIntent.getBroadcast(
+            context,
+            200,
+            ignoreIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
         val notification = Notification.Builder(context, CHANNEL_ID)
-            .setContentTitle("🔐 Encrypted message received")
+            .setContentTitle("🔐 Encrypted message")
             .setContentText("From: $sender ($platform)")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentIntent(pending)
+            .setContentIntent(decodePending)
+            .addAction(android.R.drawable.ic_menu_view, "Decode", decodePending)
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Ignore", ignorePending)
             .setAutoCancel(true)
             .build()
 
@@ -71,7 +81,7 @@ object NotificationHelper {
         nm.notify(System.currentTimeMillis().toInt(), notification)
     }
 
-    // 📁 FILE → OPEN APP
+    // 📁 FILE MESSAGE
     fun showIncomingFile(context: Context, sender: String, platform: String) {
 
         val launchIntent = context.packageManager.getLaunchIntentForPackage(
