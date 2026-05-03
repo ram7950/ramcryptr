@@ -21,8 +21,11 @@ object NotificationHelper {
         }
     }
 
+    // 📌 FIXED NOTIFICATION → Mini Tool
     fun showPersistent(context: Context) {
         val intent = Intent(context, MiniToolActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
         val pending = PendingIntent.getActivity(
             context, 0, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -40,21 +43,18 @@ object NotificationHelper {
         nm.notify(1, notification)
     }
 
-    fun showIncoming(context: Context, sender: String, platform: String, text: String) {
+    // 🔐 TEXT MESSAGE
+    fun showIncomingText(context: Context, sender: String, platform: String, text: String) {
 
         val intent = Intent(context, QuickDecodeActivity::class.java)
+        intent.putExtra("mode", "text")
         intent.putExtra("text", text)
         intent.putExtra("sender", sender)
         intent.putExtra("platform", platform)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-        val decodePending = PendingIntent.getActivity(
-            context, 1, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val ignoreIntent = Intent(context, NotificationDismissReceiver::class.java)
-        val ignorePending = PendingIntent.getBroadcast(
-            context, 2, ignoreIntent,
+        val pending = PendingIntent.getActivity(
+            context, 10, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -62,9 +62,33 @@ object NotificationHelper {
             .setContentTitle("🔐 Encrypted message received")
             .setContentText("From: $sender ($platform)")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentIntent(decodePending)
-            .addAction(android.R.drawable.ic_menu_view, "Decode", decodePending)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Ignore", ignorePending)
+            .setContentIntent(pending)
+            .setAutoCancel(true)
+            .build()
+
+        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.notify(System.currentTimeMillis().toInt(), notification)
+    }
+
+    // 📁 FILE MESSAGE
+    fun showIncomingFile(context: Context, sender: String, platform: String) {
+
+        val intent = Intent(context, QuickDecodeActivity::class.java)
+        intent.putExtra("mode", "file")
+        intent.putExtra("sender", sender)
+        intent.putExtra("platform", platform)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        val pending = PendingIntent.getActivity(
+            context, 11, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = Notification.Builder(context, CHANNEL_ID)
+            .setContentTitle("📁 Encrypted file received")
+            .setContentText("From: $sender ($platform)")
+            .setSmallIcon(android.R.drawable.ic_menu_upload)
+            .setContentIntent(pending)
             .setAutoCancel(true)
             .build()
 

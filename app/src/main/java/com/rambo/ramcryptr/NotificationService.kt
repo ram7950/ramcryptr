@@ -9,14 +9,23 @@ class NotificationService : NotificationListenerService() {
 
         val extras = sbn.notification.extras ?: return
 
-        val text = extras.getCharSequence("android.text")?.toString() ?: return
-        val sender = extras.getString("android.title") ?: "Unknown"
+        val text = extras.getCharSequence("android.text")?.toString() ?: ""
+        val title = extras.getString("android.title") ?: "Unknown"
         val app = sbn.packageName.substringAfterLast(".")
 
-        if (text == "New message") return
+        // ❌ ignore useless notifications
+        if (text.isBlank() || text == "New message") return
 
+        // 🔐 TEXT detection
         if (text.startsWith("AES256::")) {
-            NotificationHelper.showIncoming(this, sender, app, text)
+            NotificationHelper.showIncomingText(this, title, app, text)
+            return
+        }
+
+        // 📁 FILE detection
+        if (text.contains(".enc") || text.contains(".bin")) {
+            NotificationHelper.showIncomingFile(this, title, app)
+            return
         }
     }
 }

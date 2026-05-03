@@ -14,14 +14,23 @@ class QuickDecodeActivity : AppCompatActivity() {
         val tvTitle = findViewById<TextView>(R.id.tvTitle)
         val tvMessage = findViewById<TextView>(R.id.tvMessage)
 
-        // 🧹 Notification remove on open
+        // 🧹 notification remove
         val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         nm.cancelAll()
 
-        val text = intent.getStringExtra("text") ?: ""
+        val mode = intent.getStringExtra("mode") ?: "text"
         val sender = intent.getStringExtra("sender") ?: "Unknown"
         val platform = intent.getStringExtra("platform") ?: "App"
+        val text = intent.getStringExtra("text") ?: ""
 
+        // 📁 FILE MODE
+        if (mode == "file") {
+            tvTitle.text = "📁 Encrypted file received\nFrom: $sender ($platform)"
+            tvMessage.text = "Open chat and decode file manually"
+            return
+        }
+
+        // 🔐 TEXT MODE
         tvTitle.text = "📥 Received encrypted message\nFrom: $sender ($platform)"
 
         if (text.startsWith("AES256::")) {
@@ -32,7 +41,7 @@ class QuickDecodeActivity : AppCompatActivity() {
                 tvMessage.text = "Decode failed"
             }
         } else {
-            tvMessage.text = "No valid encrypted message"
+            tvMessage.text = "Invalid encrypted message"
         }
     }
 }
