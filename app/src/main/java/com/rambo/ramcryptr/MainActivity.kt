@@ -1,7 +1,9 @@
 package com.rambo.ramcryptr
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.*
@@ -17,45 +19,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val prefs = getSharedPreferences("ramcryptr_prefs", MODE_PRIVATE)
+        // 🔥 STEP 2: Request notification permission (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 100)
+        }
 
-        val switch = findViewById<Switch>(R.id.switchSmartDecode)
-
-        // 🔥 Restore saved state
-        val isEnabled = prefs.getBoolean("smart_decode", false)
-        switch.isChecked = isEnabled
-
-        // 🔥 Notification setup (always show persistent)
+        // 🔥 Notification setup (FORCE SHOW for testing)
         NotificationHelper.createChannel(this)
         NotificationHelper.showPersistent(this)
-
-        // 🔥 Switch behavior
-        switch.setOnCheckedChangeListener { _, isChecked ->
-
-            if (isChecked) {
-                if (!isNotificationServiceEnabled()) {
-
-                    Toast.makeText(
-                        this,
-                        "Enable notification access for smart decode",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-                    startActivity(intent)
-
-                    // revert switch until enabled
-                    switch.isChecked = false
-
-                } else {
-                    prefs.edit().putBoolean("smart_decode", true).apply()
-                    Toast.makeText(this, "Smart decode enabled", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                prefs.edit().putBoolean("smart_decode", false).apply()
-                Toast.makeText(this, "Smart decode disabled", Toast.LENGTH_SHORT).show()
-            }
-        }
 
         handleIncomingIntent(intent)
 
@@ -101,15 +72,6 @@ class MainActivity : AppCompatActivity() {
             pickFile(PICK_DECODE_FILE)
             true
         }
-    }
-
-    private fun isNotificationServiceEnabled(): Boolean {
-        val pkgName = packageName
-        val flat = Settings.Secure.getString(
-            contentResolver,
-            "enabled_notification_listeners"
-        )
-        return flat != null && flat.contains(pkgName)
     }
 
     override fun onNewIntent(intent: Intent?) {
