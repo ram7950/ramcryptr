@@ -32,9 +32,27 @@ class MainActivity : AppCompatActivity() {
 
         handleIncomingIntent(intent)
 
+        val smartSwitch =
+            findViewById<Switch>(R.id.switchSmartDecode)
+
         val input = findViewById<EditText>(R.id.editText)
         val encodeBtn = findViewById<Button>(R.id.btnEncode)
         val decodeBtn = findViewById<Button>(R.id.btnDecode)
+
+        smartSwitch.setOnCheckedChangeListener { _, isChecked ->
+
+            if (isChecked) {
+
+                startActivity(
+                    Intent(
+                        this,
+                        WelcomeActivity::class.java
+                    )
+                )
+
+                smartSwitch.isChecked = false
+            }
+        }
 
         encodeBtn.setOnClickListener {
             val text = input.text.toString()
