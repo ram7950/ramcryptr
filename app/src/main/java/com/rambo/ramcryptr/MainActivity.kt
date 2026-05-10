@@ -281,7 +281,6 @@ class MainActivity : AppCompatActivity() {
                     ).show()
                 }
 
-            dialog.show()
         }
 
         btnPatchIn.setOnClickListener {
