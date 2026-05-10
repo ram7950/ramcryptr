@@ -57,6 +57,8 @@ class MainActivity : AppCompatActivity() {
         val tvEmptyChannels =
             findViewById<TextView>(R.id.tvEmptyChannels)
 
+        renderChannels()
+
         smartSwitch.setOnCheckedChangeListener { _, isChecked ->
 
             if (isChecked) {
@@ -115,12 +117,95 @@ class MainActivity : AppCompatActivity() {
 
         btnInitiateCommn.setOnClickListener {
 
-            startActivity(
-                Intent(
-                    this,
-                    WelcomeActivity::class.java
-                )
-            )
+            val layout = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(40, 30, 40, 10)
+            }
+
+            val etChannelName = EditText(this).apply {
+                hint = "Enter Channel Name"
+            }
+
+            val tvChannelId = TextView(this).apply {
+                text = "Channel ID not generated"
+            }
+
+            val btnGenerate = Button(this).apply {
+                text = "Generate Channel ID"
+            }
+
+            var generatedId = ""
+
+            btnGenerate.setOnClickListener {
+
+                generatedId =
+                    java.util.UUID.randomUUID()
+                        .toString()
+                        .substring(0, 8)
+                        .uppercase()
+
+                tvChannelId.text =
+                    "Channel ID: $generatedId"
+            }
+
+            layout.addView(etChannelName)
+            layout.addView(btnGenerate)
+            layout.addView(tvChannelId)
+
+            AlertDialog.Builder(this)
+                .setTitle("INITIATE COMMN")
+                .setView(layout)
+
+                .setPositiveButton("SECURE 🔐") { _, _ ->
+
+                    val name =
+                        etChannelName.text.toString()
+
+                    if (
+                        name.isBlank() ||
+                        generatedId.isBlank()
+                    ) {
+
+                        Toast.makeText(
+                            this,
+                            "Generate channel properly",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        return@setPositiveButton
+                    }
+
+                    val joinSecret =
+                        CryptoKeyManager
+                            .generateJoinSecret()
+
+                    val channel = Channel(
+                        channelName = name,
+                        channelId = generatedId,
+                        joinSecret = joinSecret
+                    )
+
+                    ChannelStorage.saveChannel(
+                        this,
+                        channel
+                    )
+
+                    ChannelManager.setActiveChannel(
+                        this,
+                        channel
+                    )
+
+                    renderChannels()
+
+                    Toast.makeText(
+                        this,
+                        "Secure channel created",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                .setNegativeButton("Cancel", null)
+                .show()
         }
 
         btnPatchIn.setOnClickListener {
@@ -176,6 +261,144 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         handleIncomingIntent(intent)
     }
+
+
+    private fun renderChannels() {
+
+        val channelListContainer =
+            findViewById<LinearLayout>(
+                R.id.channelListContainer
+            )
+
+        val tvEmptyChannels =
+            findViewById<TextView>(
+                R.id.tvEmptyChannels
+            )
+
+        channelListContainer.removeAllViews()
+
+        val channels =
+            ChannelManager.getAllChannels(this)
+
+        if (channels.isEmpty()) {
+
+            tvEmptyChannels.visibility =
+                TextView.VISIBLE
+
+            channelListContainer.addView(
+                tvEmptyChannels
+            )
+
+            return
+        }
+
+        tvEmptyChannels.visibility =
+            TextView.GONE
+
+        channels.forEachIndexed { index, channel ->
+
+            val row = LinearLayout(this).apply {
+
+                orientation =
+                    LinearLayout.HORIZONTAL
+
+                setPadding(8, 16, 8, 16)
+            }
+
+            val sno = TextView(this).apply {
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        80,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+
+                text = "${index + 1}"
+                setTextColor(
+                    android.graphics.Color.WHITE
+                )
+            }
+
+            val name = TextView(this).apply {
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1f
+                    )
+
+                text = channel.channelName
+
+                setTextColor(
+                    android.graphics.Color.WHITE
+                )
+            }
+
+            val inception = TextView(this).apply {
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        260,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+
+                text =
+                    java.text.SimpleDateFormat(
+                        "dd-MM-yy\nHH:mm:ss",
+                        java.util.Locale.getDefault()
+                    ).format(
+                        java.util.Date(
+                            channel.createdAt
+                        )
+                    )
+
+                setTextColor(
+                    android.graphics.Color.LTGRAY
+                )
+            }
+
+            val action = TextView(this).apply {
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        120,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+
+                val active =
+                    ChannelManager
+                        .getActiveChannel()
+
+                if (
+                    active?.channelId ==
+                    channel.channelId
+                ) {
+
+                    text = "ACTIVE"
+
+                    setTextColor(
+                        android.graphics.Color.GREEN
+                    )
+
+                } else {
+
+                    text = "STANDBY"
+
+                    setTextColor(
+                        android.graphics.Color.LTGRAY
+                    )
+                }
+            }
+
+            row.addView(sno)
+            row.addView(name)
+            row.addView(inception)
+            row.addView(action)
+
+            channelListContainer.addView(row)
+        }
+    }
+
 
     private fun handleIncomingIntent(intent: Intent?) {
         if (intent == null) return
