@@ -85,6 +85,8 @@
                 android:layout_marginStart="8dp"/>
                 
 
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/channelHeaderRow"
             android:layout_width="match_parent"
