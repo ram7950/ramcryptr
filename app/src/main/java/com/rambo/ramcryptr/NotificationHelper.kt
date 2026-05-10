@@ -22,6 +22,22 @@ object NotificationHelper {
     }
 
     // 📌 FIXED NOTIFICATION → Mini Tool
+    
+
+    private var persistentShown = false
+
+    fun ensurePersistent(context: Context) {
+
+        if (persistentShown) {
+            return
+        }
+
+        persistentShown = true
+
+        showPersistent(context)
+    }
+
+
     fun showPersistent(context: Context) {
         val intent = Intent(context, MiniToolActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

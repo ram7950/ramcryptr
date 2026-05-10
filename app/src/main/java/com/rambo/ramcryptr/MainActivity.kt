@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         // 🔥 Notification setup (FORCE SHOW for testing)
         NotificationHelper.createChannel(this)
-        NotificationHelper.showPersistent(this)
+        NotificationHelper.ensurePersistent(this)
 
         handleIncomingIntent(intent)
 
