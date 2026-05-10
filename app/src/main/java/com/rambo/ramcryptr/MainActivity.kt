@@ -390,10 +390,155 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            val deleteView = TextView(this).apply {
+
+                text = "DELETE"
+
+                textSize = 11f
+
+                setPadding(0, 10, 0, 0)
+
+                setTextColor(
+                    android.graphics.Color.RED
+                )
+
+                setOnClickListener {
+
+                    val active =
+                        ChannelManager
+                            .getActiveChannel()
+
+                    if (
+                        active?.channelId ==
+                        channel.channelId
+                    ) {
+
+                        AlertDialog.Builder(
+                            this@MainActivity
+                        )
+
+                            .setTitle(
+                                "❗‼️Alert‼️❗"
+                            )
+
+                            .setMessage(
+
+                                "Cannot delete Active Channel," +
+
+                                " Change the channel first.\n\n" +
+
+                                "__________________________\n\n" +
+
+                                "Active channel ko delete nhi " +
+
+                                "kar sakte, Pahle channel " +
+
+                                "change karo."
+                            )
+
+                            .setPositiveButton(
+                                "OK",
+                                null
+                            )
+
+                            .show()
+
+                        return@setOnClickListener
+                    }
+
+                    AlertDialog.Builder(
+                        this@MainActivity
+                    )
+
+                        .setTitle(
+                            "DELETE CHANNEL"
+                        )
+
+                        .setMessage(
+                            "Delete this secure channel?"
+                        )
+
+                        .setPositiveButton(
+                            "DELETE"
+                        ) { _, _ ->
+
+                            ChannelManager
+                                .deleteChannel(
+                                    this@MainActivity,
+                                    channel
+                                )
+
+                            renderChannels()
+
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Channel deleted",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        .setNegativeButton(
+                            "CANCEL",
+                            null
+                        )
+
+                        .show()
+                }
+            }
+
+            action.addView(deleteView)
+
             row.addView(sno)
             row.addView(name)
             row.addView(inception)
             row.addView(action)
+
+            row.setOnClickListener {
+
+                AlertDialog.Builder(this)
+
+                    .setTitle("SWITCH CHANNEL")
+
+                    .setMessage(
+                        "Switch to this secure channel?\n\n" +
+                        "Note: It will apply after restart."
+                    )
+
+                    .setPositiveButton("SWITCH") { _, _ ->
+
+                        ChannelManager.setActiveChannel(
+                            this,
+                            channel
+                        )
+
+                        AlertDialog.Builder(this)
+
+                            .setTitle("RESTART REQUIRED")
+
+                            .setMessage(
+                                "App is going to restart..."
+                            )
+
+                            .setCancelable(false)
+
+                            .show()
+
+                        android.os.Handler(
+                            mainLooper
+                        ).postDelayed({
+
+                            recreate()
+
+                        }, 2000)
+                    }
+
+                    .setNegativeButton(
+                        "DISMISS",
+                        null
+                    )
+
+                    .show()
+            }
 
             channelListContainer.addView(row)
         }
