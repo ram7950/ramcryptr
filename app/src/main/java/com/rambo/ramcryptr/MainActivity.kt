@@ -17,6 +17,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        ChannelManager.initialize(this)
         setContentView(R.layout.activity_main)
 
         // 🔥 STEP 2: Request notification permission (Android 13+)
