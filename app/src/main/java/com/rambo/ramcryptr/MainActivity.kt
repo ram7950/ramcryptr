@@ -195,6 +195,12 @@ class MainActivity : AppCompatActivity() {
                         channel
                     )
 
+                    window.decorView.postDelayed({
+
+                        renderChannels()
+
+                    }, 250)
+
                     Toast.makeText(
                         this,
                         "Secure channel created",
@@ -254,13 +260,6 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-
-        renderChannels()
-    }
-
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -480,6 +479,12 @@ class MainActivity : AppCompatActivity() {
                                     this@MainActivity,
                                     channel
                                 )
+
+                            window.decorView.postDelayed({
+
+                                renderChannels()
+
+                            }, 250)
 
                             Toast.makeText(
                                 this@MainActivity,
