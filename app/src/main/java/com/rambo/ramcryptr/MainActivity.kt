@@ -206,6 +206,12 @@ class MainActivity : AppCompatActivity() {
 
                                 renderChannels()
 
+                                channelListContainer
+                                    .invalidate()
+
+                                channelListContainer
+                                    .requestLayout()
+
                             } catch (_: Exception) {
                             }
                         }
@@ -501,6 +507,12 @@ class MainActivity : AppCompatActivity() {
                                     try {
 
                                         renderChannels()
+
+                                        channelListContainer
+                                            .invalidate()
+
+                                        channelListContainer
+                                            .requestLayout()
 
                                     } catch (_: Exception) {
                                     }
