@@ -357,13 +357,19 @@ class MainActivity : AppCompatActivity() {
                 )
             }
 
-            val action = TextView(this).apply {
+            val action = LinearLayout(this).apply {
+
+                orientation =
+                    LinearLayout.VERTICAL
 
                 layoutParams =
                     LinearLayout.LayoutParams(
-                        120,
+                        160,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     )
+            }
+
+            val stateView = TextView(this).apply {
 
                 val active =
                     ChannelManager
@@ -389,6 +395,8 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             }
+
+            action.addView(stateView)
 
             val deleteView = TextView(this).apply {
 
