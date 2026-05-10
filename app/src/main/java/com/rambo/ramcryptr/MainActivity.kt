@@ -39,6 +39,18 @@ class MainActivity : AppCompatActivity() {
         val encodeBtn = findViewById<Button>(R.id.btnEncode)
         val decodeBtn = findViewById<Button>(R.id.btnDecode)
 
+        val btnTnetPanel =
+            findViewById<Button>(R.id.btnTnetPanel)
+
+        val tnetContainer =
+            findViewById<LinearLayout>(R.id.tnetContainer)
+
+        val btnInitiateCommn =
+            findViewById<Button>(R.id.btnInitiateCommn)
+
+        val btnPatchIn =
+            findViewById<Button>(R.id.btnPatchIn)
+
         smartSwitch.setOnCheckedChangeListener { _, isChecked ->
 
             if (isChecked) {
