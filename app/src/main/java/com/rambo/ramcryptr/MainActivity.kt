@@ -92,6 +92,66 @@ class MainActivity : AppCompatActivity() {
             pickFile(PICK_DECODE_FILE)
             true
         }
+
+
+
+        btnInitiateCommn.setOnClickListener {
+
+            startActivity(
+                Intent(
+                    this,
+                    WelcomeActivity::class.java
+                )
+            )
+        }
+
+        btnPatchIn.setOnClickListener {
+
+            startActivity(
+                Intent(
+                    this,
+                    WelcomeActivity::class.java
+                )
+            )
+        }
+
+        btnTnetPanel.setOnClickListener {
+            val input = EditText(this)
+
+            AlertDialog.Builder(this)
+                .setTitle("T-NET ACCESS")
+                .setMessage("Enter access password")
+                .setView(input)
+
+                .setPositiveButton("Proceed") { _, _ ->
+
+                    val pw =
+                        input.text.toString()
+
+                    if (pw == "majhkhali@18") {
+
+                        tnetContainer.visibility =
+                            LinearLayout.VISIBLE
+
+                        Toast.makeText(
+                            this,
+                            "T-NET unlocked",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    } else {
+
+                        Toast.makeText(
+                            this,
+                            "Access denied",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
