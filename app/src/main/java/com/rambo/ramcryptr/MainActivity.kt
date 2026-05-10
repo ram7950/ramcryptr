@@ -327,7 +327,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-            dialog.show()
         }
     }
 
