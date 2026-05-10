@@ -195,7 +195,11 @@ class MainActivity : AppCompatActivity() {
                         channel
                     )
 
-                    renderChannels()
+                    window.decorView.postDelayed({
+
+                        renderChannels()
+
+                    }, 300)
 
                     Toast.makeText(
                         this,
@@ -476,7 +480,11 @@ class MainActivity : AppCompatActivity() {
                                     channel
                                 )
 
-                            renderChannels()
+                            window.decorView.postDelayed({
+
+                                renderChannels()
+
+                            }, 300)
 
                             Toast.makeText(
                                 this@MainActivity,
