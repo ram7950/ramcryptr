@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         encodeBtn.setOnClickListener {
             val text = input.text.toString()
             if (text.isEmpty()) {
-                Toast.makeText(this, "Enter text", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Enter text", Toast.LENGTH_SHORT)dialog.show()
                 return@setOnClickListener
             }
             input.setText(TextCrypto.encrypt(text, "ramcryptr_secret"))
@@ -134,6 +134,18 @@ class MainActivity : AppCompatActivity() {
                 text = "Generate Channel ID"
             }
 
+            val btnSecure = Button(this).apply {
+                text = "SECURE 🔐"
+            }
+
+            val btnCreateMatrix = Button(this).apply {
+
+                text = "CREATE KEY MATRIX"
+
+                visibility =
+                    android.view.View.GONE
+            }
+
             var generatedId = ""
 
             btnGenerate.setOnClickListener {
@@ -151,12 +163,41 @@ class MainActivity : AppCompatActivity() {
             layout.addView(etChannelName)
             layout.addView(btnGenerate)
             layout.addView(tvChannelId)
+            layout.addView(btnSecure)
+            layout.addView(btnCreateMatrix)
 
-            AlertDialog.Builder(this)
+            val tvMatrixPreview = TextView(this).apply {
+
+                text =
+                    "TACTICAL MATRIX GENERATED"
+
+                textSize = 14f
+
+                setPadding(20, 40, 20, 40)
+
+                gravity =
+                    android.view.Gravity.CENTER
+
+                setBackgroundColor(
+                    android.graphics.Color.BLACK
+                )
+
+                setTextColor(
+                    android.graphics.Color.GREEN
+                )
+
+                visibility =
+                    android.view.View.GONE
+            }
+
+            layout.addView(tvMatrixPreview)
+
+            val dialog = AlertDialog.Builder(this)
                 .setTitle("INITIATE COMMN")
                 .setView(layout)
+                .create()
 
-                .setPositiveButton("SECURE 🔐") { _, _ ->
+            btnSecure.setOnClickListener {
 
                     val name =
                         etChannelName.text.toString()
@@ -172,7 +213,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        return@setPositiveButton
+                        return@setOnClickListener
                     }
 
                     val joinSecret =
@@ -217,6 +258,21 @@ class MainActivity : AppCompatActivity() {
                         }
 
                     }, 250)
+
+                    btnCreateMatrix.visibility =
+                        android.view.View.VISIBLE
+
+                    btnCreateMatrix.setOnClickListener {
+
+                        tvMatrixPreview.visibility =
+                            android.view.View.VISIBLE
+
+                        Toast.makeText(
+                            this,
+                            "Matrix initialized",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
                     Toast.makeText(
                         this,
