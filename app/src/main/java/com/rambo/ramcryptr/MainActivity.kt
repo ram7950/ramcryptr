@@ -197,7 +197,18 @@ class MainActivity : AppCompatActivity() {
 
                     window.decorView.postDelayed({
 
-                        renderChannels()
+                        if (
+                            !isFinishing &&
+                            !isDestroyed
+                        ) {
+
+                            try {
+
+                                renderChannels()
+
+                            } catch (_: Exception) {
+                            }
+                        }
 
                     }, 250)
 
@@ -482,7 +493,18 @@ class MainActivity : AppCompatActivity() {
 
                             window.decorView.postDelayed({
 
-                                renderChannels()
+                                if (
+                                    !isFinishing &&
+                                    !isDestroyed
+                                ) {
+
+                                    try {
+
+                                        renderChannels()
+
+                                    } catch (_: Exception) {
+                                    }
+                                }
 
                             }, 250)
 
