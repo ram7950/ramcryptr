@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         encodeBtn.setOnClickListener {
             val text = input.text.toString()
             if (text.isEmpty()) {
-                Toast.makeText(this, "Enter text", Toast.LENGTH_SHORT)dialog.show()
+                Toast.makeText(this, "Enter text", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             input.setText(TextCrypto.encrypt(text, "ramcryptr_secret"))
@@ -281,8 +281,7 @@ class MainActivity : AppCompatActivity() {
                     ).show()
                 }
 
-                .setNegativeButton("Cancel", null)
-                .show()
+            dialog.show()
         }
 
         btnPatchIn.setOnClickListener {
@@ -329,8 +328,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                .setNegativeButton("Cancel", null)
-                .show()
+            dialog.show()
         }
     }
 
