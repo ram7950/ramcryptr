@@ -84,6 +84,74 @@
                 android:textStyle="bold"
                 android:layout_marginStart="8dp"/>
                 
+
+        <LinearLayout
+            android:id="@+id/channelHeaderRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="18dp">
+
+            <TextView
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:text="Sno."
+                android:textColor="#00FFAA"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Channel Name"
+                android:textColor="#00FFAA"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="Inception"
+                android:textColor="#00FFAA"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:text="Action"
+                android:textColor="#00FFAA"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+
+        <ScrollView
+            android:id="@+id/channelScroll"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginTop="10dp"
+            android:background="#1A1A1A">
+
+            <LinearLayout
+                android:id="@+id/channelListContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+
+                <TextView
+                    android:id="@+id/tvEmptyChannels"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="NO SECURE CHANNELS DETECTED"
+                    android:textColor="#777777"
+                    android:textStyle="bold"
+                    android:textAlignment="center"
+                    android:padding="24dp"/>
+
+            </LinearLayout>
+        </ScrollView>
+
         </LinearLayout>
             
     </LinearLayout>

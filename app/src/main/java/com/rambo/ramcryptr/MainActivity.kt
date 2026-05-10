@@ -51,6 +51,12 @@ class MainActivity : AppCompatActivity() {
         val btnPatchIn =
             findViewById<Button>(R.id.btnPatchIn)
 
+        val channelListContainer =
+            findViewById<LinearLayout>(R.id.channelListContainer)
+
+        val tvEmptyChannels =
+            findViewById<TextView>(R.id.tvEmptyChannels)
+
         smartSwitch.setOnCheckedChangeListener { _, isChecked ->
 
             if (isChecked) {
