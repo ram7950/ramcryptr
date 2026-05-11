@@ -51,6 +51,9 @@ class MainActivity : AppCompatActivity() {
         val btnPatchIn =
             findViewById<Button>(R.id.btnPatchIn)
 
+        val btnRefreshChannels =
+            findViewById<Button>(R.id.btnRefreshChannels)
+
         val channelListContainer =
             findViewById<LinearLayout>(R.id.channelListContainer)
 
@@ -114,6 +117,21 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+
+        btnRefreshChannels.setOnClickListener {
+
+            renderChannels()
+
+            channelListContainer.invalidate()
+
+            channelListContainer.requestLayout()
+
+            Toast.makeText(
+                this,
+                "Panel refreshed",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 
         btnInitiateCommn.setOnClickListener {
 
@@ -328,6 +346,8 @@ class MainActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
+
+                .show()
 
         }
     }

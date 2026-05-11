@@ -68,6 +68,14 @@
             android:layout_marginTop="16dp">
 
             <Button
+                android:id="@+id/btnRefreshChannels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⟳ REFRESH"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
                 android:id="@+id/btnInitiateCommn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
