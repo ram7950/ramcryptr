@@ -72,7 +72,10 @@ object TextCrypto {
 
             val base64 = Base64.encodeToString(combined, Base64.NO_WRAP)
 
-            return "AES256::$code::$base64"
+            val fingerprint =
+                ChannelFingerprint.generate(master)
+
+            return "AES256::CHAN-$fingerprint::$code::$base64"
 
         } catch (e: Exception) {
             throw RuntimeException("Encryption failed", e)
@@ -82,13 +85,40 @@ object TextCrypto {
     // 🔓 Decrypt
     fun decrypt(message: String, master: String): String {
         try {
-            val parts = message.split("::", limit = 3)
-            if (parts.size != 3 || parts[0] != "AES256") {
+            val parts = message.split("::")
+
+            if (parts.isEmpty() || parts[0] != "AES256") {
                 throw IllegalArgumentException("Invalid format")
             }
 
-            val code = parts[1]
-            val data = parts[2]
+            val code: String
+            val data: String
+
+            if (
+                parts.size >= 4 &&
+                parts[1].startsWith("CHAN-")
+            ) {
+
+                code = parts[2]
+                data = parts.subList(
+                    3,
+                    parts.size
+                ).joinToString("::")
+
+            } else if (parts.size >= 3) {
+
+                code = parts[1]
+                data = parts.subList(
+                    2,
+                    parts.size
+                ).joinToString("::")
+
+            } else {
+
+                throw IllegalArgumentException(
+                    "Invalid format"
+                )
+            }
 
             val index = Base62.decode(code)
             
