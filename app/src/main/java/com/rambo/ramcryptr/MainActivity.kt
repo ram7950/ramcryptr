@@ -349,10 +349,21 @@ class MainActivity : AppCompatActivity() {
                 R.id.channelListContainer
             )
 
-        val tvEmptyChannels =
-            findViewById<TextView>(
-                R.id.tvEmptyChannels
+        val tvEmptyChannels = TextView(this).apply {
+
+            text = "NO SECURE CHANNELS DETECTED"
+
+            textSize = 14f
+
+            setPadding(24, 24, 24, 24)
+
+            gravity =
+                android.view.Gravity.CENTER
+
+            setTextColor(
+                android.graphics.Color.GRAY
             )
+        }
 
         channelListContainer.removeAllViews()
 
@@ -361,8 +372,6 @@ class MainActivity : AppCompatActivity() {
 
         if (channels.isEmpty()) {
 
-            tvEmptyChannels.visibility =
-                TextView.VISIBLE
 
             channelListContainer.addView(
                 tvEmptyChannels
@@ -371,8 +380,6 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        tvEmptyChannels.visibility =
-            TextView.GONE
 
         channels.forEachIndexed { index, channel ->
 
