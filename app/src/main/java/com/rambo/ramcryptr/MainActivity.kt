@@ -180,7 +180,17 @@ class MainActivity : AppCompatActivity() {
 
             val tvMatrixPreview = TextView(this).apply {
 
-                text = "TACTICAL MATRIX GENERATED"
+                text =
+                    """
+▓▓░▓▓▓░░▓▓▓░▓░▓▓
+▓░░▓▓░▓▓░░▓▓░░▓
+▓▓▓░░▓▓▓▓░▓▓░▓▓
+░▓▓▓░░▓▓░▓▓▓░░▓
+▓░▓▓▓░░▓▓░▓▓▓░▓
+▓▓░░▓▓▓░▓░░▓▓▓▓
+░▓▓▓░▓▓▓░▓▓░░▓▓
+▓▓░▓░░▓▓▓░▓▓▓░▓
+                    """.trimIndent()
 
                 textSize = 14f
 
@@ -264,12 +274,35 @@ class MainActivity : AppCompatActivity() {
 
             btnCreateMatrix.setOnClickListener {
 
+                val seed =
+                    name +
+                    generatedId +
+                    joinSecret
+
+                val chars =
+                    seed.map {
+
+                        if (
+                            it.code % 2 == 0
+                        ) "▓"
+                        else "░"
+                    }
+
+                val matrix =
+                    chars.chunked(18)
+                        .joinToString("\n") {
+                            it.joinToString("")
+                        }
+
+                tvMatrixPreview.text =
+                    matrix
+
                 tvMatrixPreview.visibility =
                     android.view.View.VISIBLE
 
                 Toast.makeText(
                     this,
-                    "Matrix initialized",
+                    "Dynamic matrix generated",
                     Toast.LENGTH_SHORT
                 ).show()
             }
