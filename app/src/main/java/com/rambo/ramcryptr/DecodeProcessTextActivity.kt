@@ -26,7 +26,7 @@ class DecodeProcessTextActivity : Activity() {
         }
 
         val result = try {
-            TextCrypto.decrypt(text, "ramcryptr_secret")
+            TextCrypto.decrypt(text, CryptoMasterProvider.getMaster(this))
         } catch (e: Exception) {
             "Decode failed"
         }

@@ -17,7 +17,7 @@ class EncodeProcessTextActivity : Activity() {
         }
 
         val result = try {
-            TextCrypto.encrypt(text, "ramcryptr_secret")
+            TextCrypto.encrypt(text, CryptoMasterProvider.getMaster(this))
         } catch (e: Exception) {
             text
         }

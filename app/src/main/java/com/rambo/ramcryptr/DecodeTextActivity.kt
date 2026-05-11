@@ -16,7 +16,7 @@ class DecodeTextActivity : Activity() {
             return
         }
 
-        val result = TextCrypto.decrypt(text, "ramcryptr_secret")
+        val result = TextCrypto.decrypt(text, CryptoMasterProvider.getMaster(this))
 
         val out = Intent()
         out.putExtra(Intent.EXTRA_PROCESS_TEXT, result)

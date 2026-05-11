@@ -31,7 +31,7 @@ class MiniToolActivity : AppCompatActivity() {
         btnEncode.setOnClickListener {
             val t = input.text.toString()
             if (t.isEmpty()) return@setOnClickListener
-            output.text = TextCrypto.encrypt(t, "ramcryptr_secret")
+            output.text = TextCrypto.encrypt(t, CryptoMasterProvider.getMaster(this))
         }
 
         // Decode click
@@ -42,7 +42,7 @@ class MiniToolActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             try {
-                output.text = TextCrypto.decrypt(t, "ramcryptr_secret")
+                output.text = TextCrypto.decrypt(t, CryptoMasterProvider.getMaster(this))
             } catch (e: Exception) {
                 output.text = "Decode failed"
             }

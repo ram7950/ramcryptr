@@ -16,7 +16,7 @@ class EncodeTextActivity : Activity() {
             return
         }
 
-        val result = TextCrypto.encrypt(text, "ramcryptr_secret")
+        val result = TextCrypto.encrypt(text, CryptoMasterProvider.getMaster(this))
 
         val out = Intent()
         out.putExtra(Intent.EXTRA_PROCESS_TEXT, result)

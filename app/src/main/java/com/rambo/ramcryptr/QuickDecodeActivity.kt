@@ -34,7 +34,7 @@ class QuickDecodeActivity : AppCompatActivity() {
             }
 
             val decoded = try {
-                TextCrypto.decrypt(text, "ramcryptr_secret")
+                TextCrypto.decrypt(text, CryptoMasterProvider.getMaster(this))
             } catch (e: Exception) {
                 "❌ Decode failed"
             }

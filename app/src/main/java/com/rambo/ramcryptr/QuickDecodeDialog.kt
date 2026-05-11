@@ -47,7 +47,7 @@ object QuickDecodeDialog {
             }
 
             try {
-                val decoded = TextCrypto.decrypt(text, "ramcryptr_secret")
+                val decoded = TextCrypto.decrypt(text, CryptoMasterProvider.getMaster(this))
                 output.text = decoded
                 input.setText("")
             } catch (e: Exception) {
