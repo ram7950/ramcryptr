@@ -81,7 +81,13 @@ class FileReceiveActivity : AppCompatActivity() {
                 "encoded_${System.currentTimeMillis()}.ram.bin"
             )
 
-            FileCryptoManager.encryptFile(file, outFile, ext, mime)
+            FileCryptoManager.encryptFile(
+                    file,
+                    outFile,
+                    ext,
+                    mime,
+                    CryptoMasterProvider.getMaster(this)
+                )
             file.delete()
 
             val send = Intent(Intent.ACTION_SEND)
@@ -127,7 +133,11 @@ class FileReceiveActivity : AppCompatActivity() {
             val tempOut = File(cacheDir, "out_tmp")
 
             val (ext, mime) =
-                FileCryptoManager.decryptFile(file, tempOut)
+                FileCryptoManager.decryptFile(
+                    file,
+                    tempOut,
+                    CryptoMasterProvider.getMaster(this)
+                )
 
             val finalFile = File(
                 cacheDir,

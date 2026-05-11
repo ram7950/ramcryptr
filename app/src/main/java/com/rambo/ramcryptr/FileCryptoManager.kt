@@ -14,12 +14,15 @@ import javax.crypto.spec.SecretKeySpec
 object FileCryptoManager {
 
     private const val PREFIX = "RAMCRYPT_V2|"
-    private const val KEY = "12345678901234567890123456789012"
+    private fun makeKey(
+        master: String
+    ): ByteArray {
 
-    private fun makeKey(): ByteArray {
         return MessageDigest
             .getInstance("SHA-256")
-            .digest(KEY.toByteArray())
+            .digest(
+                master.toByteArray()
+            )
     }
 
     // ---------------- ENCRYPT ----------------
@@ -28,7 +31,8 @@ object FileCryptoManager {
         input: File,
         output: File,
         ext: String,
-        mime: String
+        mime: String,
+        master: String
     ) {
 
         val cleanExt = ext.trim().lowercase()
@@ -44,7 +48,7 @@ object FileCryptoManager {
 
         cipher.init(
             Cipher.ENCRYPT_MODE,
-            SecretKeySpec(makeKey(), "AES"),
+            SecretKeySpec(makeKey(master), "AES"),
             IvParameterSpec(iv)
         )
 
@@ -67,7 +71,8 @@ object FileCryptoManager {
 
     fun decryptFile(
         input: File,
-        output: File
+        output: File,
+        master: String
     ): Pair<String, String> {
 
         FileInputStream(input).use { fis ->
@@ -120,7 +125,7 @@ object FileCryptoManager {
 
             cipher.init(
                 Cipher.DECRYPT_MODE,
-                SecretKeySpec(makeKey(), "AES"),
+                SecretKeySpec(makeKey(master), "AES"),
                 IvParameterSpec(iv)
             )
 

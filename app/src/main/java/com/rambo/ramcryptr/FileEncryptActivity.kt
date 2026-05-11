@@ -41,7 +41,13 @@ class FileEncryptActivity : AppCompatActivity() {
             val ext = uri.lastPathSegment?.substringAfterLast('.', "tmp") ?: "tmp"
             val mime = contentResolver.getType(uri) ?: "*/*"
 
-            FileCryptoManager.encryptFile(input, outFile, ext, mime)
+            FileCryptoManager.encryptFile(
+                input,
+                outFile,
+                ext,
+                mime,
+                CryptoMasterProvider.getMaster(this)
+            )
 
             val send = Intent(Intent.ACTION_SEND)
             send.type = "*/*"

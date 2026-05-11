@@ -54,7 +54,11 @@ class FileDecryptActivity : AppCompatActivity() {
 
             val tempDec = File(cacheDir, "temp_dec")
 
-            val result = FileCryptoManager.decryptFile(enc, tempDec)
+            val result = FileCryptoManager.decryptFile(
+                enc,
+                tempDec,
+                CryptoMasterProvider.getMaster(this)
+            )
 
             val ext = result.first
             val mime = result.second
