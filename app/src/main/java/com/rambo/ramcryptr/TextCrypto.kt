@@ -99,6 +99,25 @@ object TextCrypto {
                 parts[1].startsWith("CHAN-")
             ) {
 
+                val embeddedFingerprint =
+                    parts[1]
+                        .removePrefix("CHAN-")
+
+                val activeFingerprint =
+                    ChannelFingerprint.generate(
+                        master
+                    )
+
+                if (
+                    embeddedFingerprint !=
+                    activeFingerprint
+                ) {
+
+                    throw IllegalArgumentException(
+                        "☠️☠️❌ WRONG CHANNEL ❌☠️☠️\n🛑 This data package doesn't belong to your active channel 🛑"
+                    )
+                }
+
                 code = parts[2]
                 data = parts.subList(
                     3,

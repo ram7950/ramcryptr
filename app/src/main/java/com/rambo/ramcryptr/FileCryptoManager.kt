@@ -13,7 +13,7 @@ import javax.crypto.spec.SecretKeySpec
 
 object FileCryptoManager {
 
-    private const val PREFIX = "RAMCRYPT_V2|"
+    private const val PREFIX = "RAMCRYPT_V3|"
     private fun makeKey(
         master: String
     ): ByteArray {
@@ -37,8 +37,13 @@ object FileCryptoManager {
 
         val cleanExt = ext.trim().lowercase()
 
+        val fingerprint =
+            ChannelFingerprint.generate(
+                master
+            )
+
         val header =
-            "${PREFIX}ext=${cleanExt}|mime=${mime}\n"
+            "${PREFIX}chan=${fingerprint}|ext=${cleanExt}|mime=${mime}\n"
 
         val iv = ByteArray(16)
         SecureRandom().nextBytes(iv)
@@ -95,10 +100,19 @@ object FileCryptoManager {
 
             var ext = "dat"
             var mime = "*/*"
+            var embeddedFingerprint = "0000"
 
             for (p in parts) {
 
                 val clean = p.trim()
+
+                if (clean.startsWith("chan=")) {
+
+                    embeddedFingerprint =
+                        clean
+                            .removePrefix("chan=")
+                            .trim()
+                }
 
                 if (clean.startsWith("ext=")) {
                     ext = clean
@@ -112,6 +126,21 @@ object FileCryptoManager {
                         .removePrefix("mime=")
                         .trim()
                 }
+            }
+
+            val activeFingerprint =
+                ChannelFingerprint.generate(
+                    master
+                )
+
+            if (
+                embeddedFingerprint != "0000" &&
+                embeddedFingerprint != activeFingerprint
+            ) {
+
+                throw Exception(
+                    "☠️☠️❌ WRONG CHANNEL ❌☠️☠️\n🛑 This data package doesn't belong to your active channel 🛑"
+                )
             }
 
             // FINAL EXT SAFETY
