@@ -326,9 +326,15 @@ class MainActivity : AppCompatActivity() {
                                     ).padStart(8, '0')
                                 }
 
+                        val scrambledIndex =
+                            (
+                                i * 7 +
+                                generatedId.length * 13
+                            ) % payloadBits.length
+
                         val bit =
                             payloadBits[
-                                i % payloadBits.length
+                                scrambledIndex
                             ]
 
                         if (bit == '1') {
