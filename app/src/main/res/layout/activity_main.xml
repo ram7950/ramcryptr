@@ -68,20 +68,23 @@
             android:layout_marginTop="16dp">
 
             <Button
-                android:id="@+id/btnRefreshChannels"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⟳ REFRESH"
-                android:textStyle="bold"
-                android:layout_marginEnd="8dp"/>
-
-            <Button
                 android:id="@+id/btnInitiateCommn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="INITIATE COMMN"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginEnd="6dp"/>
+
+            <Button
+                android:id="@+id/btnRefreshChannels"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="⟳ REFRESH"
+                android:textStyle="bold"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"/>
 
             <Button
                 android:id="@+id/btnPatchIn"
@@ -90,7 +93,7 @@
                 android:layout_weight="1"
                 android:text="PATCH IN"
                 android:textStyle="bold"
-                android:layout_marginStart="8dp"/>
+                android:layout_marginStart="6dp"/>
                 
 
         </LinearLayout>

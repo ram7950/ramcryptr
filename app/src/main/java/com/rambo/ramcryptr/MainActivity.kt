@@ -120,187 +120,34 @@ class MainActivity : AppCompatActivity() {
 
         btnRefreshChannels.setOnClickListener {
 
-            renderChannels()
-
-            channelListContainer.invalidate()
-
-            channelListContainer.requestLayout()
-
             Toast.makeText(
                 this,
-                "Panel refreshed",
+                "Refreshing tactical panel...",
                 Toast.LENGTH_SHORT
             ).show()
-        }
 
-        btnInitiateCommn.setOnClickListener {
+            window.decorView.postDelayed({
 
-            val layout = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(40, 30, 40, 10)
-            }
-
-            val etChannelName = EditText(this).apply {
-                hint = "Enter Channel Name"
-            }
-
-            val tvChannelId = TextView(this).apply {
-                text = "Channel ID not generated"
-            }
-
-            val btnGenerate = Button(this).apply {
-                text = "Generate Channel ID"
-            }
-
-            val btnSecure = Button(this).apply {
-                text = "SECURE 🔐"
-            }
-
-            val btnCreateMatrix = Button(this).apply {
-
-                text = "CREATE KEY MATRIX"
-
-                visibility =
-                    android.view.View.GONE
-            }
-
-            var generatedId = ""
-
-            btnGenerate.setOnClickListener {
-
-                generatedId =
-                    java.util.UUID.randomUUID()
-                        .toString()
-                        .substring(0, 8)
-                        .uppercase()
-
-                tvChannelId.text =
-                    "Channel ID: $generatedId"
-            }
-
-            layout.addView(etChannelName)
-            layout.addView(btnGenerate)
-            layout.addView(tvChannelId)
-            layout.addView(btnSecure)
-            layout.addView(btnCreateMatrix)
-
-            val tvMatrixPreview = TextView(this).apply {
-
-                text =
-                    "TACTICAL MATRIX GENERATED"
-
-                textSize = 14f
-
-                setPadding(20, 40, 20, 40)
-
-                gravity =
-                    android.view.Gravity.CENTER
-
-                setBackgroundColor(
-                    android.graphics.Color.BLACK
-                )
-
-                setTextColor(
-                    android.graphics.Color.GREEN
-                )
-
-                visibility =
-                    android.view.View.GONE
-            }
-
-            layout.addView(tvMatrixPreview)
-
-            val dialog = AlertDialog.Builder(this)
-                .setTitle("INITIATE COMMN")
-                .setView(layout)
-                .create()
-
-            btnSecure.setOnClickListener {
-
-                    val name =
-                        etChannelName.text.toString()
+                try {
 
                     if (
-                        name.isBlank() ||
-                        generatedId.isBlank()
+                        !isFinishing &&
+                        !isDestroyed
                     ) {
 
-                        Toast.makeText(
-                            this,
-                            "Generate channel properly",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        return@setOnClickListener
+                        renderChannels()
                     }
 
-                    val joinSecret =
-                        CryptoKeyManager
-                            .generateJoinSecret()
-
-                    val channel = Channel(
-                        channelName = name,
-                        channelId = generatedId,
-                        joinSecret = joinSecret
-                    )
-
-                    ChannelStorage.saveChannel(
-                        this,
-                        channel
-                    )
-
-                    ChannelManager.setActiveChannel(
-                        this,
-                        channel
-                    )
-
-                    window.decorView.postDelayed({
-
-                        if (
-                            !isFinishing &&
-                            !isDestroyed
-                        ) {
-
-                            try {
-
-                                renderChannels()
-
-                                channelListContainer
-                                    .invalidate()
-
-                                channelListContainer
-                                    .requestLayout()
-
-                            } catch (_: Exception) {
-                            }
-                        }
-
-                    }, 250)
-
-                    btnCreateMatrix.visibility =
-                        android.view.View.VISIBLE
-
-                    btnCreateMatrix.setOnClickListener {
-
-                        tvMatrixPreview.visibility =
-                            android.view.View.VISIBLE
-
-                        Toast.makeText(
-                            this,
-                            "Matrix initialized",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                } catch (_: Exception) {
 
                     Toast.makeText(
                         this,
-                        "Secure channel created",
+                        "Refresh failed",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
 
-            dialog.show()
-
+            }, 150)
         }
 
         btnPatchIn.setOnClickListener {
