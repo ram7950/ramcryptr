@@ -47,7 +47,7 @@ object QuickDecodeDialog {
             }
 
             try {
-                val decoded = TextCrypto.decrypt(text, CryptoMasterProvider.getMaster(requireContext()))
+                val decoded = TextCrypto.decrypt(text, CryptoMasterProvider.getMaster(context))
                 output.text = decoded
                 input.setText("")
             } catch (e: Exception) {
