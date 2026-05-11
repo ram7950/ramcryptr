@@ -281,13 +281,17 @@ class MainActivity : AppCompatActivity() {
                 val matrixBuilder =
                     StringBuilder()
 
-                for (i in matrixSeed.indices) {
+                val fixedSize = 324
+
+                for (i in 0 until fixedSize) {
 
                     val ch =
-                        matrixSeed[i]
+                        matrixSeed[
+                            i % matrixSeed.length
+                        ]
 
                     if (
-                        ch.toInt() % 2 == 0
+                        (ch.toInt() + i) % 2 == 0
                     ) {
 
                         matrixBuilder.append("▓")
@@ -311,7 +315,7 @@ class MainActivity : AppCompatActivity() {
 
                 Toast.makeText(
                     this,
-                    "Dynamic matrix generated",
+                    "Fixed tactical matrix generated",
                     Toast.LENGTH_SHORT
                 ).show()
             }
