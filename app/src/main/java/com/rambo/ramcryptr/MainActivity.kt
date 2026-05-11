@@ -317,21 +317,21 @@ class MainActivity : AppCompatActivity() {
 
                     } else {
 
-                        val ch =
-                            matrixSeed[
-                                i % matrixSeed.length
+                        val payloadBits =
+                            matrixSeed.toByteArray()
+                                .joinToString("") {
+
+                                    Integer.toBinaryString(
+                                        it.toInt() and 0xFF
+                                    ).padStart(8, '0')
+                                }
+
+                        val bit =
+                            payloadBits[
+                                i % payloadBits.length
                             ]
 
-                        val noise =
-                            (
-                                ch.toInt() *
-                                (i + 3) *
-                                17
-                            ) % 7
-
-                        if (
-                            noise % 2 == 0
-                        ) {
+                        if (bit == '1') {
 
                             matrixBuilder.append("▓")
 
