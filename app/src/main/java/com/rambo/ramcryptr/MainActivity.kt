@@ -290,8 +290,15 @@ class MainActivity : AppCompatActivity() {
                             i % matrixSeed.length
                         ]
 
+                    val noise =
+                        (
+                            ch.toInt() *
+                            (i + 3) *
+                            17
+                        ) % 7
+
                     if (
-                        (ch.toInt() + i) % 2 == 0
+                        noise % 2 == 0
                     ) {
 
                         matrixBuilder.append("▓")
