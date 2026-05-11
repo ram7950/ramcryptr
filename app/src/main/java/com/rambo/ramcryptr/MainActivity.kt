@@ -281,34 +281,57 @@ class MainActivity : AppCompatActivity() {
                 val matrixBuilder =
                     StringBuilder()
 
-                val fixedSize = 324
+                val gridSize = 18
+
+                val fixedSize =
+                    gridSize * gridSize
 
                 for (i in 0 until fixedSize) {
 
-                    val ch =
-                        matrixSeed[
-                            i % matrixSeed.length
-                        ]
+                    val row =
+                        i / gridSize
 
-                    val noise =
+                    val col =
+                        i % gridSize
+
+                    val isFinder =
                         (
-                            ch.toInt() *
-                            (i + 3) *
-                            17
-                        ) % 7
+                            (row < 4 && col < 4) ||
+                            (row < 4 && col > 13) ||
+                            (row > 13 && col < 4)
+                        )
 
-                    if (
-                        noise % 2 == 0
-                    ) {
+                    if (isFinder) {
 
                         matrixBuilder.append("▓")
 
                     } else {
 
-                        matrixBuilder.append("░")
+                        val ch =
+                            matrixSeed[
+                                i % matrixSeed.length
+                            ]
+
+                        val noise =
+                            (
+                                ch.toInt() *
+                                (i + 3) *
+                                17
+                            ) % 7
+
+                        if (
+                            noise % 2 == 0
+                        ) {
+
+                            matrixBuilder.append("▓")
+
+                        } else {
+
+                            matrixBuilder.append("░")
+                        }
                     }
 
-                    if ((i + 1) % 18 == 0) {
+                    if ((i + 1) % gridSize == 0) {
 
                         matrixBuilder.append("\n")
                     }
