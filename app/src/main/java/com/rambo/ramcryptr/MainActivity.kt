@@ -274,28 +274,37 @@ class MainActivity : AppCompatActivity() {
 
             btnCreateMatrix.setOnClickListener {
 
-                val seed =
-                    name +
-                    generatedId +
-                    joinSecret
+                val matrixSeed =
+                    etChannelName.text.toString() +
+                    generatedId
 
-                val chars =
-                    seed.map {
+                val matrixBuilder =
+                    StringBuilder()
 
-                        if (
-                            it.code % 2 == 0
-                        ) "▓"
-                        else "░"
+                for (i in matrixSeed.indices) {
+
+                    val ch =
+                        matrixSeed[i]
+
+                    if (
+                        ch.toInt() % 2 == 0
+                    ) {
+
+                        matrixBuilder.append("▓")
+
+                    } else {
+
+                        matrixBuilder.append("░")
                     }
 
-                val matrix =
-                    chars.chunked(18)
-                        .joinToString("\n") {
-                            it.joinToString("")
-                        }
+                    if ((i + 1) % 18 == 0) {
+
+                        matrixBuilder.append("\n")
+                    }
+                }
 
                 tvMatrixPreview.text =
-                    matrix
+                    matrixBuilder.toString()
 
                 tvMatrixPreview.visibility =
                     android.view.View.VISIBLE
