@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             input.setText(
 TextCrypto.encrypt(
     text,
-    CryptoMasterProvider.getMaster(this)
+    "ramcryptr_secret"
 )
 )
         }
@@ -108,7 +108,7 @@ TextCrypto.encrypt(
                 input.setText(
 TextCrypto.decrypt(
     text,
-    CryptoMasterProvider.getMaster(this)
+    "ramcryptr_secret"
 )
 )
             } catch (e: Exception) {
