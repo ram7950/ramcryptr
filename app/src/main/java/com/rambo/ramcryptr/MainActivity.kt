@@ -301,9 +301,19 @@ class MainActivity : AppCompatActivity() {
                             (row > 13 && col < 4)
                         )
 
+                    val isReserved =
+                        (
+                            row == 8 ||
+                            col == 8
+                        )
+
                     if (isFinder) {
 
                         matrixBuilder.append("▓")
+
+                    } else if (isReserved) {
+
+                        matrixBuilder.append("▒")
 
                     } else {
 
