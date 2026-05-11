@@ -150,6 +150,143 @@ class MainActivity : AppCompatActivity() {
             }, 150)
         }
 
+        btnInitiateCommn.setOnClickListener {
+
+            val layout = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(40, 30, 40, 10)
+            }
+
+            val etChannelName = EditText(this).apply {
+                hint = "Enter Channel Name"
+            }
+
+            val tvChannelId = TextView(this).apply {
+                text = "Channel ID not generated"
+            }
+
+            val btnGenerate = Button(this).apply {
+                text = "Generate Channel ID"
+            }
+
+            val btnSecure = Button(this).apply {
+                text = "SECURE 🔐"
+            }
+
+            val btnCreateMatrix = Button(this).apply {
+                text = "CREATE KEY MATRIX"
+                visibility = android.view.View.GONE
+            }
+
+            val tvMatrixPreview = TextView(this).apply {
+
+                text = "TACTICAL MATRIX GENERATED"
+
+                textSize = 14f
+
+                setPadding(20, 40, 20, 40)
+
+                gravity = android.view.Gravity.CENTER
+
+                setBackgroundColor(
+                    android.graphics.Color.BLACK
+                )
+
+                setTextColor(
+                    android.graphics.Color.GREEN
+                )
+
+                visibility = android.view.View.GONE
+            }
+
+            var generatedId = ""
+
+            btnGenerate.setOnClickListener {
+
+                generatedId =
+                    java.util.UUID.randomUUID()
+                        .toString()
+                        .substring(0, 8)
+                        .uppercase()
+
+                tvChannelId.text =
+                    "Channel ID: $generatedId"
+            }
+
+            btnSecure.setOnClickListener {
+
+                val name =
+                    etChannelName.text.toString()
+
+                if (
+                    name.isBlank() ||
+                    generatedId.isBlank()
+                ) {
+
+                    Toast.makeText(
+                        this,
+                        "Generate channel properly",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    return@setOnClickListener
+                }
+
+                val joinSecret =
+                    CryptoKeyManager
+                        .generateJoinSecret()
+
+                val channel = Channel(
+                    channelName = name,
+                    channelId = generatedId,
+                    joinSecret = joinSecret
+                )
+
+                ChannelStorage.saveChannel(
+                    this,
+                    channel
+                )
+
+                ChannelManager.setActiveChannel(
+                    this,
+                    channel
+                )
+
+                btnCreateMatrix.visibility =
+                    android.view.View.VISIBLE
+
+                Toast.makeText(
+                    this,
+                    "Secure channel created",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            btnCreateMatrix.setOnClickListener {
+
+                tvMatrixPreview.visibility =
+                    android.view.View.VISIBLE
+
+                Toast.makeText(
+                    this,
+                    "Matrix initialized",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            layout.addView(etChannelName)
+            layout.addView(btnGenerate)
+            layout.addView(tvChannelId)
+            layout.addView(btnSecure)
+            layout.addView(btnCreateMatrix)
+            layout.addView(tvMatrixPreview)
+
+            AlertDialog.Builder(this)
+                .setTitle("INITIATE COMMN")
+                .setView(layout)
+                .show()
+        }
+
         btnPatchIn.setOnClickListener {
 
             startActivity(
