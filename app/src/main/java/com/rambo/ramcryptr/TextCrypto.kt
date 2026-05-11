@@ -54,10 +54,7 @@ object TextCrypto {
             val key = deriveKey(
                 master,
                 index,
-                RamApp.instance?.let {
-                    ChannelCryptoBridge
-                        .getActiveSeed(it)
-                } ?: "GLOBAL_DEFAULT"
+                "GLOBAL_DEFAULT"
             )
     
 
@@ -98,10 +95,7 @@ object TextCrypto {
             val key = deriveKey(
                 master,
                 index,
-                RamApp.instance?.let {
-                    ChannelCryptoBridge
-                        .getActiveSeed(it)
-                } ?: "GLOBAL_DEFAULT"
+                "GLOBAL_DEFAULT"
             )
     
 

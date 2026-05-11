@@ -37,7 +37,6 @@ object ChannelStorage {
             put("channelId", channel.channelId)
             put("joinSecret", channel.joinSecret)
             put("createdAt", channel.createdAt)
-            put("activeVersion", channel.activeVersion)
         }
 
         file.writeText(json.toString())
@@ -58,9 +57,8 @@ object ChannelStorage {
                 Channel(
                     channelName = json.getString("channelName"),
                     channelId = json.getString("channelId"),
-                    joinSecret = json.getString("joinSecret"),
+                    joinSecret = json.getString("joinSecret")
                     createdAt = json.getLong("createdAt"),
-                    activeVersion = json.getString("activeVersion")
                 )
 
             } catch (e: Exception) {
