@@ -8,7 +8,10 @@ data class Channel(
 
     val joinSecret: String,
 
-    val createdAt: Long = System.currentTimeMillis(),
+    val cryptoSeed: String =
+        java.util.UUID.randomUUID()
+            .toString(),
 
-    val activeVersion: String = "K1"
+    val createdAt: Long =
+        System.currentTimeMillis()
 )

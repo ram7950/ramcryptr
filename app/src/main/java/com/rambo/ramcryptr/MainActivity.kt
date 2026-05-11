@@ -83,7 +83,12 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Enter text", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            input.setText(TextCrypto.encrypt(text, "ramcryptr_secret"))
+            input.setText(
+TextCrypto.encrypt(
+    text,
+    CryptoMasterProvider.getMaster(this)
+)
+)
         }
 
         decodeBtn.setOnClickListener {
@@ -100,7 +105,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             try {
-                input.setText(TextCrypto.decrypt(text, "ramcryptr_secret"))
+                input.setText(
+TextCrypto.decrypt(
+    text,
+    CryptoMasterProvider.getMaster(this)
+)
+)
             } catch (e: Exception) {
                 Toast.makeText(this, "Decode failed", Toast.LENGTH_SHORT).show()
             }

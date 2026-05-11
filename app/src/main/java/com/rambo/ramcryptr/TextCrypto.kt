@@ -15,11 +15,33 @@ object TextCrypto {
     private const val TAG_SIZE = 128
 
     // 🔐 Key derivation (stable + safe)
-    private fun deriveKey(master: String, index: Int): SecretKeySpec {
-        val digest = MessageDigest.getInstance("SHA-256")
-        val fullKey = digest.digest((master + index).toByteArray(Charset.forName("UTF-8")))
-        val keyBytes = fullKey.copyOf(32) // 256-bit key
-        return SecretKeySpec(keyBytes, "AES")
+    private fun deriveKey(
+        master: String,
+        index: Int,
+        channelSeed: String
+    ): SecretKeySpec {
+
+        val digest =
+            MessageDigest.getInstance("SHA-256")
+
+        val fullKey =
+            digest.digest(
+                (
+                    master +
+                    index +
+                    channelSeed
+                ).toByteArray(
+                    Charset.forName("UTF-8")
+                )
+            )
+
+        val keyBytes =
+            fullKey.copyOf(32)
+
+        return SecretKeySpec(
+            keyBytes,
+            "AES"
+        )
     }
 
     // 🔐 Encrypt
@@ -28,7 +50,16 @@ object TextCrypto {
             val index = DateUtils.getDayIndex()
             val code = Base62.encode(index)
 
-            val key = deriveKey(master, index)
+            
+            val key = deriveKey(
+                master,
+                index,
+                RamApp.instance?.let {
+                    ChannelCryptoBridge
+                        .getActiveSeed(it)
+                } ?: "GLOBAL_DEFAULT"
+            )
+    
 
             val iv = ByteArray(IV_SIZE)
             SecureRandom().nextBytes(iv)
@@ -63,7 +94,16 @@ object TextCrypto {
             val data = parts[2]
 
             val index = Base62.decode(code)
-            val key = deriveKey(master, index)
+            
+            val key = deriveKey(
+                master,
+                index,
+                RamApp.instance?.let {
+                    ChannelCryptoBridge
+                        .getActiveSeed(it)
+                } ?: "GLOBAL_DEFAULT"
+            )
+    
 
             val decoded = Base64.decode(data, Base64.NO_WRAP)
 
