@@ -300,7 +300,7 @@ TextCrypto.decrypt(
                 val matrixBuilder =
                     StringBuilder()
 
-                val gridSize = 18
+                val gridSize = 64
 
                 val fixedSize =
                     gridSize * gridSize
