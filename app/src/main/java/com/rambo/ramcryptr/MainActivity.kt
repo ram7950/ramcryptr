@@ -708,6 +708,238 @@ TextCrypto.decrypt(
 
             action.addView(stateView)
 
+            val exportView = TextView(this).apply {
+
+                text = "EXPORT"
+
+                textSize = 11f
+
+                setPadding(0, 10, 0, 0)
+
+                setTextColor(
+                    android.graphics.Color.CYAN
+                )
+
+                setOnClickListener {
+
+                    AlertDialog.Builder(
+                        this@MainActivity
+                    )
+
+                        .setTitle(
+                            "EXPORT KEY MATRIX"
+                        )
+
+                        .setMessage(
+                            "Wanna share key matrix for channel \"" +
+                            channel.channelName +
+                            "\" ?"
+                        )
+
+                        .setNegativeButton(
+                            "No, thanx",
+                            null
+                        )
+
+                        .setPositiveButton(
+                            "EXPORT"
+                        ) { _, _ ->
+
+                            try {
+
+                                val encodedPayload =
+                                    MatrixPayloadCodec
+                                        .encodeChannel(
+                                            channel
+                                        )
+
+                                val payloadBits =
+                                    MatrixBitstream
+                                        .stringToBits(
+                                            encodedPayload
+                                        )
+
+                                val matrixBuilder =
+                                    StringBuilder()
+
+                                val entropyRandom =
+                                    java.util.Random(
+                                        (
+                                            channel.channelId
+                                                .hashCode()
+                                                .toLong() shl 32
+                                        ) xor
+                                        channel.cryptoSeed
+                                            .hashCode()
+                                            .toLong()
+                                    )
+
+                                val gridSize = 64
+
+                                for (
+                                    i in 0 until
+                                    (gridSize * gridSize)
+                                ) {
+
+                                    val row =
+                                        i / gridSize
+
+                                    val col =
+                                        i % gridSize
+
+                                    val isFinder =
+                                        (
+                                            (row < 4 && col < 4) ||
+                                            (row < 4 && col > 13) ||
+                                            (row > 13 && col < 4)
+                                        )
+
+                                    val isReserved =
+                                        (
+                                            row == 8 ||
+                                            col == 8
+                                        )
+
+                                    if (isFinder) {
+
+                                        matrixBuilder
+                                            .append("▓")
+
+                                    } else if (
+                                        isReserved
+                                    ) {
+
+                                        matrixBuilder
+                                            .append("▒")
+
+                                    } else {
+
+                                        val payloadIndex =
+                                            i - 1
+
+                                        val bit =
+                                            if (
+                                                payloadIndex >= 0 &&
+                                                payloadIndex <
+                                                payloadBits.length
+                                            ) {
+
+                                                payloadBits[
+                                                    payloadIndex
+                                                ]
+
+                                            } else {
+
+                                                if (
+                                                    entropyRandom
+                                                        .nextBoolean()
+                                                ) {
+                                                    '1'
+                                                } else {
+                                                    '0'
+                                                }
+                                            }
+
+                                        if (bit == '1') {
+
+                                            matrixBuilder
+                                                .append("▓")
+
+                                        } else {
+
+                                            matrixBuilder
+                                                .append("░")
+                                        }
+                                    }
+
+                                    if (
+                                        (i + 1) %
+                                        gridSize == 0
+                                    ) {
+
+                                        matrixBuilder
+                                            .append("\n")
+                                    }
+                                }
+
+                                val bitmap =
+                                    MatrixBitmapGenerator
+                                        .generate(
+                                            matrixBuilder
+                                                .toString()
+                                        )
+
+                                val file =
+                                    java.io.File(
+                                        cacheDir,
+                                        "export_matrix.png"
+                                    )
+
+                                val fos =
+                                    java.io.FileOutputStream(
+                                        file
+                                    )
+
+                                bitmap.compress(
+                                    android.graphics.Bitmap
+                                        .CompressFormat.PNG,
+                                    100,
+                                    fos
+                                )
+
+                                fos.flush()
+                                fos.close()
+
+                                val uri =
+                                    androidx.core.content
+                                        .FileProvider
+                                        .getUriForFile(
+                                            this@MainActivity,
+                                            packageName +
+                                            ".provider",
+                                            file
+                                        )
+
+                                val intent =
+                                    Intent(
+                                        Intent.ACTION_SEND
+                                    ).apply {
+
+                                        type = "image/png"
+
+                                        putExtra(
+                                            Intent.EXTRA_STREAM,
+                                            uri
+                                        )
+
+                                        addFlags(
+                                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                        )
+                                    }
+
+                                startActivity(
+                                    Intent.createChooser(
+                                        intent,
+                                        "SHARE TACTICAL MATRIX"
+                                    )
+                                )
+
+                            } catch (_: Exception) {
+
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Export failed",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+
+                        .show()
+                }
+            }
+
+            action.addView(exportView)
+
             val deleteView = TextView(this).apply {
 
                 text = "DELETE"
