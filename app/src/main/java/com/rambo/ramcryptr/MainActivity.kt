@@ -513,12 +513,67 @@ TextCrypto.decrypt(
 
         btnPatchIn.setOnClickListener {
 
-            startActivity(
-                Intent(
+            val layout =
+                LinearLayout(this).apply {
+
+                    orientation =
+                        LinearLayout.VERTICAL
+
+                    setPadding(
+                        40,
+                        30,
+                        40,
+                        10
+                    )
+                }
+
+            val btnScan =
+                Button(this).apply {
+
+                    text =
+                        "SCAN KEY MATRIX"
+                }
+
+            val btnImport =
+                Button(this).apply {
+
+                    text =
+                        "IMPORT KEY MATRIX"
+                }
+
+            layout.addView(btnScan)
+            layout.addView(btnImport)
+
+            val dialog =
+                AlertDialog.Builder(this)
+
+                    .setTitle(
+                        "PATCH IN"
+                    )
+
+                    .setView(layout)
+
+                    .create()
+
+            btnScan.setOnClickListener {
+
+                Toast.makeText(
                     this,
-                    WelcomeActivity::class.java
-                )
-            )
+                    "Scanner phase coming next",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            btnImport.setOnClickListener {
+
+                Toast.makeText(
+                    this,
+                    "Import flow coming next",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            dialog.show()
         }
 
         btnTnetPanel.setOnClickListener {
