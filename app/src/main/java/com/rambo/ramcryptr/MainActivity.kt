@@ -197,36 +197,27 @@ TextCrypto.decrypt(
                 visibility = android.view.View.GONE
             }
 
-            val tvMatrixPreview = TextView(this).apply {
+            
+            val ivMatrixPreview =
+                ImageView(this).apply {
 
-                text =
-                    """
-▓▓░▓▓▓░░▓▓▓░▓░▓▓
-▓░░▓▓░▓▓░░▓▓░░▓
-▓▓▓░░▓▓▓▓░▓▓░▓▓
-░▓▓▓░░▓▓░▓▓▓░░▓
-▓░▓▓▓░░▓▓░▓▓▓░▓
-▓▓░░▓▓▓░▓░░▓▓▓▓
-░▓▓▓░▓▓▓░▓▓░░▓▓
-▓▓░▓░░▓▓▓░▓▓▓░▓
-                    """.trimIndent()
+                    visibility =
+                        android.view.View.GONE
 
-                textSize = 14f
+                    adjustViewBounds = true
 
-                setPadding(20, 40, 20, 40)
+                    setBackgroundColor(
+                        android.graphics.Color.BLACK
+                    )
 
-                gravity = android.view.Gravity.CENTER
+                    setPadding(
+                        20,
+                        40,
+                        20,
+                        40
+                    )
+                }
 
-                setBackgroundColor(
-                    android.graphics.Color.BLACK
-                )
-
-                setTextColor(
-                    android.graphics.Color.GREEN
-                )
-
-                visibility = android.view.View.GONE
-            }
 
             var generatedId = ""
 
@@ -389,17 +380,18 @@ TextCrypto.decrypt(
                 val finalMatrix =
                     matrixBuilder.toString()
 
-                tvMatrixPreview.text =
-                    finalMatrix
-
-                tvMatrixPreview.visibility =
-                    android.view.View.VISIBLE
-
                 latestMatrixBitmap =
                     MatrixBitmapGenerator
                         .generate(
                             finalMatrix
                         )
+
+                ivMatrixPreview.setImageBitmap(
+                    latestMatrixBitmap
+                )
+
+                ivMatrixPreview.visibility =
+                    android.view.View.VISIBLE
 
                 btnShareMatrix.visibility =
                     android.view.View.VISIBLE
@@ -488,7 +480,7 @@ TextCrypto.decrypt(
             layout.addView(btnSecure)
             layout.addView(btnCreateMatrix)
             layout.addView(btnShareMatrix)
-            layout.addView(tvMatrixPreview)
+            layout.addView(ivMatrixPreview)
 
             AlertDialog.Builder(this)
                 .setTitle("INITIATE COMMN")
