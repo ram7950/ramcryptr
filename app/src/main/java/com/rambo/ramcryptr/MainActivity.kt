@@ -19,6 +19,31 @@ class MainActivity : AppCompatActivity() {
     private val PICK_ENCODE_FILE = 201
     private val PICK_DECODE_FILE = 202
 
+    private val importMatrixLauncher =
+        registerForActivityResult(
+            androidx.activity.result.contract
+                .ActivityResultContracts
+                .GetContent()
+        ) { uri ->
+
+            if (uri != null) {
+
+                Toast.makeText(
+                    this,
+                    "Matrix PNG imported",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "No PNG selected",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -566,11 +591,9 @@ TextCrypto.decrypt(
 
             btnImport.setOnClickListener {
 
-                Toast.makeText(
-                    this,
-                    "Import flow coming next",
-                    Toast.LENGTH_SHORT
-                ).show()
+                importMatrixLauncher.launch(
+                    "image/png"
+                )
             }
 
             dialog.show()
