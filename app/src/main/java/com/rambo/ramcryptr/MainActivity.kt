@@ -12,6 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
+    private var latestMatrixBitmap:
+        android.graphics.Bitmap? = null
+
+
     private val PICK_ENCODE_FILE = 201
     private val PICK_DECODE_FILE = 202
 
@@ -188,6 +192,11 @@ TextCrypto.decrypt(
                 visibility = android.view.View.GONE
             }
 
+            val btnShareMatrix = Button(this).apply {
+                text = "SHARE MATRIX"
+                visibility = android.view.View.GONE
+            }
+
             val tvMatrixPreview = TextView(this).apply {
 
                 text =
@@ -327,14 +336,28 @@ TextCrypto.decrypt(
 
                     } else {
 
-                        val payloadBits =
-                            matrixSeed.toByteArray()
-                                .joinToString("") {
+                        val activeChannel =
+                            ChannelManager
+                                .getActiveChannel()
 
-                                    Integer.toBinaryString(
-                                        it.toInt() and 0xFF
-                                    ).padStart(8, '0')
-                                }
+                        val encodedPayload =
+                            if (activeChannel != null) {
+
+                                MatrixPayloadCodec
+                                    .encodeChannel(
+                                        activeChannel
+                                    )
+
+                            } else {
+
+                                matrixSeed
+                            }
+
+                        val payloadBits =
+                            MatrixBitstream
+                                .stringToBits(
+                                    encodedPayload
+                                )
 
                         val scrambledIndex =
                             (
@@ -363,10 +386,22 @@ TextCrypto.decrypt(
                     }
                 }
 
-                tvMatrixPreview.text =
+                val finalMatrix =
                     matrixBuilder.toString()
 
+                tvMatrixPreview.text =
+                    finalMatrix
+
                 tvMatrixPreview.visibility =
+                    android.view.View.VISIBLE
+
+                latestMatrixBitmap =
+                    MatrixBitmapGenerator
+                        .generate(
+                            finalMatrix
+                        )
+
+                btnShareMatrix.visibility =
                     android.view.View.VISIBLE
 
                 Toast.makeText(
@@ -376,11 +411,83 @@ TextCrypto.decrypt(
                 ).show()
             }
 
+            btnShareMatrix.setOnClickListener {
+
+                try {
+
+                    val bitmap =
+                        latestMatrixBitmap
+                            ?: return@setOnClickListener
+
+                    val file =
+                        java.io.File(
+                            cacheDir,
+                            "tactical_matrix.png"
+                        )
+
+                    val fos =
+                        java.io.FileOutputStream(file)
+
+                    bitmap.compress(
+                        android.graphics.Bitmap
+                            .CompressFormat.PNG,
+                        100,
+                        fos
+                    )
+
+                    fos.flush()
+                    fos.close()
+
+                    val uri =
+                        androidx.core.content.FileProvider
+                            .getUriForFile(
+                                this,
+                                packageName +
+                                ".provider",
+                                file
+                            )
+
+                    val intent =
+                        Intent(
+                            Intent.ACTION_SEND
+                        ).apply {
+
+                            type = "image/png"
+
+                            putExtra(
+                                Intent.EXTRA_STREAM,
+                                uri
+                            )
+
+                            addFlags(
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            )
+                        }
+
+                    startActivity(
+                        Intent.createChooser(
+                            intent,
+                            "SHARE TACTICAL MATRIX"
+                        )
+                    )
+
+                } catch (e: Exception) {
+
+                    Toast.makeText(
+                        this,
+                        "Matrix share failed",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+
             layout.addView(etChannelName)
             layout.addView(btnGenerate)
             layout.addView(tvChannelId)
             layout.addView(btnSecure)
             layout.addView(btnCreateMatrix)
+            layout.addView(btnShareMatrix)
             layout.addView(tvMatrixPreview)
 
             AlertDialog.Builder(this)
