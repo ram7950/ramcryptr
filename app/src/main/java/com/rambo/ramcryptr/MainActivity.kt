@@ -350,16 +350,36 @@ TextCrypto.decrypt(
                                     encodedPayload
                                 )
 
-                        val scrambledIndex =
-                            (
-                                i * 7 +
-                                generatedId.length * 13
-                            ) % payloadBits.length
+                        val payloadIndex =
+                            i - 1
 
                         val bit =
-                            payloadBits[
-                                scrambledIndex
-                            ]
+                            if (
+                                payloadIndex >= 0 &&
+                                payloadIndex < payloadBits.length
+                            ) {
+
+                                payloadBits[
+                                    payloadIndex
+                                ]
+
+                            } else {
+
+                                val noise =
+                                    (
+                                        (
+                                            i * 31 +
+                                            generatedId.hashCode() +
+                                            matrixSeed.hashCode()
+                                        ) and 1
+                                    )
+
+                                if (noise == 1) {
+                                    '1'
+                                } else {
+                                    '0'
+                                }
+                            }
 
                         if (bit == '1') {
 
