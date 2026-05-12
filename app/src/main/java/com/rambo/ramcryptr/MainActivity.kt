@@ -365,16 +365,20 @@ TextCrypto.decrypt(
 
                             } else {
 
-                                val noise =
-                                    (
+                                val random =
+                                    java.util.Random(
                                         (
-                                            i * 31 +
-                                            generatedId.hashCode() +
-                                            matrixSeed.hashCode()
-                                        ) and 1
+                                            generatedId.hashCode()
+                                                .toLong() shl 32
+                                        ) xor
+                                        matrixSeed.hashCode()
+                                            .toLong() xor
+                                        i.toLong()
                                     )
 
-                                if (noise == 1) {
+                                if (
+                                    random.nextBoolean()
+                                ) {
                                     '1'
                                 } else {
                                     '0'
