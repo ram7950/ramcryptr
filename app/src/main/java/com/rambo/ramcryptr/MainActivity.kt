@@ -291,6 +291,16 @@ TextCrypto.decrypt(
                 val matrixBuilder =
                     StringBuilder()
 
+                val entropyRandom =
+                    java.util.Random(
+                        (
+                            generatedId.hashCode()
+                                .toLong() shl 32
+                        ) xor
+                        matrixSeed.hashCode()
+                            .toLong()
+                    )
+
                 val gridSize = 64
 
                 val fixedSize =
@@ -365,19 +375,8 @@ TextCrypto.decrypt(
 
                             } else {
 
-                                val random =
-                                    java.util.Random(
-                                        (
-                                            generatedId.hashCode()
-                                                .toLong() shl 32
-                                        ) xor
-                                        matrixSeed.hashCode()
-                                            .toLong() xor
-                                        i.toLong()
-                                    )
-
                                 if (
-                                    random.nextBoolean()
+                                    entropyRandom.nextBoolean()
                                 ) {
                                     '1'
                                 } else {
