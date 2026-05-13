@@ -9,7 +9,7 @@ object MatrixBitmapGenerator {
 
     fun generate(
         matrix: String,
-        cellSize: Int = 8
+        cellSize: Int = 24
     ): Bitmap {
 
         val rows =
