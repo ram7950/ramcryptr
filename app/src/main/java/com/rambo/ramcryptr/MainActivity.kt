@@ -61,12 +61,42 @@ class MainActivity : AppCompatActivity() {
                         recoveredChannel != null
                     ) {
 
-                        Toast.makeText(
-                            this,
-                            "Recovered channel: " +
-                            recoveredChannel.channelName,
-                            Toast.LENGTH_LONG
-                        ).show()
+                        AlertDialog.Builder(this)
+
+                            .setTitle(
+                                "FOUND CHANNEL"
+                            )
+
+                            .setMessage(
+                                "Found channel: " +
+                                recoveredChannel.channelName +
+                                "\n\nWanna patch in?"
+                            )
+
+                            .setNegativeButton(
+                                "NO THANKS",
+                                null
+                            )
+
+                            .setPositiveButton(
+                                "PATCH IN"
+                            ) { _, _ ->
+
+                                ChannelStorage.saveChannel(
+                                    this,
+                                    recoveredChannel
+                                )
+
+                                renderChannels()
+
+                                Toast.makeText(
+                                    this,
+                                    "Channel patched in",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+
+                            .show()
 
                     } else {
 
