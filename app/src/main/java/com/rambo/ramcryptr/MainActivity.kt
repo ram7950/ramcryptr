@@ -393,15 +393,15 @@ TextCrypto.decrypt(
 
                     val isFinder =
                         (
-                            (row < 4 && col < 4) ||
-                            (row < 4 && col > 13) ||
-                            (row > 13 && col < 4)
+                            (row < 8 && col < 8) ||
+                            (row < 8 && col > 55) ||
+                            (row > 55 && col < 8)
                         )
 
                     val isReserved =
                         (
-                            row == 8 ||
-                            col == 8
+                            row == 32 ||
+                            col == 32
                         )
 
                     if (isFinder) {
@@ -919,15 +919,15 @@ TextCrypto.decrypt(
 
                                     val isFinder =
                                         (
-                                            (row < 4 && col < 4) ||
-                                            (row < 4 && col > 13) ||
-                                            (row > 13 && col < 4)
+                                            (row < 8 && col < 8) ||
+                                            (row < 8 && col > 55) ||
+                                            (row > 55 && col < 8)
                                         )
 
                                     val isReserved =
                                         (
-                                            row == 8 ||
-                                            col == 8
+                                            row == 32 ||
+                                            col == 32
                                         )
 
                                     if (isFinder) {
