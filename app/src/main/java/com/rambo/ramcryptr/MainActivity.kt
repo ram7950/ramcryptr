@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(
                             this,
                             "Recovered channel: " +
-                            recoveredChannel.name,
+                            recoveredChannel.channelName,
                             Toast.LENGTH_LONG
                         ).show()
 
