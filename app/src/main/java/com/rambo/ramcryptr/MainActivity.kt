@@ -19,6 +19,9 @@ class MainActivity : AppCompatActivity() {
     private val PICK_ENCODE_FILE = 201
     private val PICK_DECODE_FILE = 202
 
+    private var scanPhotoUri:
+        android.net.Uri? = null
+
     private val importMatrixLauncher =
         registerForActivityResult(
             androidx.activity.result.contract
@@ -131,10 +134,30 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(
             androidx.activity.result.contract
                 .ActivityResultContracts
-                .TakePicturePreview()
-        ) { bitmap ->
+                .TakePicture()
+        ) { success ->
 
-            if (bitmap != null) {
+            if (
+                success &&
+                scanPhotoUri != null
+            ) {
+
+                val stream =
+                    contentResolver
+                        .openInputStream(
+                            scanPhotoUri!!
+                        )
+
+                val bitmap =
+                    android.graphics
+                        .BitmapFactory
+                        .decodeStream(stream)
+
+                stream?.close()
+
+                try {
+
+
 
                 try {
 
@@ -754,8 +777,24 @@ TextCrypto.decrypt(
 
             btnScan.setOnClickListener {
 
+                val file =
+                    java.io.File(
+                        cacheDir,
+                        "scan_matrix.png"
+                    )
+
+                scanPhotoUri =
+                    androidx.core.content
+                        .FileProvider
+                        .getUriForFile(
+                            this,
+                            packageName +
+                            ".provider",
+                            file
+                        )
+
                 scanMatrixLauncher.launch(
-                    null
+                    scanPhotoUri
                 )
             }
 
