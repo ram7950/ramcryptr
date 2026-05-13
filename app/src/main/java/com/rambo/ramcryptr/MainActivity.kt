@@ -157,10 +157,6 @@ class MainActivity : AppCompatActivity() {
 
                 try {
 
-
-
-                try {
-
                     val matrix =
                         MatrixBitmapDecoder
                             .decode(bitmap)
