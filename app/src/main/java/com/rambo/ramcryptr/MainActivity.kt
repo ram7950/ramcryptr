@@ -136,11 +136,76 @@ class MainActivity : AppCompatActivity() {
 
             if (bitmap != null) {
 
-                Toast.makeText(
-                    this,
-                    "Matrix scan captured",
-                    Toast.LENGTH_SHORT
-                ).show()
+                try {
+
+                    val matrix =
+                        MatrixBitmapDecoder
+                            .decode(bitmap)
+
+                    val recoveredChannel =
+                        MatrixRecoveryPipeline
+                            .recoverChannel(
+                                matrix
+                            )
+
+                    if (
+                        recoveredChannel != null
+                    ) {
+
+                        AlertDialog.Builder(this)
+
+                            .setTitle(
+                                "FOUND CHANNEL"
+                            )
+
+                            .setMessage(
+                                "Found channel: " +
+                                recoveredChannel.channelName +
+                                "\n\nWanna patch in?"
+                            )
+
+                            .setNegativeButton(
+                                "NO THANKS",
+                                null
+                            )
+
+                            .setPositiveButton(
+                                "PATCH IN"
+                            ) { _, _ ->
+
+                                ChannelStorage.saveChannel(
+                                    this,
+                                    recoveredChannel
+                                )
+
+                                renderChannels()
+
+                                Toast.makeText(
+                                    this,
+                                    "Channel patched in",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+
+                            .show()
+
+                    } else {
+
+                        Toast.makeText(
+                            this,
+                            "Channel recovery failed",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                } catch (_: Exception) {
+
+                    Toast.makeText(
+                        this,
+                        "Matrix decode failed",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
             } else {
 
