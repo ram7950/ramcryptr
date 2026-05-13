@@ -383,6 +383,8 @@ TextCrypto.decrypt(
                 val fixedSize =
                     gridSize * gridSize
 
+                var payloadIndex = 0
+
                 for (i in 0 until fixedSize) {
 
                     val row =
@@ -437,17 +439,14 @@ TextCrypto.decrypt(
                                     encodedPayload
                                 )
 
-                        val payloadIndex =
-                            i - 1
-
                         val bit =
                             if (
-                                payloadIndex >= 0 &&
-                                payloadIndex < payloadBits.length
+                                payloadIndex <
+                                payloadBits.length
                             ) {
 
                                 payloadBits[
-                                    payloadIndex
+                                    payloadIndex++
                                 ]
 
                             } else {
@@ -906,6 +905,8 @@ TextCrypto.decrypt(
 
                                 val gridSize = 64
 
+                                var payloadIndex = 0
+
                                 for (
                                     i in 0 until
                                     (gridSize * gridSize)
@@ -944,18 +945,14 @@ TextCrypto.decrypt(
 
                                     } else {
 
-                                        val payloadIndex =
-                                            i - 1
-
                                         val bit =
                                             if (
-                                                payloadIndex >= 0 &&
                                                 payloadIndex <
                                                 payloadBits.length
                                             ) {
 
                                                 payloadBits[
-                                                    payloadIndex
+                                                    payloadIndex++
                                                 ]
 
                                             } else {
