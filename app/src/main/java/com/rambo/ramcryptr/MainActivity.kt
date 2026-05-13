@@ -28,11 +28,37 @@ class MainActivity : AppCompatActivity() {
 
             if (uri != null) {
 
-                Toast.makeText(
-                    this,
-                    "Matrix PNG imported",
-                    Toast.LENGTH_SHORT
-                ).show()
+                try {
+
+                    val stream =
+                        contentResolver
+                            .openInputStream(uri)
+
+                    val bitmap =
+                        android.graphics
+                            .BitmapFactory
+                            .decodeStream(stream)
+
+                    stream?.close()
+
+                    val matrix =
+                        MatrixBitmapDecoder
+                            .decode(bitmap)
+
+                    Toast.makeText(
+                        this,
+                        "Matrix decoded",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                } catch (_: Exception) {
+
+                    Toast.makeText(
+                        this,
+                        "Matrix decode failed",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
             } else {
 

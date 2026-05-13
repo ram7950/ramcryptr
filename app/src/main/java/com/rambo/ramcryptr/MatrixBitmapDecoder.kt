@@ -7,7 +7,7 @@ object MatrixBitmapDecoder {
 
     fun decode(
         bitmap: Bitmap,
-        gridSize: Int = 18
+        gridSize: Int = 64
     ): String {
 
         val cellSize =
