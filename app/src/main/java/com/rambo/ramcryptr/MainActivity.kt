@@ -51,12 +51,31 @@ class MainActivity : AppCompatActivity() {
                                 matrix
                             )
 
-                    Toast.makeText(
-                        this,
-                        "Recovered bits: " +
-                        recoveredBits.length,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    val recoveredChannel =
+                        MatrixRecoveryPipeline
+                            .recoverChannel(
+                                matrix
+                            )
+
+                    if (
+                        recoveredChannel != null
+                    ) {
+
+                        Toast.makeText(
+                            this,
+                            "Recovered channel: " +
+                            recoveredChannel.name,
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                    } else {
+
+                        Toast.makeText(
+                            this,
+                            "Channel recovery failed",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
 
                 } catch (_: Exception) {
 
