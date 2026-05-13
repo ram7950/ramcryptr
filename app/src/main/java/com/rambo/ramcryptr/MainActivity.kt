@@ -45,9 +45,16 @@ class MainActivity : AppCompatActivity() {
                         MatrixBitmapDecoder
                             .decode(bitmap)
 
+                    val recoveredBits =
+                        MatrixPayloadExtractor
+                            .extractBits(
+                                matrix
+                            )
+
                     Toast.makeText(
                         this,
-                        "Matrix decoded",
+                        "Recovered bits: " +
+                        recoveredBits.length,
                         Toast.LENGTH_SHORT
                     ).show()
 
