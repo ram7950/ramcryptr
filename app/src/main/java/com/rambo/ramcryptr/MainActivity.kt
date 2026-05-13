@@ -126,6 +126,32 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
+    private val scanMatrixLauncher =
+        registerForActivityResult(
+            androidx.activity.result.contract
+                .ActivityResultContracts
+                .TakePicturePreview()
+        ) { bitmap ->
+
+            if (bitmap != null) {
+
+                Toast.makeText(
+                    this,
+                    "Matrix scan captured",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "Scan cancelled",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -663,11 +689,9 @@ TextCrypto.decrypt(
 
             btnScan.setOnClickListener {
 
-                Toast.makeText(
-                    this,
-                    "Scanner phase coming next",
-                    Toast.LENGTH_SHORT
-                ).show()
+                scanMatrixLauncher.launch(
+                    null
+                )
             }
 
             btnImport.setOnClickListener {
