@@ -5,11 +5,16 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.MotionEvent
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
 class MiniToolActivity : AppCompatActivity() {
+
+    private val recHandler = Handler(Looper.getMainLooper())
+    private var recSeconds = 0
 
     private val PICK_ENCODE_FILE = 501
     private val PICK_DECODE_FILE = 502
@@ -23,6 +28,8 @@ class MiniToolActivity : AppCompatActivity() {
         val btnEncode = findViewById<Button>(R.id.btnEncode)
         val btnDecode = findViewById<Button>(R.id.btnDecode)
         val btnVoice = findViewById<Button>(R.id.btnVoice)
+        val tvRecordingStatus =
+            findViewById<TextView>(R.id.tvRecordingStatus)
 
         // Clipboard auto paste
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -68,6 +75,39 @@ class MiniToolActivity : AppCompatActivity() {
 
                 MotionEvent.ACTION_DOWN -> {
 
+                    btnVoice.setBackgroundTintList(
+                        android.content.res.ColorStateList.valueOf(
+                            android.graphics.Color.parseColor("#00FF66")
+                        )
+                    )
+
+                    tvRecordingStatus.alpha = 1f
+
+                    recSeconds = 0
+
+                    recHandler.post(object : Runnable {
+
+                        override fun run() {
+
+                            val mins = recSeconds / 60
+                            val secs = recSeconds % 60
+
+                            tvRecordingStatus.text =
+                                String.format(
+                                    "🔴 REC %02d:%02d",
+                                    mins,
+                                    secs
+                                )
+
+                            recSeconds++
+
+                            recHandler.postDelayed(
+                                this,
+                                1000
+                            )
+                        }
+                    })
+
                     Toast.makeText(
                         this,
                         "Recording started",
@@ -78,6 +118,16 @@ class MiniToolActivity : AppCompatActivity() {
                 }
 
                 MotionEvent.ACTION_UP -> {
+
+                    btnVoice.setBackgroundTintList(
+                        android.content.res.ColorStateList.valueOf(
+                            android.graphics.Color.parseColor("#001F3F")
+                        )
+                    )
+
+                    tvRecordingStatus.alpha = 0f
+
+                    recHandler.removeCallbacksAndMessages(null)
 
                     Toast.makeText(
                         this,
