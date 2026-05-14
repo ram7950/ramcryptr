@@ -20,81 +20,23 @@ object MatrixBitmapDecoder {
 
             for (col in 0 until gridSize) {
 
-                val centerX =
+                val x =
                     col * cellSize +
                     cellSize / 2
 
-                val centerY =
+                val y =
                     row * cellSize +
                     cellSize / 2
 
-                var totalRed = 0
-                var totalGreen = 0
-                var totalBlue = 0
-                var samples = 0
-
-                for (offsetY in -2..2) {
-
-                    for (offsetX in -2..2) {
-
-                        val sampleX =
-                            (centerX + offsetX)
-                                .coerceIn(
-                                    0,
-                                    bitmap.width - 1
-                                )
-
-                        val sampleY =
-                            (centerY + offsetY)
-                                .coerceIn(
-                                    0,
-                                    bitmap.height - 1
-                                )
-
-                        val pixel =
-                            bitmap.getPixel(
-                                sampleX,
-                                sampleY
-                            )
-
-                        totalRed +=
-                            Color.red(pixel)
-
-                        totalGreen +=
-                            Color.green(pixel)
-
-                        totalBlue +=
-                            Color.blue(pixel)
-
-                        samples++
-                    }
-                }
-
-                val avgRed =
-                    totalRed / samples
-
-                val avgGreen =
-                    totalGreen / samples
-
-                val avgBlue =
-                    totalBlue / samples
+                val pixel =
+                    bitmap.getPixel(x, y)
 
                 val ch =
                     when {
 
-                        (
-                            avgGreen > 160 &&
-                            avgRed < 140
-                        ) -> '▓'
+                        isGreen(pixel) -> '▓'
 
-                        (
-                            kotlin.math.abs(
-                                avgRed - avgGreen
-                            ) < 25 &&
-                            kotlin.math.abs(
-                                avgGreen - avgBlue
-                            ) < 25
-                        ) -> '▒'
+                        isGray(pixel) -> '▒'
 
                         else -> '░'
                     }
