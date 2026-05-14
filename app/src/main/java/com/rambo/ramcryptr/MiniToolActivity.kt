@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.MotionEvent
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
@@ -21,6 +22,7 @@ class MiniToolActivity : AppCompatActivity() {
         val output = findViewById<TextView>(R.id.tvOutput)
         val btnEncode = findViewById<Button>(R.id.btnEncode)
         val btnDecode = findViewById<Button>(R.id.btnDecode)
+        val btnVoice = findViewById<Button>(R.id.btnVoice)
 
         // Clipboard auto paste
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -57,6 +59,37 @@ class MiniToolActivity : AppCompatActivity() {
         btnDecode.setOnLongClickListener {
             pickFile(PICK_DECODE_FILE)
             true
+        }
+
+
+        btnVoice.setOnTouchListener { _, event ->
+
+            when (event.action) {
+
+                MotionEvent.ACTION_DOWN -> {
+
+                    Toast.makeText(
+                        this,
+                        "Recording started",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    true
+                }
+
+                MotionEvent.ACTION_UP -> {
+
+                    Toast.makeText(
+                        this,
+                        "Recording stopped",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    true
+                }
+
+                else -> false
+            }
         }
     }
 
