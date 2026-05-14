@@ -23,6 +23,9 @@ class MiniToolActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mini_tool)
 
+        supportActionBar?.hide()
+        title = ""
+
         val input = findViewById<EditText>(R.id.etInput)
         val output = findViewById<TextView>(R.id.tvOutput)
         val btnEncode = findViewById<Button>(R.id.btnEncode)
