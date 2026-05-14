@@ -6,6 +6,31 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RAMcryptr"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/tvRecordingStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="auto"
+            android:text="🔴 REC 00:00"
+            android:textColor="#FF0033"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:alpha="0"/>
+    </LinearLayout>
+
+
     <EditText
         android:id="@+id/etInput"
         android:layout_width="match_parent"
