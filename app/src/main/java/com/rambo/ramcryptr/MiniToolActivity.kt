@@ -46,7 +46,7 @@ class MiniToolActivity : AppCompatActivity() {
                 arrayOf(Manifest.permission.RECORD_AUDIO),
                 999
             )
-        }""
+        }
 
         val input = findViewById<EditText>(R.id.etInput)
         val output = findViewById<TextView>(R.id.tvOutput)
