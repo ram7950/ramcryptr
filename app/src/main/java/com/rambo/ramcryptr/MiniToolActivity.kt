@@ -209,6 +209,15 @@ class MiniToolActivity : AppCompatActivity() {
                         ).show()
                     }
 
+                    val kbSize =
+                        (recordedFile?.length() ?: 0L) / 1024
+
+                    Toast.makeText(
+                        this,
+                        "Saved: ${kbSize} KB",
+                        Toast.LENGTH_LONG
+                    ).show()
+
                     Toast.makeText(
                         this,
                         "Recording stopped",
