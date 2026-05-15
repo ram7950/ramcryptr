@@ -3,6 +3,7 @@ package com.rambo.ramcryptr
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.Manifest
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -10,6 +11,8 @@ import android.os.Looper
 import android.view.MotionEvent
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 class MiniToolActivity : AppCompatActivity() {
 
@@ -28,6 +31,22 @@ class MiniToolActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
         title = ""
+
+        if (
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            )
+            !=
+            android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.RECORD_AUDIO),
+                999
+            )
+        }""
 
         val input = findViewById<EditText>(R.id.etInput)
         val output = findViewById<TextView>(R.id.tvOutput)
