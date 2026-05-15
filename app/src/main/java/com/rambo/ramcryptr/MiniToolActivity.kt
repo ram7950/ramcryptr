@@ -16,6 +16,9 @@ class MiniToolActivity : AppCompatActivity() {
     private val recHandler = Handler(Looper.getMainLooper())
     private var recSeconds = 0
 
+    private var mediaRecorder: android.media.MediaRecorder? = null
+    private var recordedFile: java.io.File? = null
+
     private val PICK_ENCODE_FILE = 501
     private val PICK_DECODE_FILE = 502
 
@@ -88,6 +91,46 @@ class MiniToolActivity : AppCompatActivity() {
 
                     recSeconds = 0
 
+                    try {
+
+                        recordedFile = java.io.File(
+                            cacheDir,
+                            "voice_record.mp4"
+                        )
+
+                        mediaRecorder =
+                            android.media.MediaRecorder().apply {
+
+                                setAudioSource(
+                                    android.media.MediaRecorder.AudioSource.MIC
+                                )
+
+                                setOutputFormat(
+                                    android.media.MediaRecorder.OutputFormat.MPEG_4
+                                )
+
+                                setAudioEncoder(
+                                    android.media.MediaRecorder.AudioEncoder.AAC
+                                )
+
+                                setOutputFile(
+                                    recordedFile!!.absolutePath
+                                )
+
+                                prepare()
+                                start()
+                            }
+
+                    } catch (e: Exception) {
+
+                        Toast.makeText(
+                            this,
+                            "Mic error: " + e.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                    }
+
                     recHandler.post(object : Runnable {
 
                         override fun run() {
@@ -131,6 +174,21 @@ class MiniToolActivity : AppCompatActivity() {
                     tvRecordingStatus.alpha = 0f
 
                     recHandler.removeCallbacksAndMessages(null)
+
+                    try {
+
+                        mediaRecorder?.stop()
+                        mediaRecorder?.release()
+                        mediaRecorder = null
+
+                    } catch (e: Exception) {
+
+                        Toast.makeText(
+                            this,
+                            "Stop error: " + e.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
 
                     Toast.makeText(
                         this,
