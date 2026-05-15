@@ -11,6 +11,7 @@ import android.os.Looper
 import android.view.MotionEvent
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
@@ -199,6 +200,52 @@ class MiniToolActivity : AppCompatActivity() {
                         mediaRecorder?.stop()
                         mediaRecorder?.release()
                         mediaRecorder = null
+
+                        val inputVoice = recordedFile
+
+                        if (inputVoice != null && inputVoice.exists()) {
+
+                            val encryptedFile = java.io.File(
+                                cacheDir,
+                                "voice_record.ram.bin"
+                            )
+
+                            FileCryptoManager.encryptFile(
+                                inputVoice,
+                                encryptedFile,
+                                "mp4",
+                                "audio/mp4",
+                                CryptoMasterProvider.getMaster(this)
+                            )
+
+                            val uri =
+                                FileProvider.getUriForFile(
+                                    this,
+                                    packageName + ".provider",
+                                    encryptedFile
+                                )
+
+                            val shareIntent =
+                                Intent(Intent.ACTION_SEND)
+
+                            shareIntent.type = "*/*"
+
+                            shareIntent.putExtra(
+                                Intent.EXTRA_STREAM,
+                                uri
+                            )
+
+                            shareIntent.addFlags(
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            )
+
+                            startActivity(
+                                Intent.createChooser(
+                                    shareIntent,
+                                    "Share encrypted voice"
+                                )
+                            )
+                        }
 
                     } catch (e: Exception) {
 
