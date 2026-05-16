@@ -729,7 +729,40 @@ TextCrypto.decrypt(
 
         btnPatchIn.setOnClickListener {
 
-            TnetDialogs.showPatchInDialog(this)
+            TnetDialogs.showPatchInDialog(
+
+                this,
+
+                onScanClick = {
+
+                    val file =
+                        java.io.File(
+                            cacheDir,
+                            "scan_matrix.png"
+                        )
+
+                    scanPhotoUri =
+                        androidx.core.content
+                            .FileProvider
+                            .getUriForFile(
+                                this,
+                                packageName +
+                                ".provider",
+                                file
+                            )
+
+                    scanMatrixLauncher.launch(
+                        scanPhotoUri
+                    )
+                },
+
+                onImportClick = {
+
+                    importMatrixLauncher.launch(
+                        "image/png"
+                    )
+                }
+            )
         }
 
         btnTnetPanel.setOnClickListener {

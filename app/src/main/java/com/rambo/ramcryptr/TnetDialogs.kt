@@ -8,7 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 object TnetDialogs {
 
     fun showPatchInDialog(
-        activity: AppCompatActivity
+        activity: AppCompatActivity,
+        onScanClick: () -> Unit,
+        onImportClick: () -> Unit
     ) {
 
         val layout =
@@ -54,27 +56,11 @@ object TnetDialogs {
                 .create()
 
         btnScan.setOnClickListener {
-
-            Toast.makeText(
-                activity,
-                "Scan flow coming next",
-                Toast.LENGTH_SHORT
-            ).show()
+            onScanClick()
         }
 
         btnImport.setOnClickListener {
-
-            val intent =
-                Intent(Intent.ACTION_GET_CONTENT)
-
-            intent.type = "image/png"
-
-            activity.startActivity(
-                Intent.createChooser(
-                    intent,
-                    "IMPORT KEY MATRIX"
-                )
-            )
+            onImportClick()
         }
 
         dialog.show()
