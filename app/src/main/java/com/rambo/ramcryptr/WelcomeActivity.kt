@@ -10,6 +10,24 @@ class WelcomeActivity : AppCompatActivity() {
     private var latestMatrixBitmap:
         android.graphics.Bitmap? = null
 
+
+    private val importMatrixLauncher =
+        registerForActivityResult(
+            androidx.activity.result.contract
+                .ActivityResultContracts
+                .GetContent()
+        ) { uri ->
+
+            if (uri != null) {
+
+                TnetRecovery.recoverFromMatrixUri(
+                    activity = this,
+                    uri = uri
+                )
+            }
+        }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,16 +72,8 @@ class WelcomeActivity : AppCompatActivity() {
 
                 onImportClick = {
 
-                    val intent =
-                        Intent(Intent.ACTION_GET_CONTENT)
-
-                    intent.type = "image/png"
-
-                    startActivity(
-                        Intent.createChooser(
-                            intent,
-                            "IMPORT KEY MATRIX"
-                        )
+                    importMatrixLauncher.launch(
+                        "image/png"
                     )
                 }
             )
