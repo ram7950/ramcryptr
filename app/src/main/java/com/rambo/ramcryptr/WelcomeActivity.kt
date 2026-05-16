@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 
 class WelcomeActivity : AppCompatActivity() {
 
+    private var latestMatrixBitmap:
+        android.graphics.Bitmap? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -20,21 +23,49 @@ class WelcomeActivity : AppCompatActivity() {
 
         btnInitiate.setOnClickListener {
 
-            startActivity(
-                Intent(
-                    this,
-                    MainActivity::class.java
-                )
+            TnetDialogs.showInitiateCommnDialog(
+
+                activity = this,
+
+                latestBitmapProvider = {
+                    latestMatrixBitmap
+                },
+
+                latestBitmapUpdater = {
+                    latestMatrixBitmap = it
+                }
             )
         }
 
         btnPatchIn.setOnClickListener {
 
-            startActivity(
-                Intent(
-                    this,
-                    MainActivity::class.java
-                )
+            TnetDialogs.showPatchInDialog(
+
+                activity = this,
+
+                onScanClick = {
+
+                    android.widget.Toast.makeText(
+                        this,
+                        "Scan support coming next",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                },
+
+                onImportClick = {
+
+                    val intent =
+                        Intent(Intent.ACTION_GET_CONTENT)
+
+                    intent.type = "image/png"
+
+                    startActivity(
+                        Intent.createChooser(
+                            intent,
+                            "IMPORT KEY MATRIX"
+                        )
+                    )
+                }
             )
         }
     }
