@@ -68,7 +68,9 @@ object TnetDialogs {
 
 
     fun showInitiateCommnDialog(
-        activity: AppCompatActivity
+        activity: AppCompatActivity,
+        latestBitmapProvider: () -> android.graphics.Bitmap?,
+        latestBitmapUpdater: (android.graphics.Bitmap) -> Unit
     ) {
 
         val layout =
@@ -111,6 +113,46 @@ object TnetDialogs {
 
                 text =
                     "SECURE 🔐"
+            }
+
+        val btnCreateMatrix =
+            Button(activity).apply {
+
+                text =
+                    "CREATE KEY MATRIX"
+
+                visibility =
+                    android.view.View.GONE
+            }
+
+        val btnShareMatrix =
+            Button(activity).apply {
+
+                text =
+                    "SHARE MATRIX"
+
+                visibility =
+                    android.view.View.GONE
+            }
+
+        val ivMatrixPreview =
+            ImageView(activity).apply {
+
+                visibility =
+                    android.view.View.GONE
+
+                adjustViewBounds = true
+
+                setBackgroundColor(
+                    android.graphics.Color.BLACK
+                )
+
+                setPadding(
+                    20,
+                    40,
+                    20,
+                    40
+                )
             }
 
         var generatedId = ""
@@ -166,6 +208,9 @@ object TnetDialogs {
                 channel
             )
 
+            btnCreateMatrix.visibility =
+                android.view.View.VISIBLE
+
             Toast.makeText(
                 activity,
                 "Secure channel created",
@@ -176,7 +221,224 @@ object TnetDialogs {
         layout.addView(etChannelName)
         layout.addView(btnGenerate)
         layout.addView(tvChannelId)
+        btnCreateMatrix.setOnClickListener {
+
+            val matrixSeed =
+                etChannelName.text.toString() +
+                generatedId
+
+            val matrixBuilder =
+                StringBuilder()
+
+            val entropyRandom =
+                java.util.Random(
+                    (
+                        generatedId.hashCode()
+                            .toLong() shl 32
+                    ) xor
+                    matrixSeed.hashCode()
+                        .toLong()
+                )
+
+            val gridSize = 64
+
+            val fixedSize =
+                gridSize * gridSize
+
+            var payloadIndex = 0
+
+            for (i in 0 until fixedSize) {
+
+                val row =
+                    i / gridSize
+
+                val col =
+                    i % gridSize
+
+                val isFinder =
+                    (
+                        (row < 8 && col < 8) ||
+                        (row < 8 && col > 55) ||
+                        (row > 55 && col < 8)
+                    )
+
+                val isReserved =
+                    (
+                        row == 32 ||
+                        col == 32
+                    )
+
+                if (isFinder) {
+
+                    matrixBuilder.append("▓")
+
+                } else if (isReserved) {
+
+                    matrixBuilder.append("▒")
+
+                } else {
+
+                    val activeChannel =
+                        ChannelManager
+                            .getActiveChannel()
+
+                    val encodedPayload =
+                        if (activeChannel != null) {
+
+                            MatrixPayloadCodec
+                                .encodeChannel(
+                                    activeChannel
+                                )
+
+                        } else {
+
+                            matrixSeed
+                        }
+
+                    val payloadBits =
+                        MatrixBitstream
+                            .stringToBits(
+                                encodedPayload
+                            )
+
+                    val bit =
+                        if (
+                            payloadIndex <
+                            payloadBits.length
+                        ) {
+
+                            payloadBits[
+                                payloadIndex++
+                            ]
+
+                        } else {
+
+                            if (
+                                entropyRandom.nextBoolean()
+                            ) {
+                                '1'
+                            } else {
+                                '0'
+                            }
+                        }
+
+                    if (bit == '1') {
+
+                        matrixBuilder.append("▓")
+
+                    } else {
+
+                        matrixBuilder.append("░")
+                    }
+                }
+
+                if ((i + 1) % gridSize == 0) {
+
+                    matrixBuilder.append("\n")
+                }
+            }
+
+            val finalMatrix =
+                matrixBuilder.toString()
+
+            val bitmap =
+                MatrixBitmapGenerator.generate(
+                    finalMatrix
+                )
+
+            latestBitmapUpdater(bitmap)
+
+            ivMatrixPreview.setImageBitmap(
+                bitmap
+            )
+
+            ivMatrixPreview.visibility =
+                android.view.View.VISIBLE
+
+            btnShareMatrix.visibility =
+                android.view.View.VISIBLE
+
+            Toast.makeText(
+                activity,
+                "Fixed tactical matrix generated",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        btnShareMatrix.setOnClickListener {
+
+            try {
+
+                val bitmap =
+                    latestBitmapProvider()
+                        ?: return@setOnClickListener
+
+                val file =
+                    java.io.File(
+                        activity.cacheDir,
+                        "tactical_matrix.png"
+                    )
+
+                val fos =
+                    java.io.FileOutputStream(file)
+
+                bitmap.compress(
+                    android.graphics.Bitmap
+                        .CompressFormat.PNG,
+                    100,
+                    fos
+                )
+
+                fos.flush()
+                fos.close()
+
+                val uri =
+                    androidx.core.content.FileProvider
+                        .getUriForFile(
+                            activity,
+                            activity.packageName +
+                            ".provider",
+                            file
+                        )
+
+                val intent =
+                    Intent(
+                        Intent.ACTION_SEND
+                    ).apply {
+
+                        type = "image/png"
+
+                        putExtra(
+                            Intent.EXTRA_STREAM,
+                            uri
+                        )
+
+                        addFlags(
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
+                    }
+
+                activity.startActivity(
+                    Intent.createChooser(
+                        intent,
+                        "SHARE TACTICAL MATRIX"
+                    )
+                )
+
+            } catch (e: Exception) {
+
+                Toast.makeText(
+                    activity,
+                    "Matrix share failed",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
         layout.addView(btnSecure)
+        layout.addView(btnCreateMatrix)
+        layout.addView(btnShareMatrix)
+        layout.addView(ivMatrixPreview)
 
         AlertDialog.Builder(activity)
             .setTitle("INITIATE COMMN")

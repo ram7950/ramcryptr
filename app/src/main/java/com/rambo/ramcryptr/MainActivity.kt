@@ -384,7 +384,18 @@ TextCrypto.decrypt(
 
         btnInitiateCommn.setOnClickListener {
 
-            TnetDialogs.showInitiateCommnDialog(this)
+            TnetDialogs.showInitiateCommnDialog(
+
+                activity = this,
+
+                latestBitmapProvider = {
+                    latestMatrixBitmap
+                },
+
+                latestBitmapUpdater = {
+                    latestMatrixBitmap = it
+                }
+            )
         }
 
         btnPatchIn.setOnClickListener {
