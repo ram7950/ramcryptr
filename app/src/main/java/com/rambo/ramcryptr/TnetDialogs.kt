@@ -48,7 +48,7 @@ object TnetDialogs {
             AlertDialog.Builder(activity)
 
                 .setTitle(
-                    "PATCH IN"
+                    "PATCH INTO SECURED NETWORK"
                 )
 
                 .setView(layout)
