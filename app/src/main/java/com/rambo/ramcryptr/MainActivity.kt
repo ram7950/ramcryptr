@@ -239,6 +239,22 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val channels =
+            ChannelStorage.loadChannels(this)
+
+        if (channels.isEmpty()) {
+
+            startActivity(
+                Intent(
+                    this,
+                    WelcomeActivity::class.java
+                )
+            )
+
+            finish()
+            return
+        }
+
         ChannelManager.initialize(this)
         setContentView(R.layout.activity_main)
 
