@@ -70,7 +70,8 @@ object TnetDialogs {
     fun showInitiateCommnDialog(
         activity: AppCompatActivity,
         latestBitmapProvider: () -> android.graphics.Bitmap?,
-        latestBitmapUpdater: (android.graphics.Bitmap) -> Unit
+        latestBitmapUpdater: (android.graphics.Bitmap) -> Unit,
+        onSuccess: (() -> Unit)? = null
     ) {
 
         val layout =
@@ -202,6 +203,8 @@ object TnetDialogs {
                 activity,
                 channel
             )
+
+            onSuccess?.invoke()
 
             ChannelManager.setActiveChannel(
                 activity,

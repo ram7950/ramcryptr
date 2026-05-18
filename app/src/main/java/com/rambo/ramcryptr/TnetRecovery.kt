@@ -10,6 +10,8 @@ object TnetRecovery {
     fun recoverFromMatrixUri(
         activity: AppCompatActivity,
         uri: Uri,
+
+        onSuccess: (() -> Unit)? = null,
         onChannelPatched: () -> Unit = {}
     ) {
 
@@ -60,6 +62,8 @@ object TnetRecovery {
                             activity,
                             recoveredChannel
                         )
+
+                        onSuccess?.invoke()
 
                         onChannelPatched()
 

@@ -22,7 +22,19 @@ class WelcomeActivity : AppCompatActivity() {
 
                 TnetRecovery.recoverFromMatrixUri(
                     activity = this,
-                    uri = uri
+                    uri = uri,
+
+                    onSuccess = {
+
+                        startActivity(
+                            Intent(
+                                this,
+                                MainActivity::class.java
+                            )
+                        )
+
+                        finish()
+                    }
                 )
             }
         }
@@ -51,6 +63,18 @@ class WelcomeActivity : AppCompatActivity() {
 
                 latestBitmapUpdater = {
                     latestMatrixBitmap = it
+                },
+
+                onSuccess = {
+
+                    startActivity(
+                        Intent(
+                            this,
+                            MainActivity::class.java
+                        )
+                    )
+
+                    finish()
                 }
             )
         }
