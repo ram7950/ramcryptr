@@ -62,6 +62,12 @@ object TnetRecovery {
                             activity,
                             recoveredChannel
                         )
+                        ChannelManager
+                            .setActiveChannel(
+                                activity,
+                                recoveredChannel
+                            )
+
 
                         onSuccess?.invoke()
 
