@@ -993,51 +993,60 @@ TextCrypto.decrypt(
             row.addView(inception)
             row.addView(action)
 
-            row.setOnClickListener {
+            val activeChannel =
+                ChannelManager.getActiveChannel()
 
-                AlertDialog.Builder(this)
+            if (
+                activeChannel?.channelId !=
+                channel.channelId
+            ) {
 
-                    .setTitle("SWITCH CHANNEL")
+                row.setOnClickListener {
 
-                    .setMessage(
-                        "Switch to this secure channel?\n\n" +
-                        "Note: It will apply after restart."
-                    )
+                    AlertDialog.Builder(this)
 
-                    .setPositiveButton("SWITCH") { _, _ ->
+                        .setTitle("SWITCH CHANNEL")
 
-                        ChannelManager.setActiveChannel(
-                            this,
-                            channel
+                        .setMessage(
+                            "Switch to this secure channel?\n\n" +
+                            "Note: It will apply after restart."
                         )
 
-                        AlertDialog.Builder(this)
+                        .setPositiveButton("SWITCH") { _, _ ->
 
-                            .setTitle("RESTART REQUIRED")
-
-                            .setMessage(
-                                "App is going to restart..."
+                            ChannelManager.setActiveChannel(
+                                this,
+                                channel
                             )
 
-                            .setCancelable(false)
+                            AlertDialog.Builder(this)
 
-                            .show()
+                                .setTitle("RESTART REQUIRED")
 
-                        android.os.Handler(
-                            mainLooper
-                        ).postDelayed({
+                                .setMessage(
+                                    "App is going to restart..."
+                                )
 
-                            recreate()
+                                .setCancelable(false)
 
-                        }, 2000)
-                    }
+                                .show()
 
-                    .setNegativeButton(
-                        "DISMISS",
-                        null
-                    )
+                            android.os.Handler(
+                                mainLooper
+                            ).postDelayed({
 
-                    .show()
+                                recreate()
+
+                            }, 2000)
+                        }
+
+                        .setNegativeButton(
+                            "DISMISS",
+                            null
+                        )
+
+                        .show()
+                }
             }
 
             channelListContainer.addView(row)
