@@ -8,11 +8,10 @@
     <!-- 🔔 Notification permission -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
-    <!-- Optional (future overlay) -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
         android:allowBackup="true"
+        android:usesCleartextTraffic="false"
         android:label="RAMcryptr"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -31,7 +30,7 @@
         
         <activity
             android:name=".WelcomeActivity"
-            android:exported="true"/>
+            android:exported="false"/>
 
 
         <!-- MAIN -->
@@ -58,17 +57,17 @@
         <!-- 🆕 MINI TOOL POPUP -->
         <activity
             android:name=".MiniToolActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.Dialog"/>
 
         <!-- FILE -->
-        <activity android:name=".FileEncryptActivity" android:exported="true"/>
-        <activity android:name=".FileDecryptActivity" android:exported="true"/>
+        <activity android:name=".FileEncryptActivity" android:exported="false"/>
+        <activity android:name=".FileDecryptActivity" android:exported="false"/>
 
         <!-- QUICK DECODE (incoming later) -->
         <activity
             android:name=".QuickDecodeActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
         <!-- 🔔 NOTIFICATION LISTENER -->

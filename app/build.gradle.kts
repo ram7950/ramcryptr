@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.rambo.ramcryptr"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.rambo.ramcryptr"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 2
         versionName = "3.1.1"
     }
