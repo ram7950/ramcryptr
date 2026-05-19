@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rambo.ramcryptr"
+    android:versionCode="2"
+    android:versionName="3.1.1" >
+
+    <uses-sdk
+        android:minSdkVersion="24"
+        android:targetSdkVersion="33" />
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- 🔔 Notification permission -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Optional (future overlay) -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <permission
+        android:name="com.rambo.ramcryptr.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.rambo.ramcryptr.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+
+    <application
+        android:allowBackup="true"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:extractNativeLibs="false"
+        android:label="RAMcryptr"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+
+        <!-- FileProvider -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.rambo.ramcryptr.provider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.rambo.ramcryptr.WelcomeActivity"
+            android:exported="true" />
+
+        <!-- MAIN -->
+        <activity
+            android:name="com.rambo.ramcryptr.MainActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+
+        <!-- 🆕 MINI TOOL POPUP -->
+        <activity
+            android:name="com.rambo.ramcryptr.MiniToolActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+
+        <!-- FILE -->
+        <activity
+            android:name="com.rambo.ramcryptr.FileEncryptActivity"
+            android:exported="true" />
+        <activity
+            android:name="com.rambo.ramcryptr.FileDecryptActivity"
+            android:exported="true" />
+
+        <!-- QUICK DECODE (incoming later) -->
+        <activity
+            android:name="com.rambo.ramcryptr.QuickDecodeActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <!-- 🔔 NOTIFICATION LISTENER -->
+        <service
+            android:name="com.rambo.ramcryptr.NotificationService"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- DISMISS RECEIVER -->
+        <receiver
+            android:name="com.rambo.ramcryptr.NotificationDismissReceiver"
+            android:exported="true" />
+
+        <!-- TEXT MENU -->
+        <activity
+            android:name="com.rambo.ramcryptr.EncodeProcessTextActivity"
+            android:exported="true"
+            android:label="Encode" >
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.rambo.ramcryptr.DecodeProcessTextActivity"
+            android:exported="true"
+            android:label="Decode" >
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.rambo.ramcryptr.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+        </provider>
+    </application>
+
+</manifest>

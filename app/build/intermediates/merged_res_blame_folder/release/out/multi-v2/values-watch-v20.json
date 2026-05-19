@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.rambo.ramcryptr.app-mergeReleaseResources-27:/values-watch-v20/values-watch-v20.xml",
+            "map": [
+                {
+                    "source": "/data/data/com.termux/files/home/.gradle/caches/transforms-3/fd5e13db22d09d9582f224218a919680/transformed/appcompat-1.6.1/res/values-watch-v20/values-watch-v20.xml",
+                    "from": {
+                        "startLines": "2,5,8",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,214,385",
+                        "endLines": "4,7,10",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "209,380,553"
+                    }
+                }
+            ]
+        }
+    ]
+}

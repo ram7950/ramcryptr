@@ -15,8 +15,31 @@ android {
         versionName = "3.1.1"
     }
 
+    signingConfigs {
+
+        create("release") {
+
+            storeFile =
+                file("../ramcryptr-release.jks")
+
+            storePassword =
+                "RAMpratap13@"
+
+            keyAlias =
+                "RAMcryptr"
+
+            keyPassword =
+                "Rampratap13@"
+        }
+    }
+
     buildTypes {
+
         release {
+
+            signingConfig =
+                signingConfigs.getByName("release")
+
             isMinifyEnabled = false
         }
     }
