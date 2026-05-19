@@ -26,10 +26,10 @@ android {
                 "RAMpratap13@"
 
             keyAlias =
-                "RAMcryptr"
+                "ramcryptr"
 
             keyPassword =
-                "Rampratap13@"
+                "RAMpratap13@"
         }
     }
 
