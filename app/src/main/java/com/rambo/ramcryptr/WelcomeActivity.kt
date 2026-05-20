@@ -95,6 +95,24 @@ class WelcomeActivity : AppCompatActivity() {
                 .setDuration(500)
                 .start()
 
+            android.os.Handler(
+                android.os.Looper.getMainLooper()
+            ).postDelayed({
+
+                findViewById<android.view.View>(
+                    R.id.tvTitle
+                ).animate()
+                    .alpha(1f)
+                    .setDuration(200)
+                    .start()
+
+                animatedLogo.animate()
+                    .alpha(0f)
+                    .setDuration(250)
+                    .start()
+
+            }, 450)
+
             android.media.MediaPlayer.create(
                 this,
                 R.raw.thangg
@@ -126,6 +144,10 @@ class WelcomeActivity : AppCompatActivity() {
             findViewById<android.view.View>(
                 R.id.welcomeContent
             )
+
+        findViewById<android.view.View>(
+            R.id.tvTitle
+        ).alpha = 0f
 
         welcomeContent.alpha = 0f
 
