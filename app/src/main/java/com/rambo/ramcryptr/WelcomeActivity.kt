@@ -118,7 +118,7 @@ class WelcomeActivity : AppCompatActivity() {
                 R.raw.thangg
             ).start()
 
-        }, 5700)
+        }, 7150)
 
         android.os.Handler(
             android.os.Looper.getMainLooper()
@@ -138,7 +138,7 @@ class WelcomeActivity : AppCompatActivity() {
                 .setDuration(1400)
                 .start()
 
-        }, 6200)
+        }, 7750)
 
         val welcomeContent =
             findViewById<android.view.View>(
