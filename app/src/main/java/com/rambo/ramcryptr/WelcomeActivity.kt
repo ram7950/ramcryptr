@@ -75,6 +75,33 @@ class WelcomeActivity : AppCompatActivity() {
 
         introPlayer.play()
 
+        val animatedLogo =
+            findViewById<android.widget.TextView>(
+                R.id.animatedLogo
+            )
+
+        android.os.Handler(
+            android.os.Looper.getMainLooper()
+        ).postDelayed({
+
+            animatedLogo.alpha = 1f
+
+            animatedLogo.scaleX = 4f
+            animatedLogo.scaleY = 4f
+
+            animatedLogo.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(500)
+                .start()
+
+            android.media.MediaPlayer.create(
+                this,
+                R.raw.thangg
+            ).start()
+
+        }, 5700)
+
         android.os.Handler(
             android.os.Looper.getMainLooper()
         ).postDelayed({
