@@ -61,7 +61,8 @@
         android:id="@+id/introVideo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:keepScreenOn="true"
         app:use_controller="false"
-        android:keepScreenOn="true"/>
+        app:resize_mode="zoom"/>
 
 </FrameLayout>
