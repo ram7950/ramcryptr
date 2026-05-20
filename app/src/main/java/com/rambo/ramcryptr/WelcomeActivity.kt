@@ -101,7 +101,9 @@ class WelcomeActivity : AppCompatActivity() {
                             .setDuration(500)
                             .start()
 
-                        welcomeContent.animate()
+                        findViewById<android.view.View>(
+                            R.id.welcomeContent
+                        ).animate()
                             .alpha(1f)
                             .setDuration(500)
                             .start()
