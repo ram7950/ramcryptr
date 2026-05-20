@@ -75,35 +75,25 @@ class WelcomeActivity : AppCompatActivity() {
 
         introPlayer.play()
 
-        introPlayer.addListener(
-            object : androidx.media3.common.Player.Listener {
+        android.os.Handler(
+            android.os.Looper.getMainLooper()
+        ).postDelayed({
 
-                override fun onPlaybackStateChanged(
-                    playbackState: Int
-                ) {
+            findViewById<android.view.View>(
+                R.id.welcomeContent
+            ).animate()
+                .alpha(1f)
+                .setDuration(1000)
+                .start()
 
-                    if (
-                        playbackState ==
-                        androidx.media3.common.Player.STATE_ENDED
-                    ) {
+            findViewById<android.view.View>(
+                R.id.introOverlay
+            ).animate()
+                .alpha(0f)
+                .setDuration(1400)
+                .start()
 
-                        findViewById<android.view.View>(
-                            R.id.welcomeContent
-                        ).animate()
-                            .alpha(1f)
-                            .setDuration(900)
-                            .start()
-
-                        findViewById<android.view.View>(
-                            R.id.introOverlay
-                        ).animate()
-                            .alpha(0f)
-                            .setDuration(1200)
-                            .start()
-                    }
-                }
-            }
-        )
+        }, 6200)
 
         val welcomeContent =
             findViewById<android.view.View>(
