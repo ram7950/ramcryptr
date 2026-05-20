@@ -5,7 +5,13 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
+
 class WelcomeActivity : AppCompatActivity() {
+
+    private lateinit var introPlayer: ExoPlayer
 
     private var latestMatrixBitmap:
         android.graphics.Bitmap? = null
@@ -44,6 +50,25 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_welcome)
+
+        val playerView =
+            findViewById<PlayerView>(R.id.introVideo)
+
+        introPlayer =
+            ExoPlayer.Builder(this).build()
+
+        playerView.player = introPlayer
+
+        val mediaItem =
+            MediaItem.fromUri(
+                "android.resource://$packageName/${R.raw.intro}"
+            )
+
+        introPlayer.setMediaItem(mediaItem)
+
+        introPlayer.prepare()
+
+        introPlayer.play()
 
         val btnInitiate =
             findViewById<Button>(R.id.btnInitiate)
