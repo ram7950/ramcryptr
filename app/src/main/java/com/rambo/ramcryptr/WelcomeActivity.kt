@@ -75,6 +75,48 @@ class WelcomeActivity : AppCompatActivity() {
 
         introPlayer.play()
 
+        introPlayer.addListener(
+            object : androidx.media3.common.Player.Listener {
+
+                override fun onPlaybackStateChanged(
+                    playbackState: Int
+                ) {
+
+                    if (
+                        playbackState ==
+                        androidx.media3.common.Player.STATE_ENDED
+                    ) {
+
+                        findViewById<android.view.View>(
+                            R.id.introVideo
+                        ).animate()
+                            .alpha(0f)
+                            .setDuration(500)
+                            .start()
+
+                        findViewById<android.view.View>(
+                            R.id.bgVideo
+                        ).animate()
+                            .alpha(0f)
+                            .setDuration(500)
+                            .start()
+
+                        welcomeContent.animate()
+                            .alpha(1f)
+                            .setDuration(500)
+                            .start()
+                    }
+                }
+            }
+        )
+
+        val welcomeContent =
+            findViewById<android.view.View>(
+                R.id.welcomeContent
+            )
+
+        welcomeContent.alpha = 0f
+
         val btnInitiate =
             findViewById<Button>(R.id.btnInitiate)
 
