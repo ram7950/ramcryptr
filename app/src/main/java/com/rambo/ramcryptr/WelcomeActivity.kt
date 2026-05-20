@@ -51,11 +51,16 @@ class WelcomeActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_welcome)
 
+        val bgVideo =
+            findViewById<PlayerView>(R.id.bgVideo)
+
         val playerView =
             findViewById<PlayerView>(R.id.introVideo)
 
         introPlayer =
             ExoPlayer.Builder(this).build()
+
+        bgVideo.player = introPlayer
 
         playerView.player = introPlayer
 

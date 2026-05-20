@@ -57,12 +57,25 @@
 
 </LinearLayout>
 
+    <!-- BACKGROUND VIDEO -->
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/bgVideo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.45"
+        android:scaleX="1.8"
+        android:scaleY="1.8"
+        android:keepScreenOn="true"
+        app:use_controller="false"
+        app:resize_mode="zoom"/>
+
+    <!-- MAIN VIDEO -->
     <androidx.media3.ui.PlayerView
         android:id="@+id/introVideo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:keepScreenOn="true"
         app:use_controller="false"
-        app:resize_mode="fill"/>
+        app:resize_mode="fit"/>
 
 </FrameLayout>
