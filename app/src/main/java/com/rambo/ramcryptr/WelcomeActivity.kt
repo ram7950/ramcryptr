@@ -88,24 +88,17 @@ class WelcomeActivity : AppCompatActivity() {
                     ) {
 
                         findViewById<android.view.View>(
-                            R.id.introVideo
-                        ).animate()
-                            .alpha(0f)
-                            .setDuration(500)
-                            .start()
-
-                        findViewById<android.view.View>(
-                            R.id.bgVideo
-                        ).animate()
-                            .alpha(0f)
-                            .setDuration(500)
-                            .start()
-
-                        findViewById<android.view.View>(
                             R.id.welcomeContent
                         ).animate()
                             .alpha(1f)
-                            .setDuration(500)
+                            .setDuration(900)
+                            .start()
+
+                        findViewById<android.view.View>(
+                            R.id.introOverlay
+                        ).animate()
+                            .alpha(0f)
+                            .setDuration(1200)
                             .start()
                     }
                 }

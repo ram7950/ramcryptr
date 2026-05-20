@@ -58,6 +58,11 @@
 
 </LinearLayout>
 
+    <FrameLayout
+        android:id="@+id/introOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <!-- BACKGROUND VIDEO -->
     <androidx.media3.ui.PlayerView
         android:id="@+id/bgVideo"
@@ -78,5 +83,7 @@
         android:keepScreenOn="true"
         app:use_controller="false"
         app:resize_mode="zoom"/>
+
+</FrameLayout>
 
 </FrameLayout>
