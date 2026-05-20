@@ -95,7 +95,8 @@
         android:textColor="#00FFAA"
         android:textSize="34sp"
         android:textStyle="bold"
-        android:layout_gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="210dp"
         android:alpha="0"/>
 
 </FrameLayout>
