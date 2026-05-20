@@ -63,6 +63,6 @@
         android:layout_height="match_parent"
         android:keepScreenOn="true"
         app:use_controller="false"
-        app:resize_mode="zoom"/>
+        app:resize_mode="fill"/>
 
 </FrameLayout>
